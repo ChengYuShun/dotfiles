@@ -2,7 +2,7 @@
 
 ;;; License:
 
-;; Copyright (C) 2022  Yushun Cheng <chengys@disroot.org>
+;; Copyright (C) 2024  Yushun Cheng <chengys@disroot.org>
 ;;
 ;; This file is free software: you can redistribute it and/or modify it under
 ;; the terms of the GNU General Public License as published by the Free
