@@ -1,0 +1,5 @@
+[Desktop Entry]
+TryExec=ssh-agent
+Exec=systemctl --user restart ssh-agent
+Name=Start ssh-agent
+Type=Application
