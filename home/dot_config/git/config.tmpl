@@ -1,0 +1,16 @@
+[user]
+	email = chengys@disroot.org
+	name = Yushun Cheng
+	signingKey = {{ if eq "pretty-arch" .cys.hostname -}}
+		B0B62A4275EF306C
+	{{- end }}
+[core]
+	excludesfile = /home/cys/.config/git/ignore
+[credential]
+	helper = store
+[pull]
+	rebase = true
+[commit]
+	gpgSign = true
+[init]
+	defaultBranch = master
