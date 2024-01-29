@@ -1,0 +1,109 @@
+port: 7890
+socks-port: 7891
+#redir-port: 7892
+#tproxy-port: 7893
+allow-lan: false
+log-level: info
+ipv6: true
+external-controller-port: 9090
+#external-ui: folder
+#interface-name: en0
+#routing-mark: 6666
+#hosts:
+clash-for-android:
+  append-system-dns: false
+test-url: 'http://www.gstatic.com/generate_204'
+test-interval: 300
+dns:
+  enable: true
+  default-nameserver:
+    - 1.1.1.1
+  ipv6: true
+  enhanced-mode: fake-ip
+  nameserver:
+    - 1.1.1.1
+    - 8.8.8.8
+    - 9.9.9.9
+    - 208.67.222.222
+policies:
+  - UCAS:
+      domain-suffix:
+        - ucas.com
+  - HK:
+      domain-suffix:
+        - hk
+  - StackX:
+      domain-suffix:
+        - stackoverflow.com
+        - stackexchange.com
+        - askubuntu.com
+        - sstatic.net
+  - GitHub:
+      domain-suffix:
+        - github.com
+        - githubassets.com
+  - Spotify:
+      domain-suffix:
+        - spotify.com
+        - spotifycdn.com
+        - scdn.co
+  - WikiMedia:
+      domain-suffix:
+        - wikimedia.org
+        - mediawiki.org
+        - wikisource.org
+        - wikidata.org
+        - wikinews.org
+        - wikipedia.org
+        - wikiquote.org
+        - wikibooks.org
+        - wikiversity.org
+        - wikivoyage.org
+        - wiktionary.org
+  - YouTube:
+      domain-suffix:
+        - youtube.com
+        - googlevideo.com
+        - ytimg.com
+      domain:
+        - youtubei.googleapis.com
+        - yt3.ggpht.com
+direct-policies:
+  - loopback:
+      ip-cidr:
+        - 127.0.0.0/8
+  - private IPs:
+      ip-cidr:
+        - 10.0.0.0/8
+        - 172.16.0.0/12
+        - 192.168.0.0/16
+      ip-cidr6:
+        - fc00::/7
+  - Mozilla Location Service:
+      domain:
+        - location.services.mozilla.com
+chinese-policies:
+  - Bilibili:
+      domain-suffix:
+        - bilibili.com
+        - hdslb.com
+        - bilivideo.cn
+  - ClassIn:
+      domain-suffix:
+        - eeo.cn
+  - 知乎:
+      domain-suffix:
+        - zhihu.com
+        - zhimg.com
+  - 清华:
+      domain-suffix:
+        - tsinghua.edu.cn
+  - 教育机构:
+      domain-suffix:
+        - edu.cn
+  - 阿思丹:
+      domain-suffix:
+        - seedasdan.asia
+  - 大学霸:
+      domain-suffix:
+        - daxueba.net

@@ -1,0 +1,10 @@
+# -*- mode: conf -*-
+
+[Unit]
+Description=Clash proxy
+After=network-wait-online.target
+
+[Service]
+Type=exec
+Restart=on-abort
+ExecStart=/usr/bin/clash

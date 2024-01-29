@@ -1,0 +1,150 @@
+#!/usr/bin/env python3
+
+# Copyright 2023  Yushun Cheng <chengys@disroot.org>
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the “Software”), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+if __name__ == "__main__":
+    from xdg.BaseDirectory import xdg_config_home
+    import yaml
+    from pathlib import Path
+
+    # Get configuration directory.
+    clash_config_path = Path(xdg_config_home) / 'clash'
+
+    # Load settings.
+    with open(clash_config_path / 'settings.yaml', 'r') as f:
+        config = yaml.load(f, Loader=yaml.CLoader)
+
+    # Load proxies.
+    with open(clash_config_path / 'proxies.yaml', 'r') as f:
+        proxies = yaml.load(f, Loader=yaml.CLoader)['proxies']
+
+    # Load secret.
+    secret_path = clash_config_path / "secret"
+    if secret_path.exists():
+        with open(secret_path, "r") as f:
+            config["secret"] = f.read().strip()
+
+    # Set external controller.
+    config['external-controller'] = 'localhost:' + \
+        str(config.pop('external-controller-port'))
+
+    # Set other settings.
+    config['mode'] = 'Rule'
+    config['profiles'] = {'store-selected': True}
+
+    # Tidy proxies.
+    test_url = config.pop('test-url')
+    test_interval = config.pop('test-interval')
+    proxies_tmp = []
+    url_test_groups = []
+    url_test_names = []
+    for region in proxies:
+        for region_name, region_proxies in region.items():
+            url_test_names.append(region_name)
+            proxy_names = []
+            for proxy_index in range(len(region_proxies)):
+                proxy_name = region_name + ' - ' + str(proxy_index + 1)
+                proxy_names.append(proxy_name)
+                proxy = region_proxies[proxy_index].copy()
+                proxy['name'] = proxy_name
+                proxies_tmp.append(proxy)
+            url_test_groups.append({
+                'name': region_name,
+                'type': 'url-test',
+                'proxies': proxy_names.copy(),
+                'url': test_url,
+                'interval': test_interval,
+            })
+    url_test_groups.insert(
+        0, {
+            'name': 'Fastest',
+            'type': 'url-test',
+            'proxies': url_test_names.copy(),
+            'url': test_url,
+            'interval': test_interval,
+        })
+    proxies = proxies_tmp
+    proxy_groups = [{
+        'name': 'Default',
+        'type': 'select',
+        'proxies': ['Fastest', 'DIRECT', 'REJECT'] + url_test_names
+    }, {
+        'name': 'China',
+        'type': 'select',
+        'proxies': ['DIRECT', 'Default', 'REJECT', 'Fastest'] + url_test_names
+    }]
+    url_test_names.insert(0, 'Fastest')
+
+    # Set policies and rules.
+    policies = config.pop('policies')
+    chinese_policies = config.pop('chinese-policies')
+    direct_policies = config.pop('direct-policies')
+    rules = []
+    for policy in policies:
+        for policy_name, policy_matches in policy.items():
+            proxy_groups.append({
+                'name': policy_name,
+                'type': 'select',
+                'proxies': ['Default', 'DIRECT', 'REJECT'] + url_test_names
+            })
+            for match_method, keywords in policy_matches.items():
+                for keyword in keywords:
+                    rules.append(match_method.upper() + ',' + keyword + ','
+                                 + policy_name)
+    for policy in chinese_policies:
+        for policy_name, policy_matches in policy.items():
+            proxy_groups.append({
+                'name': policy_name,
+                'type': 'select',
+                'proxies': ['China', 'DIRECT', 'Default', 'REJECT']
+                + url_test_names
+            })
+            for match_method, keywords in policy_matches.items():
+                for keyword in keywords:
+                    rules.append(match_method.upper() + ',' + keyword + ','
+                                 + policy_name)
+    for policy in direct_policies:
+        for policy_name, policy_matches in policy.items():
+            proxy_groups.append({
+                'name': policy_name,
+                'type': 'select',
+                'proxies': ['DIRECT', 'Default', 'REJECT'] + url_test_names,
+            })
+            for match_method, keywords in policy_matches.items():
+                for keyword in keywords:
+                    rules.append(match_method.upper() + ',' + keyword + ','
+                                 + policy_name)
+    rules.append('GEOIP,CN,China')
+    rules.append('MATCH,Default')
+    proxy_groups += url_test_groups
+    config['rules'] = rules.copy()
+    config['proxies'] = proxies.copy()
+    config['proxy-groups'] = proxy_groups.copy()
+
+    config_file_path = clash_config_path / "config.yaml"
+    if config_file_path.is_file():
+        with open(config_file_path, "r") as f:
+            update = yaml.load(f, Loader=yaml.CLoader) != config
+    else:
+        update = True
+    if update:
+        with open(config_file_path, "w") as f:
+            f.write(yaml.dump(config, Dumper=yaml.CDumper))

@@ -1,0 +1,13 @@
+# -*- mode: conf -*-
+
+[Unit]
+Description=Clash Dashboard
+After=clash.target
+
+[Service]
+Type=exec
+Restart=on-abort
+ExecStart=/usr/bin/env -C {{ .chezmoi.homeDir }}/.local/share/clash-dashboard python3 -m http.server --bind localhost 3000
+
+[Install]
+WantedBy=default.target

@@ -1,0 +1,9 @@
+# -*- mode: conf -*-
+
+[Unit]
+Description=network wait online
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/nm-online -s -q
+RemainAfterExit=yes
