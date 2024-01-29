@@ -1,0 +1,27 @@
+#!/usr/bin/env python3
+
+from pathlib import Path
+import json
+
+data = {}
+
+try:
+    with open(Path.home() / ".local/share/chezmoi/.chezmoidata.json") as cd:
+        data = json.load(cd)["cys"]
+except FileNotFoundError:
+    pass
+
+with open("/sys/devices/virtual/dmi/id/product_name", "r") as f:
+    data["machine"] = f.read().strip()
+
+with open("/etc/hostname") as f:
+    data["hostname"] = f.read().strip()
+
+if data["machine"] == "HP EliteBook 755 G5" and data["hostname"] == "pretty-arch":
+    data["desktop"] = "KDE"
+
+if "location" not in data.keys():
+    data["location"] = input("where are you? ")
+
+with open(Path.home() / ".local/share/chezmoi/.chezmoidata.json", "w") as f:
+    json.dump({"cys": data}, f)
