@@ -1,0 +1,9 @@
+# -*- mode: conf -*-
+
+[Unit]
+Description=Nominatim location update
+
+[Service]
+Type=simple
+Environment="https_proxy=http://127.0.0.1:7890"
+ExecStart=/usr/bin/env ${HOME}/.local/bin/scripts/synloc-nominatim
