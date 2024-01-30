@@ -1,0 +1,6 @@
+[Unit]
+Description=Pacman Mirrorlist Generator
+
+[Service]
+Type=simple
+ExecStart=env ${HOME}/.local/bin/scripts/pacman-mirrorlist-gen

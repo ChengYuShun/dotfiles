@@ -1,0 +1,91 @@
+#!/usr/bin/env python3
+
+# Copyright 2023  Yushun Cheng <chengys@disroot.org>
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the “Software”), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+
+def mirrors(contents, country, city):
+    mirror_list = []
+    mirror_set = set()
+
+    if contents is None:
+        return (mirror_list, mirror_set)
+
+    def add_mirror(mirror):
+        if mirror not in mirror_set:
+            mirror_set.add(mirror)
+            mirror_list.append(mirror)
+
+    if country in contents:
+        country_contents = contents[country]
+        if country_contents is not None:
+            if city in country_contents:
+                city_mirrors = country_contents[city]
+                if city_mirrors is not None:
+                    for mirror in country_contents[city]:
+                        add_mirror(mirror)
+
+            if "DEFAULT" in country_contents:
+                default_country_mirrors = country_contents["DEFAULT"]
+                if default_country_mirrors is not None:
+                    for mirror in default_country_mirrors:
+                        add_mirror(mirror)
+
+    if "DEFAULT" in contents:
+        default_mirrors = contents["DEFAULT"]
+        if default_mirrors is not None:
+            for mirror in contents["DEFAULT"]:
+                add_mirror(mirror)
+
+    return (mirror_list, mirror_set)
+
+
+if __name__ == "__main__":
+    from xdg.BaseDirectory import xdg_config_home
+    from pathlib import Path
+    import yaml
+
+    synloc_path = Path(xdg_config_home) / "synloc"
+    with open(synloc_path / "country", "r") as f:
+        country = f.read().strip()
+    with open(synloc_path / "city", "r") as f:
+        city = f.read().strip()
+
+    pacman_config_path = Path(xdg_config_home) / "pacman"
+    yaml_path = pacman_config_path / "mirrors.yaml"
+
+    with open(yaml_path, "r") as f:
+        contents = yaml.load(f, Loader=yaml.CLoader)
+
+    for name, contents in contents.items():
+        mirror_list = mirrors(contents, country, city)[0]
+        output = ""
+        for mirror in mirror_list:
+            output += "Server = " + mirror + "\n"
+        mirror_list_path = pacman_config_path / (name + "-mirrors.txt")
+        update = True
+        if mirror_list_path.is_file():
+            with open(mirror_list_path, "r") as f:
+                if f.read() == output:
+                    update = False
+        if update is True:
+            with open(mirror_list_path, "w") as f:
+                for mirror in mirror_list:
+                    f.write("Server = " + mirror + "\n")
