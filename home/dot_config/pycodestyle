@@ -1,0 +1,4 @@
+# -*- mode: conf -*-
+
+[pycodestyle]
+ignore = E402, W503
