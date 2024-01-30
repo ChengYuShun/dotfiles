@@ -1,0 +1,9 @@
+# -*- mode: conf -*-
+
+[Unit]
+Description=geographical address update automatically
+After=network-wait-online.target
+
+[Path]
+PathChanged={{ .chezmoi.homeDir }}/.config/synloc/latitude
+PathChanged={{ .chezmoi.homeDir }}/.config/synloc/longitude

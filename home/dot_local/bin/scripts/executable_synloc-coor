@@ -1,0 +1,57 @@
+#!/usr/bin/env python3
+
+# Copyright 2023  Yushun Cheng <chengys@disroot.org>
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the “Software”), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+if __name__ == "__main__":
+    from xdg.BaseDirectory import xdg_config_home
+    from pathlib import Path
+    import gi
+    gi.require_version("Geoclue", "2.0")
+    from gi.repository import Geoclue
+
+    # Get latitude and longitude.
+    location = Geoclue.Simple.new_sync(
+        "", Geoclue.AccuracyLevel.EXACT).get_location()
+    latitude = str(location.get_property("latitude"))
+    longitude = str(location.get_property("longitude"))
+
+    # Get synloc path.
+    synloc_path = Path(xdg_config_home) / "synloc"
+
+    # Update latitude.
+    lat_path = synloc_path / "latitude"
+    if lat_path.is_file():
+        with open(lat_path, "r") as f:
+            update_lat = f.read() != latitude
+    else:
+        update_lat = True
+    with open(lat_path, "w") as f:
+        f.write(latitude)
+
+    # Update longitude.
+    lon_path = synloc_path / "longitude"
+    if lon_path.is_file():
+        with open(lon_path, "r") as f:
+            update_lon = f.read() != longitude
+    else:
+        update_lon = True
+    with open(lon_path, "w") as f:
+        f.write(longitude)

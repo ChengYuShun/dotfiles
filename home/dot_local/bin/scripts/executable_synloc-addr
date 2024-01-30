@@ -1,0 +1,64 @@
+#!/usr/bin/env python3
+
+# Copyright 2023  Yushun Cheng <chengys@disroot.org>
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the “Software”), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+if __name__ == "__main__":
+    from xdg.BaseDirectory import xdg_config_home
+    from pathlib import Path
+    from geopy.geocoders import Nominatim
+
+    # Get synloc path.
+    synloc_path = Path(xdg_config_home) / "synloc"
+
+    # Read coordinates.
+    with open(synloc_path / "latitude", "r") as f:
+        latitude = f.read()
+    with open(synloc_path / "longitude", "r") as f:
+        longitude = f.read()
+
+    # Get address.
+    address = Nominatim(
+        user_agent="synloc").reverse(latitude + ", "
+                                     + longitude).raw["address"]
+    country = address["country"]
+    city = address["city"]
+
+    # Update country.
+    country_path = synloc_path / "country"
+    if country_path.is_file():
+        with open(country_path, "r") as f:
+            update_country = f.read() != country
+    else:
+        update_country = True
+    if update_country:
+        with open(country_path, "w") as f:
+            f.write(country)
+
+    # Update city.
+    city_path = synloc_path / "city"
+    if city_path.is_file():
+        with open(city_path, "r") as f:
+            update_city = f.read() != city
+    else:
+        update_city = True
+    if update_city:
+        with open(city_path, "w") as f:
+            f.write(city)

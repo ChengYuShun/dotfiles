@@ -1,0 +1,9 @@
+# -*- mode: conf -*-
+
+[Unit]
+Description=geographical coordinates update regularly
+After=network-wait-online.target
+
+[Timer]
+Persistent=true
+OnCalendar=00,03,06,09,12,15,18,21:0
