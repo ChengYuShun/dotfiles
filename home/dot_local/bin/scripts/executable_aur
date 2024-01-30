@@ -1,0 +1,146 @@
+#!/usr/bin/bash
+
+# Copyright 2023  Yushun Cheng <chengys@disroot.org>
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the “Software”), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+# Common functions.
+parent_dir() {
+  case "$1" in
+    */*) echo "${1%/*}";;
+    *) echo '..';;
+  esac
+}
+
+package_in_dir() {
+  case "$2" in
+    */*) echo "$2";;
+    *) echo -n "$1/"
+       echo $(ls -r "$1" | grep "^$2" | grep -v '.sig$' | head -n 1);;
+  esac
+}
+
+# Tests.
+test_defined() {
+  [ "$1" ]
+}
+
+test_r_file() {
+  [ -f "$1" ] && [ -r "$1" ]
+}
+
+test_r_dir() {
+  [ -d "$1" ] && [ -r "$1" ]
+}
+
+# Help.
+help() {
+  cat >&2 <<_HELP
+Syntax: aur SUBCOMMAND
+
+Subcommands:
+    help                         Show this message.
+    push PACKAGE REPO_FILE       Push PACKAGE to the repository of REPO_FILE.
+    pull PACKAGE REPO            Pull PACKAGE from REPO.
+    install PACKAGE              Install PACKAGE.
+_HELP
+}
+
+# Push.
+push() {
+  # Get args.
+  package=$(package_in_dir "$PKGDEST" "$1")
+  repo_file="$2"
+  repo=$(parent_dir "$repo_file")
+
+  # Test for args.
+  if ! test_r_file "$package"; then
+    echo "'$package' is not a readable file." >&2
+    exit 1
+  fi
+
+  if [ -e "$repo_file" ] && ! test_r_file "$repo_file"; then
+    echo "'$repo_file' is not a readable file." >&2
+    exit 1
+  fi
+
+  # Add the package
+  '/usr/bin/repo-add' "$repo_file" "$package" &&
+  cp "$package" "$repo"
+}
+
+# Pull.
+pull() {
+  # Get and test args.
+  repo="$2"
+  if ! test_r_dir "$repo"; then
+    echo "'$repo' is not a readable directory." >&2
+    exit 1
+  fi
+
+  package=$(package_in_dir "$repo" "$1")
+  if ! test_r_file "$package"; then
+    echo "'$package' is not a readable file." >&2
+    exit 1
+  fi
+
+  # Pull package.
+  cp "$package" "$PKGDEST"
+}
+
+# Install.
+install() {
+  # Get args.
+  package=$(package_in_dir "$PKGDEST" "$1")
+
+  # Test args.
+  if ! test_r_file "$package"; then
+    echo "'$package' is not a readable file." >&2
+    exit 1
+  fi
+
+  # Install package.
+  sudo pacman -U "$package"
+}
+
+# Source configs.
+source_file() {
+  if [ -f "$1" ] && [ -r "$1" ]; then
+    . "$1"
+  fi
+}
+
+source_file "/etc/makepkg.conf"
+source_file "$XDG_CONFIG_HOME/pacman/makepkg.conf"
+source_file "$HOME/.makepkg.conf"
+
+# Test for $PKGDEST.
+! (test_defined "$PKGDEST" && test_r_dir "$PKGDEST") && (
+  echo "'$PKGDEST' is not a readable directory."
+  exit 1
+)
+
+# Subcommands.
+case "$1" in
+  push) push "$2" "$3";;
+  pull) pull "$2" "$3";;
+  install) install "$2";;
+  help) help;;
+  *) help; exit 1;;
+esac
