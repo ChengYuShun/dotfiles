@@ -44,10 +44,4 @@
                  (substring (shell-command-to-string "fcitx5-remote") 0 -1)))
     (call-process "fcitx5-remote" nil nil nil "-c")))
 
-(when (equal (getenv "XDG_CURRENT_DESKTOP") "KDE") (input-switch-fcitx5))
-
-;; Add hooks.
-(add-hook 'evil-insert-state-entry-hook 'input-switch-enter)
-(add-hook 'evil-insert-state-exit-hook 'input-switch-exit)
-
 (provide 'input-switch)

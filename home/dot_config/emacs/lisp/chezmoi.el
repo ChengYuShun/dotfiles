@@ -33,10 +33,12 @@
 (defvar chezmoi-dir "~/.local/share/chezmoi/home")
 (defvar chezmoi-diff-buffer-name "*chezmoi diff*")
 (defvar chezmoi-apply-buffer-name "*chezmoi apply*")
+;;;###autoload
 (defun chezmoi-cd ()
   "Open chezmoi directory in dired."
   (interactive)
   (dired chezmoi-dir))
+;;;###autoload
 (defun chezmoi-apply ()
   "Run 'chezmoi apply'."
   (interactive)
@@ -45,6 +47,7 @@
 		    "-D" "~" "-S" chezmoi-dir "apply" "--no-tty")))
     (switch-to-buffer term-buffer)
     (term-line-mode)))
+;;;###autoload
 (defun chezmoi-diff ()
   "Open 'chezmoi diff' in a new buffer with diff mode."
   (interactive)
@@ -58,10 +61,12 @@
 (defvar chezmoi-root-dir "~/.local/share/chezmoi/root")
 (defvar chezmoi-root-diff-buffer-name "*schezmoi diff*")
 (defvar chezmoi-root-apply-buffer-name "*schezmoi apply*")
+;;;###autoload
 (defun chezmoi-root-cd ()
   "Open chezmoi directory for root in dired."
   (interactive)
   (dired chezmoi-root-dir))
+;;;###autoload
 (defun chezmoi-root-apply ()
   "Run 'schezmoi apply'."
   (interactive)
@@ -70,6 +75,7 @@
 		    "-D" "/" "-S" chezmoi-root-dir "apply" "no-tty")))
     (switch-to-buffer term-buffer)
     (term-line-mode)))
+;;;###autoload
 (defun chezmoi-root-diff ()
   "Open 'schezmoi diff' in a buffer with diff mode."
   (interactive)
