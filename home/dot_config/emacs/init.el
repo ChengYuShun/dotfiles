@@ -492,9 +492,7 @@ frame, current terminal."
     (interactive)
     (if (invisible-p (point-at-eol))
         (outline-show-subtree)
-      (outline-hide-subtree)))
-  ;; Define key.
-)
+      (outline-hide-subtree))))
 
 ;;;; php-mode
 (use-package php-mode
