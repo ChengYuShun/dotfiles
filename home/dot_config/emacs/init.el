@@ -572,5 +572,5 @@ frame, current terminal."
 
 ;;;; yapfify
 (use-package yapfify
-  :straight nil
+  :straight (:host github :repo "ChengYuShun/yapfify.el" :branch "no_modify")
   :commands (yapfify-buffer))
