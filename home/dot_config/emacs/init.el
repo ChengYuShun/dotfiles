@@ -384,32 +384,32 @@ frame, current terminal."
 ;;   :after (lsp-mode))
 
 ;;;; lsp-mode
-;; (use-package lsp-mode
-;;   :after (evil)
-;;   :demand t
-;;   :config
-;;   (setq lsp-keep-workspace-alive nil)
-;;   (setq lsp-disabled-clients '(pylsp ruff-lsp))
-;;   :bind (:map
-;;          evil-motion-state-map
-;;          ;; workspaces
-;;          ("C-c C-l wD" . lsp-disconnect)
-;;          ("C-c C-l wd" . lsp-describe-session)
-;;          ("C-c C-l ws" . lsp)
-;;          ;; folders
-;;          ("C-c C-l fa" . lsp-workspace-folders-add)
-;;          ("C-c C-l fb" . lsp-workspace-blacklist-remove)
-;;          ("C-c C-l fr" . lsp-workspace-folders-remove)
-;;          ;; goto
-;;          ("gD" . nil)
-;;          ("gD" . lsp-find-declaration)
-;;          ("gd" . nil)
-;;          ("gd" . lsp-find-definition)
-;;          :map
-;;          evil-normal-state-map
-;;          ;; formatting
-;;          ("=" . nil)
-;;          ("=r" . lsp-format-region)))
+(use-package lsp-mode
+  :after (evil)
+  :commands (lsp)
+  :bind (:map
+         evil-motion-state-map
+         ;; workspaces
+         ("C-c C-l wD" . lsp-disconnect)
+         ("C-c C-l wd" . lsp-describe-session)
+         ("C-c C-l ws" . lsp)
+         ;; folders
+         ("C-c C-l fa" . lsp-workspace-folders-add)
+         ("C-c C-l fb" . lsp-workspace-blacklist-remove)
+         ("C-c C-l fr" . lsp-workspace-folders-remove)
+         ;; goto
+         ("gD" . nil)
+         ("gD" . lsp-find-declaration)
+         ("gd" . nil)
+         ("gd" . lsp-find-definition)
+         :map
+         evil-normal-state-map
+         ;; formatting
+         ("=" . nil)
+         ("=r" . lsp-format-region))
+  :config
+  (setq lsp-keep-workspace-alive nil)
+  (setq lsp-disabled-clients '(pylsp ruff-lsp)))
 
 ;;;; lsp-pylsp
 ;; (use-package lsp-pylsp
@@ -425,9 +425,8 @@ frame, current terminal."
 ;;   (setq lsp-pylsp-plugins-yapf-enabled t))
 
 ;;;; lsp-pyright
-;; (use-package lsp-pyright
-;;   :after (lsp-mode)
-;;   :demand t)
+(use-package lsp-pyright
+  :after (lsp-mode python))
 
 ;;;; lsp-ruff
 ;; (use-package lsp-ruff-lsp
@@ -435,8 +434,9 @@ frame, current terminal."
 ;;   :demand t)
 
 ;;;; lsp-ui
-;; (use-package lsp-ui
-;;   :hook (lsp-mode . lsp-ui-mode))
+(use-package lsp-ui
+  :commands (lsp-ui-mode)
+  :hook (lsp-mode . lsp-ui-mode))
 
 ;;;; lua-mode.
 (use-package lua-mode
