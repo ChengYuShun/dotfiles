@@ -31,6 +31,9 @@
 ;;;; Disable ring bell.
 (setq ring-bell-function 'ignore)
 
+;;;; No delay for echoing keystrokes.
+(setq echo-keystrokes 0.01)
+
 ;;;; Encoding.
 (prefer-coding-system 'utf-8-unix)
 
