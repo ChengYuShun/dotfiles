@@ -241,15 +241,15 @@ frame, current terminal."
            evil-collection-mode-hooks)
   ;; help
   (puthash 'help
-           (lambda () (evil-define-key 'normal 'help-mode-map (kbd "SPC") nil))
+           (lambda () (evil-define-key 'normal help-mode-map (kbd "SPC") nil))
            evil-collection-mode-hooks)
   ;; info
   (puthash 'info
-           (lambda () (evil-define-key 'normal 'Info-mode-map (kbd "SPC") nil))
+           (lambda () (evil-define-key 'normal Info-mode-map (kbd "SPC") nil))
            evil-collection-mode-hooks)
   ;; man
   (puthash 'man
-           (lambda () (evil-define-key* 'normal 'Man-mode-map
+           (lambda () (evil-define-key* 'normal Man-mode-map
                         (kbd "SPC") nil
                         (kbd "u") 'scroll-down-command
                         (kbd "d") 'scroll-up-command))
@@ -348,7 +348,7 @@ frame, current terminal."
     (if (invisible-p (point-at-eol))
         (hs-show-block)
       (hs-hide-block)))
-  (evil-define-key* 'motion 'hs-minor-mode-map
+  (evil-define-key* 'motion hs-minor-mode-map
     (kbd "<tab>") nil
     (kbd "<tab>") 'hs-toggle-block
     (kbd "TAB") nil
@@ -503,7 +503,7 @@ frame, current terminal."
   :hook (python-mode . (lambda () (hs-minor-mode 1)))
   :after (evil)
   :config
-  (evil-define-key 'motion 'python-mode-map "==" 'yapfify-buffer))
+  (evil-define-key 'motion python-mode-map "==" 'yapfify-buffer))
 
 ;;;; rustic.
 ;; (use-package rustic
