@@ -1,0 +1,15 @@
+#!/usr/bin/zsh
+
+case "$(uname -o)" in
+  'GNU/Linux' )
+    case ${XDG_SESSION_DESKTOP} in
+      'gnome' | 'gnome-wayland' )
+      ;;
+      * )
+        if [[ $(tty) == /dev/tty1 ]]; then
+          exec startx "$XDG_CONFIG_HOME/X11/xinit/xinitrc"
+        fi
+    esac
+    ;;
+  * )
+esac

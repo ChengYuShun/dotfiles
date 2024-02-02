@@ -1,0 +1,33 @@
+#!/usr/bin/zsh
+
+# if ! [ -n "$TMUX" ]; then
+#   exec tmux -L $XDG_SESSION_ID new-session -A
+# fi
+
+if [ -n "$USE_FISH" ]; then
+  exec fish
+fi
+
+# Always prefer alacritty-direct.
+if [ "$TERM" = "alacritty" ]; then
+  export TERM=alacritty-direct
+fi
+
+source $XDG_CONFIG_HOME/sh/aliases.sh
+source $XDG_CONFIG_HOME/sh/functions.sh
+
+# Prompt.
+PROMPT="[%n@%M %~]$ "
+
+# options
+setopt No_Beep
+
+zcmpl () {
+  for f in 'zshenv' 'zprofile' 'zshrc' 'zlogin' 'zlogout'
+  do
+    if [[ -e "$ZDOTDIR/.$f" ]]
+    then
+      zcompile "$ZDOTDIR/.$f"
+    fi
+  done
+}

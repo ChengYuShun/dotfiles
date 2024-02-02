@@ -1,0 +1,19 @@
+#!/usr/bin/zsh
+
+comp() {
+  file=$1
+  zwc=$file.zwc
+
+  if ! test -e $zwc || test $file -nt $zwc; then
+    zcompile $file
+  fi
+}
+
+# Hashes:
+#   zprofile: {{ include "dot_zprofile" | sha256sum }}
+#   zlogin:   {{ include "dot_config/zsh/dot_zlogin" | sha256sum }}
+#   zshrc:    {{ include "dot_config/zsh/dot_zshrc" | sha256sum }}
+
+comp ~/.zprofile
+comp ~/.config/zsh/.zlogin
+comp ~/.config/zsh/.zshrc

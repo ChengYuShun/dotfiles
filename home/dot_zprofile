@@ -1,0 +1,3 @@
+#!/usr/bin/zsh
+
+emulate sh -c 'source "${HOME}/.config/profile.sh"'
