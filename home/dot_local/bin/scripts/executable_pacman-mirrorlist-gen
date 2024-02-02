@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Copyright 2023  Yushun Cheng <chengys@disroot.org>
+# Copyright 2024  Yushun Cheng <chengys@disroot.org>
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the “Software”), to deal
@@ -20,41 +20,224 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from typing import Any, Optional
+from pathlib import Path
+import json
 
-def mirrors(contents, country, city):
-    mirror_list = []
-    mirror_set = set()
 
-    if contents is None:
-        return (mirror_list, mirror_set)
+def get_dict_key(dic: Any, key: Any, expected_type=object):
+    """Get the value of an expected type of a ``str`` key in a ``dict``."""
+    if isinstance(dic, dict) and isinstance(key, str) and key in dic:
+        ret = dic[key]
+        if isinstance(ret, expected_type):
+            return ret
+    return None
 
-    def add_mirror(mirror):
-        if mirror not in mirror_set:
-            mirror_set.add(mirror)
-            mirror_list.append(mirror)
 
-    if country in contents:
-        country_contents = contents[country]
-        if country_contents is not None:
-            if city in country_contents:
-                city_mirrors = country_contents[city]
-                if city_mirrors is not None:
-                    for mirror in country_contents[city]:
-                        add_mirror(mirror)
+class Nominatim:
+    __inner: dict
 
-            if "DEFAULT" in country_contents:
-                default_country_mirrors = country_contents["DEFAULT"]
-                if default_country_mirrors is not None:
-                    for mirror in default_country_mirrors:
-                        add_mirror(mirror)
+    def __init__(self, inner: dict) -> None:
+        """Create a new instance from a ``dict``."""
+        self.__inner = inner
 
-    if "DEFAULT" in contents:
-        default_mirrors = contents["DEFAULT"]
-        if default_mirrors is not None:
-            for mirror in contents["DEFAULT"]:
-                add_mirror(mirror)
+    @classmethod
+    def from_json_file(cls, path: Path | str):
+        """Create a new instance from a JSON file."""
+        with open(path, "r") as f:
+            return cls(json.load(f))
 
-    return (mirror_list, mirror_set)
+    def get_label(self, label: Any) -> Optional[str]:
+        """Get the value of the label.
+
+        Return ``None`` if ``label`` is not found.  Raise an error if ``label``
+        is not a ``str``.
+        """
+        if not isinstance(label, str):
+            raise TypeError(f"label ``{label}`` is not a ``str``")
+        if label not in self.__inner:
+            return None
+        ret = self.__inner[label]
+        if isinstance(ret, str):
+            return ret
+        else:
+            raise TypeError(f"address part {label} is not a ``str``")
+
+
+class Mirrorlist:
+    __list: list[str]
+    __set: set[str]
+    __mirror_map: dict
+
+    def __init__(self, mirror_map: Any = None) -> None:
+        """Create a new instance.
+
+        Raise an error if ``mirror_map`` is not a ``dict`` or ``None``.
+        """
+        self.__list = []
+        self.__set = set()
+        if mirror_map is None:
+            self.__mirror_map = {}
+        elif isinstance(mirror_map, dict):
+            self.__mirror_map = mirror_map
+        else:
+            raise TypeError(f"``{mirror_map}`` is not a ``dict`` or ``None``")
+
+    def __contains__(self, mirror: Any) -> bool:
+        """Check whether ``mirror`` is in ``self``.
+
+        Raise an error if ``mirror`` is not a ``str``.
+        """
+        if isinstance(mirror, str):
+            return mirror in self.__set
+        else:
+            raise TypeError(f"``{mirror}`` is not a ``str``")
+
+    @staticmethod
+    def from_dict(dic: Any, nominatim: Nominatim) -> "Mirrorlist":
+        """Create a new instance from a ``dict`` config.
+
+        Raise an error if ``dic`` is not a ``dict``.
+        """
+
+        # Initialize mirrorlist.
+        if dic is None:
+            return Mirrorlist()
+        elif not isinstance(dic, dict):
+            raise TypeError(f"``{dic}`` is not a ``dict``")
+        mirrorlist = Mirrorlist(dic["MIRRORS"])
+
+        # Get push default mirrors onto the stack.
+        stack: list[Any] = []  # A list of default mirror lists.
+        current: Any = dic  # The current dict.
+        while True:
+
+            # If current is a list, simply push it onto the stack, and break.
+            if isinstance(current, list):
+                stack.append(current)
+                break
+
+            # If current is None, break.
+            if current is None:
+                break
+
+            # If current is not a dict, raise an error.
+            if not isinstance(current, dict):
+                raise TypeError(
+                    f"``{dic}`` is not a ``dict``, a ``list`` or ``None``")
+
+            # Push default mirrors onto the stack.
+            if "DEFAULT" in current:
+                stack.append(current["DEFAULT"])
+
+            # Get rules and values.
+            try:
+                value = nominatim.get_label(current["LABEL"])
+                rules = current["RULES"]
+                if rules is None or value is None:
+                    break
+            except KeyError:
+                break
+
+            # If rules is a dict, check its keys.
+            if isinstance(rules, dict):
+                if value in rules:
+                    current = rules[value]
+                    continue
+                else:
+                    break
+
+            # If rules is not a list, raise an error:
+            if not isinstance(rules, list):
+                raise TypeError(
+                    f"{rules} not a ``list``, a ``dict`` or ``None``")
+
+            # If rules is a list, find the first matched rule.
+            for rule in rules:
+
+                # Skip empty rules.
+                if rule is None:
+                    continue
+
+                # Raise an error if the rule is not a ``dict``.
+                if not isinstance(rule, dict):
+                    raise TypeError(f"{rule} is not a ``dict`` or ``None``")
+
+                # Get match value.
+                match_value = rule["VALUE"]
+                if match_value is None:
+                    continue
+
+                # If the match value is a str, simply match.
+                if isinstance(match_value, str):
+                    if value == match_value:
+                        current = rule
+                        break
+                    continue
+
+                # If the match value is a list, simply match.
+                if isinstance(match_value, list):
+                    if value in match_value:
+                        current = rule
+                        break
+                    continue
+
+                # Raise an error.
+                raise TypeError(
+                    f"{match_value} is not a ``list``, a ``str`` or ``None``")
+
+        # Write mirrors.
+        while len(stack) != 0:
+            mirrorlist.append_list(stack.pop())
+        return mirrorlist
+
+    def append(self, mirror: Any) -> None:
+        """Append ``mirror`` to the end of the mirrorlist.
+
+        Raise an error if ``mirror`` is not a ``str``.
+        """
+        if not isinstance(mirror, str):
+            raise TypeError(f"mirror ``{mirror}`` is not a ``str``")
+        if mirror not in self:
+            self.__set.add(mirror)
+            self.__list.append(mirror)
+
+    def append_list(self, mirror_list: Any) -> None:
+        """Append a list of mirrors to the end of the mirrorlist.
+
+        Raise an error if ``mirror_list`` is not a ``list`` or ``None``.
+        """
+        if isinstance(mirror_list, list):
+            for mirror in mirror_list:
+                self.append(mirror)
+        elif mirror_list is not None:
+            raise TypeError(f"``{mirror_list}`` is not a list or ``None``")
+
+    def dumps(self) -> str:
+        """Dump the mirrorlist as a ``str``.
+
+        Raise an error if mirror URL is not a ``str``.
+        """
+        output: str = ""
+        for mirror in self.__list:
+            mirror_url = self.__mirror_map[mirror]
+            if isinstance(mirror_url, str):
+                output += "Server = " + str(mirror_url) + "\n"
+            else:
+                raise TypeError(f"URL {mirror_url} is not a ``str``")
+        return output
+
+    def dump(self, path: Path) -> None:
+        """Dump the mirrorlist to a file."""
+        s = self.dumps()
+        update = True
+        if path.is_file():
+            with open(path, "r") as f:
+                if f.read() == s:
+                    update = False
+        if update is True:
+            with open(path, "w") as f:
+                f.write(s)
 
 
 if __name__ == "__main__":
@@ -62,30 +245,18 @@ if __name__ == "__main__":
     from pathlib import Path
     import yaml
 
-    synloc_path = Path(xdg_config_home) / "synloc"
-    with open(synloc_path / "country", "r") as f:
-        country = f.read().strip()
-    with open(synloc_path / "city", "r") as f:
-        city = f.read().strip()
-
+    # Read two files.
     pacman_config_path = Path(xdg_config_home) / "pacman"
-    yaml_path = pacman_config_path / "mirrors.yaml"
+    with open(pacman_config_path / "mirrors.yaml", "r") as f:
+        yaml_data = yaml.load(f, Loader=yaml.CLoader)
+    nominatim = Nominatim.from_json_file(
+        Path(xdg_config_home) / "synloc" / "nominatim")
 
-    with open(yaml_path, "r") as f:
-        contents = yaml.load(f, Loader=yaml.CLoader)
-
-    for name, contents in contents.items():
-        mirror_list = mirrors(contents, country, city)[0]
-        output = ""
-        for mirror in mirror_list:
-            output += "Server = " + mirror + "\n"
-        mirror_list_path = pacman_config_path / (name + "-mirrors.txt")
-        update = True
-        if mirror_list_path.is_file():
-            with open(mirror_list_path, "r") as f:
-                if f.read() == output:
-                    update = False
-        if update is True:
-            with open(mirror_list_path, "w") as f:
-                for mirror in mirror_list:
-                    f.write("Server = " + mirror + "\n")
+    # Write mirrors.
+    if yaml_data is None:
+        exit()
+    if not isinstance(yaml_data, dict):
+        raise TypeError(f"``{yaml_data}`` is not a ``dict`` or ``None``")
+    for repo, dic in yaml_data.items():
+        mirrorlist = Mirrorlist.from_dict(dic, nominatim)
+        mirrorlist.dump(pacman_config_path / (repo + "-mirrors.txt"))

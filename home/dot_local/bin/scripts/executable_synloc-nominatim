@@ -23,7 +23,7 @@
 if __name__ == "__main__":
     from xdg.BaseDirectory import xdg_config_home
     from pathlib import Path
-    from geopy.geocoders import Nominatim
+    import requests
     import json
 
     # Get synloc path.
@@ -36,18 +36,24 @@ if __name__ == "__main__":
         longitude = f.read()
 
     # Get data.
-    data = Nominatim(user_agent="synloc").reverse(f"{latitude}, {longitude}")
+    response = requests.get(
+        "https://nominatim.openstreetmap.org/reverse"
+        + f"?lat={latitude}&lon={longitude}&format=jsonv2&addressdetails=1")
+    assert response.status_code == requests.codes.ok
+    data = response.json()
+    addr = data["address"] if "address" in data else {}
+    assert isinstance(addr, dict)
 
     # Check data.
-    data_str = json.dumps(data.raw, ensure_ascii=True, sort_keys=True)
-    data_path = synloc_path / "nominatim"
-    if data_path.is_file():
-        with open(data_path, "r") as f:
-            update_data = f.read() != data_str
+    addr_str = json.dumps(addr, ensure_ascii=True, sort_keys=True)
+    addr_path = synloc_path / "nominatim"
+    if addr_path.is_file():
+        with open(addr_path, "r") as f:
+            update_addr = f.read() != addr_str
     else:
-        update_data = True
+        update_addr = True
 
     # Write data.
-    if update_data is True:
-        with open(data_path, "w") as f:
-            f.write(data_str)
+    if update_addr is True:
+        with open(addr_path, "w") as f:
+            f.write(addr_str)
