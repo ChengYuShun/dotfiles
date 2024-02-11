@@ -74,6 +74,9 @@
 (use-package bibtex
   :commands (bibtex-mode))
 
+;;;; calendar
+(setq calendar-week-start-day 1)
+
 ;;;; ccls.
 ;; (use-package ccls
 ;;   :after (cc-mode evil-collection)
@@ -468,6 +471,8 @@ frame, current terminal."
 ;;;; org
 (use-package org
   :commands (org-mode)
+  :bind (("C-x a" . org-agenda))
+  :hook (org-mode . (lambda () (display-fill-column-indicator-mode -1)))
   :config
   (setq org-startup-indented t)
   (set-face-attribute 'outline-1 nil :height 150)
@@ -475,7 +480,11 @@ frame, current terminal."
   (set-face-attribute 'outline-3 nil :height 130)
   (set-face-attribute 'outline-4 nil :height 120)
   (set-face-attribute 'outline-5 nil :height 110)
-  (set-face-attribute 'outline-6 nil :height 100))
+  (set-face-attribute 'outline-6 nil :height 100)
+  (setq org-deadline-warning-days 30)
+  (setq org-agenda-files '("~/todos"))
+  (setq org-agenda-start-on-weekday nil)
+  (setq org-log-done t))
 
 ;;;; outline
 (use-package outline
