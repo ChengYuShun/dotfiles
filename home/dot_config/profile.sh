@@ -105,7 +105,7 @@ export GNUPGHOME="${XDG_CONFIG_HOME}/gnupg"
 
 # Proxies.
 if [ -f "$XDG_CONFIG_HOME/clash/auth.yaml" ]; then
-  export PROXY_AUTH=$(yq -r ".[0]" "$XDG_CONFIG_HOME/clash/auth.yaml")
+  export PROXY_AUTH=$(cat "$XDG_CONFIG_HOME/clash/auth")
   export http_proxy=socks5h://$PROXY_AUTH@127.0.0.1:7891
 else
   export PROXY_AUTH=""

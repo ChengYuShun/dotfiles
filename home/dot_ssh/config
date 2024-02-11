@@ -1,0 +1,20 @@
+Host aur.archlinux.org
+  User aur
+  IdentityFile ~/.ssh/aur
+
+Host github-disroot.com
+  HostName github.com
+  User git
+  IdentityFile ~/.ssh/github-disroot
+
+Host github-163.com
+  HostName github.com
+  User git
+  IdentityFile ~/.ssh/github-163
+
+Host gitlab.freedesktop.org
+  User git
+  IdentityFile ~/.ssh/xdg-gitlab
+
+Match all
+  ProxyCommand corkscrew 127.0.0.1 7890 %h %p ~/.config/clash/auth

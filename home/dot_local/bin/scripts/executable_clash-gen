@@ -58,7 +58,7 @@ following.
 * ``rules.yaml``: This is a list of rules.  Sub-rules are currently not
   supported.  If this file does not exist, it is considered as an empty list.
 
-* ``auth.yaml``: This is a list of authentications in the form
+* ``auth``: This is the authentication stored in the form
   ``USERNAME:PASSWORD``.
 
 * ``secret``: This is a plain text file containing the secret password for the
@@ -88,13 +88,12 @@ if __name__ == "__main__":
     else:
         config = {}
 
-    # Load auth.yaml
-    auth_path = clash_config_path / "auth.yaml"
+    # Load auth
+    auth_path = clash_config_path / "auth"
     if auth_path.is_file():
         with open(auth_path, "r") as f:
-            authentications = yaml.load(f, Loader=yaml.CLoader)
-        if authentications is not None:
-            config["authentication"] = authentications
+            auth = f.read().strip()
+        config["authentication"] = [auth]
 
     # Load secret
     secret_path = clash_config_path / "secret"
