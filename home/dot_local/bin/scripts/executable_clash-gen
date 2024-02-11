@@ -1,150 +1,255 @@
 #!/usr/bin/env python3
+"""This is the clash/mihomo config generator.
 
-# Copyright 2023  Yushun Cheng <chengys@disroot.org>
-#
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the “Software”), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-#
-# The above copyright notice and this permission notice shall be included in
-# all copies or substantial portions of the Software.
-#
-# THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-# SOFTWARE.
+=======
+License
+=======
+
+Copyright 2023  Yushun Cheng ``<chengys@disroot.org>``
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the “Software”), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+===========
+Description
+===========
+
+This program takes 6 file as input, and write its output to the file
+``$XDG_CONFIG_HOME/clash/config.yaml``.  All of its inputs are in the directory
+``$XDG_CONFIG_HOME/clash``.  The filenames and roles of each input file are as
+following.
+
+* ``settings.yaml``: This file constitutes the default contents of
+  ``config.yaml``, which is modified by other files, as documented below.  If
+  this file does not exist, it is equivalent to an empty map.
+
+* ``proxies.yaml``: This file contains information about the subscribed
+  proxies.  It is in the form ``PROXY-GROUP-NAME: [PROXY-1, PROXY-2, ...]``.
+  There are also special keys such as ``用量`` and ``到期``.  If this file does
+  not exist, it is considered as an empty map.
+
+* ``proxy-groups.yaml``: This file contains specifies how proxies are organized
+  into groups.  This file must be a map, and if it does not exist, it is
+  considered as an empty map.  Its keys are listed below.
+
+  * ``url-tests``, ``fallbacks``, ``load-balances`` and ``relays``: a map from
+    a group name to a list of children
+
+  * ``selects``: a list of select groups.
+
+  * ``select-append``: a list of URL test proxy groups that should be appended
+    to every select group.
+
+* ``rules.yaml``: This is a list of rules.  Sub-rules are currently not
+  supported.  If this file does not exist, it is considered as an empty list.
+
+* ``auth.yaml``: This is a list of authentications in the form
+  ``USERNAME:PASSWORD``.
+
+* ``secret``: This is a plain text file containing the secret password for the
+  controller.
+
+"""
+
+
+class Unimplemented(Exception):
+    pass
+
 
 if __name__ == "__main__":
     from xdg.BaseDirectory import xdg_config_home
     import yaml
     from pathlib import Path
 
-    # Get configuration directory.
-    clash_config_path = Path(xdg_config_home) / 'clash'
+    clash_config_path = Path(xdg_config_home) / "clash"
 
-    # Load settings.
-    with open(clash_config_path / 'settings.yaml', 'r') as f:
-        config = yaml.load(f, Loader=yaml.CLoader)
-
-    # Load proxies.
-    with open(clash_config_path / 'proxies.yaml', 'r') as f:
-        proxies = yaml.load(f, Loader=yaml.CLoader)['proxies']
-
-    # Load secret.
-    secret_path = clash_config_path / "secret"
-    if secret_path.exists():
-        with open(secret_path, "r") as f:
-            config["secret"] = f.read().strip()
-
-    # Set external controller.
-    config['external-controller'] = 'localhost:' + \
-        str(config.pop('external-controller-port'))
-
-    # Set other settings.
-    config['mode'] = 'Rule'
-    config['profiles'] = {'store-selected': True}
-
-    # Tidy proxies.
-    test_url = config.pop('test-url')
-    test_interval = config.pop('test-interval')
-    proxies_tmp = []
-    url_test_groups = []
-    url_test_names = []
-    for region in proxies:
-        for region_name, region_proxies in region.items():
-            url_test_names.append(region_name)
-            proxy_names = []
-            for proxy_index in range(len(region_proxies)):
-                proxy_name = region_name + ' - ' + str(proxy_index + 1)
-                proxy_names.append(proxy_name)
-                proxy = region_proxies[proxy_index].copy()
-                proxy['name'] = proxy_name
-                proxies_tmp.append(proxy)
-            url_test_groups.append({
-                'name': region_name,
-                'type': 'url-test',
-                'proxies': proxy_names.copy(),
-                'url': test_url,
-                'interval': test_interval,
-            })
-    url_test_groups.insert(
-        0, {
-            'name': 'Fastest',
-            'type': 'url-test',
-            'proxies': url_test_names.copy(),
-            'url': test_url,
-            'interval': test_interval,
-        })
-    proxies = proxies_tmp
-    proxy_groups = [{
-        'name': 'Default',
-        'type': 'select',
-        'proxies': ['Fastest', 'DIRECT', 'REJECT'] + url_test_names
-    }, {
-        'name': 'China',
-        'type': 'select',
-        'proxies': ['DIRECT', 'Default', 'REJECT', 'Fastest'] + url_test_names
-    }]
-    url_test_names.insert(0, 'Fastest')
-
-    # Set policies and rules.
-    policies = config.pop('policies')
-    chinese_policies = config.pop('chinese-policies')
-    direct_policies = config.pop('direct-policies')
-    rules = []
-    for policy in policies:
-        for policy_name, policy_matches in policy.items():
-            proxy_groups.append({
-                'name': policy_name,
-                'type': 'select',
-                'proxies': ['Default', 'DIRECT', 'REJECT'] + url_test_names
-            })
-            for match_method, keywords in policy_matches.items():
-                for keyword in keywords:
-                    rules.append(match_method.upper() + ',' + keyword + ','
-                                 + policy_name)
-    for policy in chinese_policies:
-        for policy_name, policy_matches in policy.items():
-            proxy_groups.append({
-                'name': policy_name,
-                'type': 'select',
-                'proxies': ['China', 'DIRECT', 'Default', 'REJECT']
-                + url_test_names
-            })
-            for match_method, keywords in policy_matches.items():
-                for keyword in keywords:
-                    rules.append(match_method.upper() + ',' + keyword + ','
-                                 + policy_name)
-    for policy in direct_policies:
-        for policy_name, policy_matches in policy.items():
-            proxy_groups.append({
-                'name': policy_name,
-                'type': 'select',
-                'proxies': ['DIRECT', 'Default', 'REJECT'] + url_test_names,
-            })
-            for match_method, keywords in policy_matches.items():
-                for keyword in keywords:
-                    rules.append(match_method.upper() + ',' + keyword + ','
-                                 + policy_name)
-    rules.append('GEOIP,CN,China')
-    rules.append('MATCH,Default')
-    proxy_groups += url_test_groups
-    config['rules'] = rules.copy()
-    config['proxies'] = proxies.copy()
-    config['proxy-groups'] = proxy_groups.copy()
-
-    config_file_path = clash_config_path / "config.yaml"
-    if config_file_path.is_file():
-        with open(config_file_path, "r") as f:
-            update = yaml.load(f, Loader=yaml.CLoader) != config
+    # Load settings.yaml
+    settings_path = clash_config_path / "settings.yaml"
+    if settings_path.is_file():
+        with open(clash_config_path / "settings.yaml", "r") as f:
+            config = yaml.load(f, Loader=yaml.CLoader)
+        if config is None:
+            config = {}
     else:
-        update = True
-    if update:
-        with open(config_file_path, "w") as f:
-            f.write(yaml.dump(config, Dumper=yaml.CDumper))
+        config = {}
+
+    # Load auth.yaml
+    auth_path = clash_config_path / "auth.yaml"
+    if auth_path.is_file():
+        with open(auth_path, "r") as f:
+            authentications = yaml.load(f, Loader=yaml.CLoader)
+        if authentications is not None:
+            config["authentication"] = authentications
+
+    # Load secret
+    secret_path = clash_config_path / "secret"
+    if secret_path.is_file():
+        with open(secret_path, "r") as f:
+            config["secret"] = f.read()
+
+    # Load rules.yaml
+    rules_path = clash_config_path / "rules.yaml"
+    if rules_path.is_file():
+        with open(rules_path, "r") as f:
+            rules = yaml.load(f, Loader=yaml.CLoader)
+        if rules is not None:
+            config["rules"] = rules
+
+    # Load proxies.yaml
+    proxies_path = clash_config_path / "proxies.yaml"
+    proxies_data = {}
+    used_gigs = None
+    total_gigs = None
+    expire_date = None
+    if proxies_path.is_file():
+        with open(proxies_path, "r") as f:
+            proxies_data = yaml.load(f, Loader=yaml.CLoader)
+        if proxies_data is None:
+            proxies_data = {}
+        if "用量" in proxies_data:
+            used_gigs = proxies_data.pop("用量")
+        if "总量" in proxies_data:
+            total_gigs = proxies_data.pop("总量")
+        if "到期" in proxies_data:
+            expire_date = proxies_data.pop("到期")
+
+    # Load proxy-groups.yaml
+    proxy_groups_path = clash_config_path / "proxy-groups.yaml"
+    auto_groups = {}
+    auto_config = {}
+    select_groups = []
+    select_append = []
+    if proxy_groups_path.is_file():
+
+        # Read proxy_groups_data.
+        with open(proxy_groups_path, "r") as f:
+            proxy_groups_data = yaml.load(f, Loader=yaml.CLoader)
+        if proxy_groups_data is None:
+            proxy_groups_data = {}
+
+        # Read automated groups.
+        auto_groups = proxy_groups_data.copy()
+        keys_to_remove = []
+        for key in auto_groups.keys():
+            if not key.endswith("-groups") or key == "select-groups":
+                keys_to_remove.append(key)
+        for key in keys_to_remove:
+            auto_groups.pop(key)
+
+        # Read auto_config.
+        if "auto-config" in proxy_groups_data:
+            auto_config = proxy_groups_data["auto-config"]
+        if auto_config is None:
+            auto_config = {}
+
+        # Read select_groups.
+        if "select-groups" in proxy_groups_data:
+            select_groups = proxy_groups_data["select-groups"]
+        if select_groups is None:
+            select_groups = []
+
+        # Read select_append.
+        if "select-append" in proxy_groups_data:
+            select_append = proxy_groups_data["select-append"]
+        if select_append is None:
+            select_append = []
+
+    # Apply proxies
+    proxies = []
+    for group, group_proxies in proxies_data.items():
+        for i in range(len(group_proxies)):
+            proxy = group_proxies[i]
+            proxy["name"] = f"{group} - {i + 1}"
+            proxies.append(proxy)
+    config["proxies"] = proxies
+
+    # Get proxy names.
+    proxy_names = set(proxies_data.keys())
+    for groups in auto_groups.values():
+        proxy_names = proxy_names.union(groups.keys())
+    for group in select_groups:
+        proxy_names.add(group["name"])
+    proxy_names.add("DIRECT")
+    proxy_names.add("REJECT")
+
+    # Get select-append
+    select_append_new = []
+    for group in select_append:
+        if group in proxy_names:
+            select_append_new.append(group)
+    select_append = select_append_new
+
+    # Add select groups.
+    proxy_groups = []
+    for group in select_groups:
+        proxy_list = []
+        proxy_set = set()
+        for name in group["proxies"] + select_append:
+            if name in proxy_names and name not in proxy_set:
+                proxy_list.append(name)
+                proxy_set.add(name)
+        if len(proxy_list) != 0:
+            proxy_group = group.copy()
+            proxy_group["proxies"] = proxy_list
+            proxy_group["type"] = "select"
+            proxy_groups.append(proxy_group)
+
+    # Add automated groups.
+    for group_type, group_dict in auto_groups.items():
+        group_type = group_type[:-7]
+        for group_name, children in group_dict.items():
+            proxy_list = []
+            for name in children:
+                if name in proxy_names:
+                    proxy_list.append(name)
+            if len(proxy_list) != 0:
+                proxy_group = {
+                    "name": group_name,
+                    "type": group_type,
+                    "proxies": proxy_list,
+                }
+                if group_type in ("url-test", "load-balance", "fallback"):
+                    proxy_group["url"] = auto_config["url"]
+                    proxy_group["interval"] = auto_config["interval"]
+                proxy_groups.append(proxy_group)
+
+    # Add basic URL test groups.
+    for group_name, proxies in proxies_data.items():
+        proxy_group = {
+            "name": group_name,
+            "type": "url-test",
+            "proxies": [proxy["name"] for proxy in proxies],
+            "url": auto_config["url"],
+            "interval": auto_config["interval"],
+        }
+        proxy_groups.append(proxy_group)
+
+    # Apply proxy-groups
+    config["proxy-groups"] = proxy_groups
+
+    # Write config.yaml
+    config_str = yaml.dump(config, Dumper=yaml.CDumper, allow_unicode=True)
+    config_path = clash_config_path / "config.yaml"
+    update = True
+    if config_path.is_file():
+        with open(config_path, "r") as f:
+            old_str = f.read()
+        update = old_str != config_str
+    if update is True:
+        with open(config_path, "w") as f:
+            f.write(config_str)

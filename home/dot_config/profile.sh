@@ -104,7 +104,13 @@ export XDG_CACHE_HOME="$HOME/.cache"
 export GNUPGHOME="${XDG_CONFIG_HOME}/gnupg"
 
 # Proxies.
-export http_proxy='http://127.0.0.1:7890'
+if [ -f "$XDG_CONFIG_HOME/clash/auth.yaml" ]; then
+  export PROXY_AUTH=$(yq -r ".[0]" "$XDG_CONFIG_HOME/clash/auth.yaml")
+  export http_proxy=socks5h://$PROXY_AUTH@127.0.0.1:7891
+else
+  export PROXY_AUTH=""
+  export http_proxy=socks5h://127.0.0.1:7891
+fi
 export https_proxy="${http_proxy}"
 export ftp_proxy="${http_proxy}"
 export rsync_proxy="${http_proxy}"

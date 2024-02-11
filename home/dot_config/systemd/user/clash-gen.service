@@ -3,4 +3,4 @@ Description=Clash Config Generator
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/env ${HOME}/.local/bin/scripts/clash-gen
+ExecStart=/bin/env clash-gen

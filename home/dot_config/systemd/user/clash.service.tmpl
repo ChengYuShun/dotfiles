@@ -1,0 +1,10 @@
+# -*- mode: conf -*-
+
+[Unit]
+Description=Meta, Another Clash Kernel
+After=network-wait-online.target
+
+[Service]
+Type=exec
+Restart=on-abort
+ExecStart=/bin/env clash-meta -d {{ .chezmoi.homeDir }}/.config/clash
