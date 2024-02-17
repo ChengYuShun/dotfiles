@@ -30,9 +30,10 @@ Description
 ===========
 
 This program takes 6 file as input, and write its output to the file
-``$XDG_CONFIG_HOME/clash/config.yaml``.  All of its inputs are in the directory
-``$XDG_CONFIG_HOME/clash``.  The filenames and roles of each input file are as
-following.
+``$CLASH_CONFIG_DIR/config.yaml``.  All of its inputs are in the directory
+``$CLASH_CONFIG_DIR``.  By default, ``$CLASH_CONFIG_DIR`` is set to be
+``$XDG_CONFIG_HOME/clash``, and it can be overriden by the option ``-d``.  The
+filenames and roles of each input file are as following.
 
 * ``settings.yaml``: This file constitutes the default contents of
   ``config.yaml``, which is modified by other files, as documented below.  If
@@ -65,17 +66,25 @@ following.
 
 """
 
-
-class Unimplemented(Exception):
-    pass
-
-
 if __name__ == "__main__":
     from xdg.BaseDirectory import xdg_config_home
-    import yaml
     from pathlib import Path
+    from argparse import ArgumentParser
 
-    clash_config_path = Path(xdg_config_home) / "clash"
+    import yaml
+
+    # Parse $CLASH_CONFIG_PATH
+    parser = ArgumentParser(prog="clash-gen",
+                            description="Generate clash config automatically")
+    parser.add_argument("-d",
+                        "--directory",
+                        metavar="DIR",
+                        help="clash config directory")
+    args = parser.parse_args()
+    if args.directory is None:
+        clash_config_path = Path(xdg_config_home) / "clash"
+    else:
+        clash_config_path = Path(args.directory)
 
     # Load settings.yaml
     settings_path = clash_config_path / "settings.yaml"
@@ -166,6 +175,11 @@ if __name__ == "__main__":
     # Apply proxies
     proxies = []
     for group, group_proxies in proxies_data.items():
+        if len(group_proxies) == 1:
+            proxy = group_proxies[0]
+            proxy["name"] = group
+            proxies.append(proxy)
+            continue
         for i in range(len(group_proxies)):
             proxy = group_proxies[i]
             proxy["name"] = f"{group} - {i + 1}"
@@ -224,6 +238,8 @@ if __name__ == "__main__":
 
     # Add basic URL test groups.
     for group_name, proxies in proxies_data.items():
+        if len(proxies) == 1:
+            continue
         proxy_group = {
             "name": group_name,
             "type": "url-test",

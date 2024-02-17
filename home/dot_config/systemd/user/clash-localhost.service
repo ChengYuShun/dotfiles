@@ -1,0 +1,10 @@
+# -*- mode: conf -*-
+
+[Unit]
+Description=Clash-Meta for localhost
+After=clash.target
+
+[Service]
+Type=exec
+Restart=on-abort
+ExecStart=/bin/env clash-meta -d ${HOME}/.config/clash-localhost

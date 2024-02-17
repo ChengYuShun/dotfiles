@@ -1,0 +1,6 @@
+[Unit]
+Description=Clash Config Generator for localhost
+
+[Service]
+Type=simple
+ExecStart=/bin/env clash-gen -d ${HOME}/.config/clash-localhost
