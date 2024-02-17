@@ -1,0 +1,125 @@
+{
+    "createdBy": "Redirector v3.5.3",
+    "createdAt": "2022-12-10T08:23:14.073Z",
+    "redirects": [
+        {
+            "description": "youtube.com/xxx to Piped",
+            "exampleUrl": "https://www.youtube.com/watch?v=x",
+            "exampleResult": "https://piped.video/watch?v=x",
+            "error": null,
+            "includePattern": "https://[a-z]*.youtube.com([/a-zA-Z0-9-_?=+%]*)",
+            "excludePattern": "",
+            "patternDesc": "",
+            "redirectUrl": "https://piped.video$1",
+            "patternType": "R",
+            "processMatches": "noProcessing",
+            "disabled": false,
+            "grouped": false,
+            "appliesTo": [
+                "main_frame"
+            ]
+        },
+        {
+            "description": "youtube.com/xxx to Invidious",
+            "exampleUrl": "https://www.youtube.com/watch?v=x",
+            "exampleResult": "https://yewtu.be/watch?v=x",
+            "error": null,
+            "includePattern": "https://[a-z]*.youtube.com([/a-zA-Z0-9-_?=+%]*)",
+            "excludePattern": "",
+            "patternDesc": "",
+            "redirectUrl": "https://yewtu.be$1",
+            "patternType": "R",
+            "processMatches": "noProcessing",
+            "disabled": true,
+            "grouped": false,
+            "appliesTo": [
+                "main_frame"
+            ]
+        },
+        {
+            "description": "wikiless.tiekoetter.com to Wikipedia",
+            "exampleUrl": "https://wikiless.tiekoetter.com/wiki/Main_Page",
+            "exampleResult": "https://wikipedia.org/wiki/Main_Page",
+            "error": null,
+            "includePattern": "https://wikiless.tiekoetter.com/wiki/([a-zA-Z0-9_]*)",
+            "excludePattern": "",
+            "patternDesc": "",
+            "redirectUrl": "https://wikipedia.org/wiki/$1",
+            "patternType": "R",
+            "processMatches": "noProcessing",
+            "disabled": false,
+            "grouped": false,
+            "appliesTo": [
+                "main_frame"
+            ]
+        },
+        {
+            "description": "wikiless.tiekoetter.com?lang=xx to Wikipedia",
+            "exampleUrl": "https://wikiless.tiekoetter.com/wiki/Main_Page?lang=en",
+            "exampleResult": "https://en.wikipedia.org/wiki/Main_Page",
+            "error": null,
+            "includePattern": "https://wikiless.tiekoetter.com/wiki/([a-zA-Z0-9_]*)\\?lang=(.*)",
+            "excludePattern": "",
+            "patternDesc": "",
+            "redirectUrl": "https://$2.wikipedia.org/wiki/$1",
+            "patternType": "R",
+            "processMatches": "noProcessing",
+            "disabled": false,
+            "grouped": false,
+            "appliesTo": [
+                "main_frame"
+            ]
+        },
+        {
+            "description": "xx.wikiless.tiekoetter.com to Wikipedia",
+            "exampleUrl": "https://en.wikiless.tiekoetter.com/wiki/Main_Page",
+            "exampleResult": "https://en.wikipedia.org/wiki/Main_Page",
+            "error": null,
+            "includePattern": "https://([a-z]+).wikiless.tiekoetter.com(.*)",
+            "excludePattern": "",
+            "patternDesc": "",
+            "redirectUrl": "https://$1.wikipedia.org$2",
+            "patternType": "R",
+            "processMatches": "noProcessing",
+            "disabled": false,
+            "grouped": false,
+            "appliesTo": [
+                "main_frame"
+            ]
+        },
+        {
+            "description": "简体维基",
+            "exampleUrl": "https://zh.wikipedia.org/wiki/Wikipedia:%E9%A6%96%E9%A1%B5",
+            "exampleResult": "https://zh.wikipedia.org/zh-hans/Wikipedia:%E9%A6%96%E9%A1%B5",
+            "error": null,
+            "includePattern": "https://zh.wikipedia.org/wiki/(.*)",
+            "excludePattern": "",
+            "patternDesc": "",
+            "redirectUrl": "https://zh.wikipedia.org/zh-hans/$1",
+            "patternType": "R",
+            "processMatches": "noProcessing",
+            "disabled": false,
+            "grouped": false,
+            "appliesTo": [
+                "main_frame"
+            ]
+        },
+        {
+            "description": "繁體維基",
+            "exampleUrl": "https://zh.wikipedia.org/wiki/Wikipedia:%E9%A6%96%E9%A1%B5",
+            "exampleResult": "https://zh.wikipedia.org/zh-hant/Wikipedia:%E9%A6%96%E9%A1%B5",
+            "error": null,
+            "includePattern": "https://zh.wikipedia.org/wiki/(.*)",
+            "excludePattern": "",
+            "patternDesc": "",
+            "redirectUrl": "https://zh.wikipedia.org/zh-hant/$1",
+            "patternType": "R",
+            "processMatches": "noProcessing",
+            "disabled": true,
+            "grouped": false,
+            "appliesTo": [
+                "main_frame"
+            ]
+        }
+    ]
+}

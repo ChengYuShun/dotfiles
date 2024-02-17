@@ -1,0 +1,25 @@
+html {
+    background-color: #000000;
+    color: #eaeaea;
+}
+
+/* This is going to cause a lot of trouble for other sites.
+body {
+    margin: auto;
+    min-width: 15rem;
+    width: max(78.6%, 69.6561503% + 4.55157745rem);
+    max-width: 40rem;
+}
+*/
+
+a {
+    color: #5555ff;
+}
+
+a:visited {
+    color: #aa33ff;
+}
+
+/* This does not work.
+.pdfViewer .page { border: 0px !important; }
+*/

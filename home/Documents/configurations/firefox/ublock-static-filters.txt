@@ -1,0 +1,190 @@
+!
+! Contents to be banned.
+!
+
+! Stack exchange.
+stackexchange.com##.js-consent-banner
+
+! Math overflow.
+mathoverflow.net##.js-consent-banner
+
+! Stack overflow.
+stackoverflow.com##.js-consent-banner
+
+! Super user.
+superuser.com##.js-consent-banner
+
+! Ask Ubuntu.
+askubuntu.com##.js-consent-banner
+
+! BiliBili user space.
+space.bilibili.com##body > .modal-container
+
+!
+! Disable all scripts.
+!
+
+||*$script
+
+!
+! Safe javascripts.
+!
+
+! MathJax.
+@@||cdnjs.cloudflare.com/ajax/libs/mathjax/*$script
+@@||cdn.jsdelivr.net/npm/mathjax@*$script
+
+! jQuery.
+@@||cdnjs.cloudflare.com/ajax/libs/jquery/*$script
+@@||cdn.jsdelivr.net/npm/jquery@*$script
+
+!
+! Safe websites.
+!
+
+! localhost.
+@@||localhost:*^$script,1p
+
+! Invidious instances.
+@@||yewtu.be^$script,1p
+@@||vid.puffyan.us^$script,1p
+
+! Searx instances.
+@@||search.ononoki.org/static/themes/simple/js/*$script,1p
+@@||searx.tiekoetter.com/static/themes/simple/js/*$script,1p
+@@||searx.be/static/*$script,1p
+@@||search.disroot.org/static/themes/simple/js/*$script,1p
+@@||search.sapti.me/static/themes/simple/js/*$script,1p
+@@||search.unlocked.link/static/themes/simple/js/*$script,1p
+
+! Disroot.org.
+@@||mail.disroot.org^$script,1p
+
+! Piped instances.
+@@||piped.kavin.rocks/assets/*$script,1p
+@@||piped.video/assets/*$script,1p
+@@||piped-api.garudalinux.org/assets/*$script,1p
+
+! Gitlab instances.
+@@||gitlab.com/assets/webpack/*$script,1p
+@@||gitlab.freedesktop.org/assets/webpack/*$script,1p
+@@||invent.kde.org/assets/webpack/*$script,1p
+
+! Searx space.
+@@||searx.space/main.js$script,1p
+@@||searx.space/assets/vue.js$script,1p
+
+! FireFly.
+@@||ulinkcn.fireflycloud.net.cn/bundles/runtime/*$script,1p
+@@||ulinkcn.fireflycloud.net.cn/bundles/vendor/*$script,1p
+@@||ulinkcn.fireflycloud.net.cn/bundles/pages-main/*$script,1p
+@@||ulinkcn.fireflycloud.net.cn/bundles/task-listing/*$script,1p
+@@||ulinkcn.fireflycloud.net.cn/bundles/task-details/*$script,1p
+@@||ulinkcn.fireflycloud.net.cn/Templates/lib/WebViewer/public/ui/webviewer-ui.min.js$script,1p
+@@||ulinkcn.fireflycloud.net.cn/Templates/lib/WebViewer/public/core/CoreControls.js$script,1p
+@@||ulinkcn.fireflycloud.net.cn/Templates/lib/WebViewer/public/core/ExternalPdfPartRetriever.chunk.js$script,1p
+@@||ulinkcn.fireflycloud.net.cn/Templates/lib/WebViewer/public/core/pdf/PDFworker.js$script,1p
+@@||ulinkcn.fireflycloud.net.cn/Templates/lib/WebViewer/public/core/external/decode.min.js$script,1p
+
+! IMSLP.
+@@||imslp.org/load.php$script,1p
+@@||imslp.org/extensions/common/jscss/IMSLPJS.D.js$script,1p
+
+! GitHub.
+@@||github.githubassets.com/assets/*$script,domain=github.com
+@@||viewscreen.githubusercontent.com/static/assets/*$script,1p
+
+! Quora.
+@@||qsbr.cf2.quoracdn.net^$script,domain=www.quora.com
+
+! Hugo.
+@@||gohugo.io/output/js/*$script,1p
+
+! KDE Store.
+@@||store.kde.org/theme/react/*$script,1p
+
+! doc.rust-lang.org and docs.rs.
+@@||doc.rust-lang.org^$script,1p
+
+! Wiktionary.
+@@||en.wiktionary.org/w/load.php$script,1p
+
+! ISAMS.
+@@||isams.ulinkedu.com/auth/js/portal-layout.min.js$script,1p
+@@||isams.ulinkedu.com/auth/lib/jquery/*$script,1p
+@@||pupils.ulinkedu.com/api/menu/*$script,1p
+@@||pupils.ulinkedu.com/api/profile/gradebooks/*$script,1p
+@@||pupils.ulinkedu.com/system/functions/javascript/oidc/*$script,1p
+
+! Bilibili (search, video, live, homepage).
+@@||s1.hdslb.com/bfs/static/laputa-home/client/assets/*$script,domain=bilibili.com
+@@||s1.hdslb.com/bfs/static/laputa-search/client/assets/*$script,domain=bilibili.com
+@@||s1.hdslb.com/bfs/static/jinkela/long/js/sentry/*$script,domain=bilibili.com
+@@||s1.hdslb.com/bfs/static/jinkela/space/*$script,domain=space.bilibili.com
+@@||s1.hdslb.com/bfs/static/player/main/*$script,domain=bilibili.com
+@@||s1.hdslb.com/bfs/blive-engineer/live-web-player/*$script,domain=bilibili.com
+
+! Discourse.
+@@||global.discourse-cdn.com^$script
+
+! Web archive.
+@@||archive.org^$script,1p
+
+! Cambridge undergraduate.
+@@||www.undergraduate.study.cam.ac.uk/sites/www.undergraduate.study.cam.ac.uk/files/js/*$script,1p
+www.undergraduate.study.cam.ac.uk##.eu-cookie-compliance-banner--categories.eu-cookie-compliance-banner-info.eu-cookie-compliance-banner
+
+! YouTube.
+!@@||www.youtube.com/s/player/*$script,domain=www.youtube.com
+!@@||www.youtube.com/s/desktop/*$script,domain=www.youtube.com
+
+! CCTV.
+@@||js.player.cntv.cn/creator/*$script,domain=tv.cctv.com
+@@||vdn.live.cntv.cn^$script,domain=tv.cctv.com
+@@||r.img.cctvpic.com/photoAlbum/templet/common/*$script,domain=tv.cctv.com
+@@||r.img.cctvpic.com/photoAlbum/templet/js/*$script,domain=tv.cctv.com
+
+! OpenJudge.
+@@||static.openjudge.cn/scripts/*$script,domain=noi.openjudge.cn
+
+! Frank CIE.
+@@||lib.fraft.cn^$script,domain=cie.fraft.cn
+@@||cie.fraft.cn/static/pc/*$script,domain=cie.fraft.cn
+
+! Feyman lectures.
+@@||www.feynmanlectures.caltech.edu^$script,1p
+
+! https://alexkritchevsky.com
+@@||alexkritchevsky.com/js/katex.min.js$script,1p
+@@||alexkritchevsky.com/js/auto-render.min.js$script,1p
+
+! https://pay.dfktpaum.com
+@@||lib.baomitu.com/jquery/*$script,domain=pay.dfktpaum.com
+@@||pay.dfktpaum.com/assets/js/*$script,domain=pay.dfktpaum.com
+
+! https://proofwiki.org
+@@||proofwiki.org/cdn-cgi/scripts/*$script,1p
+
+! HuaCloud.
+@@||flower.yt^$script,1p
+@@||huacloud.dev^$script,1p
+
+! Desmos.
+@@||www.desmos.com/assets/build/*$script,domain=www.desmos.com
+
+! https://nexitally.net
+@@||nexitally.net^$script,1p
+
+! WestData.
+@@||fuqing.li^$script,1p
+@@||fuqing.cz^$script,1p
+
+! China Digital Times.
+@@||cdn.ampproject.org/v0.mjs$script,domain=chinadigitaltimes.net
+
+! Nearpod.
+@@||api.nearpod.com^$script,1p
+@@||cf.nearpod.com/neareducation/new/localization/nearpod-next/*$script,1p
+@@||cf.nearpod.com/neareducation/new/localization/nearpod-html/*$script,1p
+@@||html.nearpod.com^$script,1p
+@@||r.nearpod.com/assets/*$script,1p

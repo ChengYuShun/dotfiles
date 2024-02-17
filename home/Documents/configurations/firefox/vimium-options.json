@@ -1,0 +1,74 @@
+{
+  "settingsVersion": "1.67.6",
+  "exclusionRules": [
+    {
+      "pattern": "https://searx.be/*",
+      "passKeys": "hdujktrio"
+    },
+    {
+      "pattern": "https://searx.tiekoetter.com/*",
+      "passKeys": "hdujktrio"
+    },
+    {
+      "pattern": "https://paulgo.io/*",
+      "passKeys": "hdujktrio"
+    },
+    {
+      "pattern": "https://xo.wtf/*",
+      "passKeys": "hdujktrio"
+    },
+    {
+      "pattern": "https://searx.fmac.xyz/*",
+      "passKeys": "hdujktrio"
+    },
+    {
+      "pattern": "https://search.sapti.me/*",
+      "passKeys": "hdujktrio"
+    },
+    {
+      "pattern": "https://security.bilibili.com/*",
+      "passKeys": "*"
+    },
+    {
+      "pattern": "https://search.ononoki.org/*",
+      "passKeys": "hdujktrio"
+    },
+    {
+      "pattern": "https://search.disroot.org/*",
+      "passKeys": "hdujktrio"
+    },
+    {
+      "pattern": "https://search.unlocked.link/*",
+      "passKeys": "hdujktrio"
+    },
+    {
+      "pattern": "https://search.sapti.me/*",
+      "passKeys": "hdujktrio"
+    },
+    {
+      "pattern": "https://northboot.xyz/*",
+      "passKeys": "hdujktrio"
+    },
+    {
+      "pattern": "https?://searxng.nicfab.eu/*",
+      "passKeys": "hdujktrio"
+    }
+  ],
+  "filterLinkHints": false,
+  "waitForEnterForFilteredHints": true,
+  "hideHud": false,
+  "keyMappings": "# Insert your preferred key mappings here.\nunmap O\nunmap o\nunmap b\nunmap B",
+  "linkHintCharacters": "sadfjklewcmpgh",
+  "linkHintNumbers": "0123456789",
+  "newTabUrl": "about:newtab",
+  "nextPatterns": "next,more,newer,>,›,→,»,≫,>>",
+  "previousPatterns": "prev,previous,back,older,<,‹,←,«,≪,<<",
+  "regexFindMode": false,
+  "ignoreKeyboardLayout": false,
+  "scrollStepSize": 29,
+  "smoothScroll": false,
+  "grabBackFocus": true,
+  "searchEngines": "wp: https://www.wikipedia.org/w/index.php?title=Special:Search&search=%s Wikipedia\nwikt: https://en.wiktionary.org/wiki/Special:Search?search=%s Wiktionary\nyt: https://www.youtube.com/results?search_query=%s Youtube\ngh: https://github.com/search?q=%s\n\n# Searx instances.\non: https://search.ononoki.org/search?q=%s search.ononoki.org\nonzh: https://search.ononoki.org/search?q=%s&language=zh search.ononoki.org 中文\nbe: https://searx.be/search?q=%s&language=en searx.be\nbezh: https://searx.be/search?q=%s&language=zh searx.be 中文\npa: https://paulgo.io/search?q=%s paulgo.io\npazh: https://paulgo.io/search?q=%s&language=zh paugo.io 中文\ntk: https://searx.tiekoetter.com/search?q=%s\ntkzh: https://searx.tiekoetter.com/search?q=%s&language=zh\nts: https://searxng.tordenskjold.de/search?q=%s\ntszh: https://searxng.tordenskjold.de/search?q=%s&language=zh\nml: https://serx.ml/search?q=%s\nmlzh: https://serx.ml/search?q=%s&language=zh\nul: https://search.unlocked.link/search?q=%s\nulzh: https://search.unlocked.link/search?q=%s&language=zh\nsam: https://search.sapti.me/search?q=%s\nsamzh: https://search.sapti.me/search?q=%s&language=zh\nnb: https://northboot.xyz/search?q=%s\nnbzh: https://northboot.xyz/search?q=%s&language=zh",
+  "searchUrl": "https://www.google.com/search?q=",
+  "userDefinedLinkHintCss": "div > .vimiumHintMarker {\n/* linkhint boxes */\nbackground: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#FFF785),\n  color-stop(100%,#FFC542));\nborder: 1px solid #E3BE23;\n}\n\ndiv > .vimiumHintMarker span {\n/* linkhint text */\ncolor: black;\nfont-weight: bold;\nfont-size: 12px;\n}\n\ndiv > .vimiumHintMarker > .matchingCharacter {\n}"
+}
