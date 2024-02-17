@@ -1,0 +1,8 @@
+#!/usr/bin/sh
+
+if [ -n $1 ]; then
+  systemctl stop NetworkManager
+  ip link set $1 down
+  iw $1 set type monitor
+  ip link set $1 up
+fi

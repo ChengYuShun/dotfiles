@@ -1,0 +1,7 @@
+#!/usr/bin/sh
+
+. "$XDG_CONFIG_HOME/pacman/makepkg.conf"
+
+package=$(ls -r "$PKGDEST" | grep -v '.sig$' | grep "$1" | head -n 1)
+
+/usr/bin/repo-add "$PKGDEST/custom.db.tar.gz" "$PKGDEST/$package"

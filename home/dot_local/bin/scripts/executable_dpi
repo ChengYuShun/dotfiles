@@ -1,0 +1,14 @@
+#!/usr/bin/sh
+
+line=$(xrandr | grep primary)
+
+pixels=$(echo $line | awk '{ print $4 }')
+xp=$(echo $pixels | awk -v FS=x '{ print $1 }')
+yp=$(echo $pixels | awk -v FS=x '{ print $2 }' | awk -v FS=+ '{ print $1 }')
+
+width=$(echo $line | awk '{ print $13 }')
+width=${width%%mm}
+height=$(echo $line | awk '{ print $15 }')
+height=${height%%mm}
+
+echo $(echo "scale=3; ($xp / $width + $yp / $height) * 25.4 / 2" | bc)

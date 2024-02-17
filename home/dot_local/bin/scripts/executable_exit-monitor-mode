@@ -1,0 +1,8 @@
+#!/usr/bin/sh
+
+if [ -n $1 ]; then
+  ip link set $1 down
+  iw $1 set type managed
+  ip link set $1 up
+  systemctl restart NetworkManager
+fi

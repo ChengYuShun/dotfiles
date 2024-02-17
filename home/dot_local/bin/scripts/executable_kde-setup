@@ -1,0 +1,224 @@
+#!/usr/bin/env python3
+
+# Copyright 2023  Yushun Cheng <chengys@disroot.org>
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the “Software”), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+# from argparse import ArgumentParser
+from xdg.BaseDirectory import xdg_config_home
+from pathlib import Path
+import toml
+import subprocess
+from PyQt5 import QtCore as Qc
+
+
+class CommandSet:
+    """A set of commands."""
+
+    def __init__(self):
+        self.commands = []
+
+    @classmethod
+    def new(cls):
+        """Create a new instance."""
+        return cls()
+
+    def add(self, command):
+        """Add a new command."""
+        self.commands.append(command)
+
+    def display(self):
+        """Print the commands out."""
+        for command in self.commands:
+            print(command)
+
+    def exec(self):
+        """Execute all commands."""
+        for command in self.commands:
+            subprocess.run(command)
+
+    def __add__(self, cs2):
+        """Join two command sets by adding them."""
+        ret = CommandSet.new()
+        for command in self.commands:
+            ret.add(command)
+        for command in cs2.commands:
+            ret.add(command)
+        return ret
+
+
+class KdeTable:
+    """A hash table, either a `KdeConfigFile` or a `KdeGroup`."""
+
+    def __init__(self, name: str, subgroups: list, items: dict):
+        """Initialize the instance.
+
+        Keyword arguments:
+        name -- a string of the name of the table.
+        subgroups -- a list of `KdeGroup`s.
+        items -- a dict of items contained in the table.
+        """
+        self.name = name
+        self.subgroups = subgroups
+        self.items = items
+
+    @staticmethod
+    def parse(dictionary: dict):
+        """Parse a dictionary into subgroups and items.
+
+        For instance:
+
+        { "Group1": { ... }, "Group2": { ... }, "key1": value1, "key2": value2 }
+
+        becomes
+
+        ( [ Group1, Group2 ], { "key1": value1, "key2": value2 } )
+        """
+        subgroups = []
+        items = {}
+        for key, value in dictionary.items():
+            if isinstance(value, dict):
+                subgroups.append(KdeGroup.new(key, value))
+            else:
+                items[key] = value
+        return (subgroups, items)
+
+    @staticmethod
+    def value_to_string(value) -> str:
+        """Get the value as a string.
+
+        bool => 'true' / 'false'
+
+        number => '0' / '1' / '1.0'
+        """
+        if isinstance(value, bool):
+            if value:
+                return 'true'
+            else:
+                return 'false'
+        else:
+            return str(value)
+
+    def patch_items(self, config_file: str, groups: list[str]):
+        """Return a CommandSet that patches items to config file.
+
+        Keyword arguments:
+        config_file -- the filename of that config file.
+        groups -- a list of group names inserted into every command.
+
+        It's is equivalent to:
+        kwriteconfig5 --file CONFIG_FILE --group GROUPS --key ITEM_KEY ITEM_VALUE
+        """
+        command_set = CommandSet.new()
+        for key, value in self.items.items():
+            args = ["kwriteconfig5", "--file", config_file]
+            for group in groups:
+                args += ["--group", group]
+            args += ["--key", key]
+            value = KdeTable.value_to_string(value)
+            if value == "":
+                args.append("--delete")
+            else:
+                args.append(value)
+            command_set.add(args)
+        return command_set
+
+    def patch_subgroups(self, config_file: str, groups: list[str]):
+        """Return a CommandSet that patches subgroups to config file.
+
+        Keyword arguments:
+        groups -- a list of group names before *every subgroup*.
+        """
+        command_set = CommandSet.new()
+        for subgroup in self.subgroups:
+            command_set += subgroup.patch(config_file, groups)
+        return command_set
+
+
+class KdeGroup(KdeTable):
+    """A KDE config group in a config file."""
+
+    def __init__(self, name: str, subgroups: list, items: dict):
+        super().__init__(name, subgroups, items)
+
+    @classmethod
+    def new(cls, name: str, dictionary: dict):
+        """Create a new instance."""
+        subgroups, items = KdeTable.parse(dictionary)
+        return cls(name, subgroups, items)
+
+    def patch(self, config_file: str, groups: list[str]):
+        """Return a CommandSet that patches to config file.
+
+        Keyword arguments:
+        groups -- a list of group names before this group.
+        """
+        return self.patch_items(config_file,
+                                groups + [self.name]) + self.patch_subgroups(
+                                    config_file, groups + [self.name])
+
+
+class KdeConfigFile(KdeTable):
+    """A KDE config file."""
+
+    def __init__(self, name: str, subgroups: list, items: dict):
+        super().__init__(name, subgroups, items)
+
+    def filename(self) -> str:
+        """Get the config file name in the config directory."""
+        return self.name
+
+    @classmethod
+    def from_dict(cls, name: str, dictionary: dict):
+        """Create a new instance from a dictionary."""
+        subgroups, items = KdeTable.parse(dictionary)
+        return cls(name, subgroups, items)
+
+    @classmethod
+    def from_file(cls, filename: str):
+        """Create a new instance from a file."""
+        settings = Qc.QSettings(str(Path(xdg_config_home) / filename),
+                                Qc.QSettings.IniFormat)
+        config_dict = {}
+        # Add keys.
+        for key in settings.allKeys():
+            config_dict[key] = settings.value(key)
+        return cls.from_dict(filename, config_dict)
+
+    def patch(self):
+        """Return a command set that applies the patches indicated by self."""
+        filename = self.filename()
+        return self.patch_items(
+            filename, ["<default>"]) + self.patch_subgroups(filename, [])
+
+
+if __name__ == "__main__":
+    # Parse TOML.
+    parsed_toml = None
+    with (Path(xdg_config_home) / "kde-config.toml").open() as f:
+        parsed_toml = toml.loads(f.read())
+
+    # Get config files.
+    config_files = []
+    for filename, table in parsed_toml.items():
+        config_files.append(KdeConfigFile.from_dict(filename, table))
+
+    # Write config to files.
+    for config_file in config_files:
+        config_file.patch().exec()
