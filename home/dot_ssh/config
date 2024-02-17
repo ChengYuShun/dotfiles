@@ -17,4 +17,4 @@ Host gitlab.freedesktop.org
   IdentityFile ~/.ssh/xdg-gitlab
 
 Match all
-  ProxyCommand corkscrew 127.0.0.1 7890 %h %p ~/.config/clash/auth
+  ProxyCommand ssh-connect %h %p
