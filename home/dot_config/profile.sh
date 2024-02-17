@@ -104,16 +104,19 @@ export XDG_CACHE_HOME="$HOME/.cache"
 export GNUPGHOME="${XDG_CONFIG_HOME}/gnupg"
 
 # Proxies.
-if [ -f "$XDG_CONFIG_HOME/clash/auth" ]; then
-  export PROXY_AUTH=$(cat "$XDG_CONFIG_HOME/clash/auth")
-  export http_proxy=socks5h://$PROXY_AUTH@127.0.0.1:7891
-else
-  export PROXY_AUTH=""
-  export http_proxy=socks5h://127.0.0.1:7891
+if [ -f "$XDG_CONFIG_HOME/clash/settings-private.yaml" ]; then
+  PROXY_AUTH=$(yq -r '.["authentication"][0]' \
+                  "$XDG_CONFIG_HOME/clash/settings-private.yaml")
+  if [ "$PROXY_AUTH" = null ]; then
+    unset -v PROXY_AUTH
+  else
+    export PROXY_AUTH
+    export ALL_PROXY=socks5h://$PROXY_AUTH@127.0.0.1:7891
+  fi
 fi
-export https_proxy="${http_proxy}"
-export ftp_proxy="${http_proxy}"
-export rsync_proxy="${http_proxy}"
+if [ "$PROXY_AUTH" = "" ]; then
+  export ALL_PROXY=socks5h://127.0.0.1:7891
+fi
 
 # Environments.
 export USE_FISH=1

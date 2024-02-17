@@ -38,6 +38,11 @@ following.
   ``config.yaml``, which is modified by other files, as documented below.  If
   this file does not exist, it is equivalent to an empty map.
 
+* ``settings-private.yaml``: This file is similar to ``settings.yaml``, and
+  always overrides the former, but it is separated from the form in order to
+  have different permissions.  If this file does not exist, it is equivalent to
+  an empty map.
+
 * ``proxies.yaml``: This file contains information about the subscribed
   proxies.  It is in the form ``PROXY-GROUP-NAME: [PROXY-1, PROXY-2, ...]``.
   There are also special keys such as ``用量`` and ``到期``.  If this file does
@@ -58,12 +63,6 @@ following.
 * ``rules.yaml``: This is a list of rules.  Sub-rules are currently not
   supported.  If this file does not exist, it is considered as an empty list.
 
-* ``auth``: This is the authentication stored in the form
-  ``USERNAME:PASSWORD``.
-
-* ``secret``: This is a plain text file containing the secret password for the
-  controller.
-
 """
 
 
@@ -81,25 +80,21 @@ if __name__ == "__main__":
     # Load settings.yaml
     settings_path = clash_config_path / "settings.yaml"
     if settings_path.is_file():
-        with open(clash_config_path / "settings.yaml", "r") as f:
+        with open(settings_path, "r") as f:
             config = yaml.load(f, Loader=yaml.CLoader)
         if config is None:
             config = {}
     else:
         config = {}
 
-    # Load auth
-    auth_path = clash_config_path / "auth"
-    if auth_path.is_file():
-        with open(auth_path, "r") as f:
-            auth = f.read().strip()
-        config["authentication"] = [auth]
-
-    # Load secret
-    secret_path = clash_config_path / "secret"
-    if secret_path.is_file():
-        with open(secret_path, "r") as f:
-            config["secret"] = f.read()
+    # Load settings-private.yaml
+    settings_private_path = clash_config_path / "settings-private.yaml"
+    if settings_private_path.is_file():
+        with open(settings_private_path, "r") as f:
+            settings_private = yaml.load(f, Loader=yaml.CLoader)
+        if settings_private is not None:
+            for key, val in settings_private.items():
+                config[key] = val
 
     # Load rules.yaml
     rules_path = clash_config_path / "rules.yaml"
