@@ -11,13 +11,25 @@ try:
 except FileNotFoundError:
     pass
 
-with open("/sys/devices/virtual/dmi/id/product_name", "r") as f:
-    data["machine"] = f.read().strip()
+# Read machine name.
+if "machine" not in data:
+    machine_path = Path("/sys/devices/virtual/dmi/id/product_name")
+    if machine_path.is_file():
+        with open(machine_path, "r") as f:
+            data["machine"] = f.read().strip()
+if "machine" not in data:
+    machine_path = Path("/proc/device-tree/model")
+    if machine_path.is_file():
+        with open(machine_path, "r") as f:
+            data["machine"] = f.read().strip().rstrip("\u0000")
+if "machine" not in data:
+    data["machine"] = input("which machine are you using? ")
 
 with open("/etc/hostname") as f:
     data["hostname"] = f.read().strip()
 
-if data["machine"] == "HP EliteBook 755 G5" and data["hostname"] == "pretty-arch":
+if data["machine"] == "HP EliteBook 755 G5" and data[
+        "hostname"] == "pretty-arch":
     data["desktop"] = "KDE"
 
 if "location" not in data.keys():
