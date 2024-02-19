@@ -29,9 +29,11 @@ if "machine" not in data:
 with open("/etc/hostname") as f:
     data["hostname"] = f.read().strip()
 
-if data["machine"] == "HP EliteBook 755 G5" and data[
-        "hostname"] == "pretty-arch":
+if (data["machine"] == "HP EliteBook 755 G5"
+        and data["hostname"] == "pretty-arch"):
     data["desktop"] = "KDE"
+else:
+    data["desktop"] = ""
 
 if "location" not in data.keys():
     data["location"] = input("where are you? ")
