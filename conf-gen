@@ -4,9 +4,10 @@ from pathlib import Path
 import json
 
 data = {}
+data_path = Path.home() / ".local/share/chezmoi/chezmoidata.json"
 
 try:
-    with open(Path.home() / ".local/share/chezmoi/.chezmoidata.json") as cd:
+    with open(data_path, "r") as cd:
         data = json.load(cd)["cys"]
 except FileNotFoundError:
     pass
@@ -35,5 +36,5 @@ if data["machine"] == "HP EliteBook 755 G5" and data[
 if "location" not in data.keys():
     data["location"] = input("where are you? ")
 
-with open(Path.home() / ".local/share/chezmoi/.chezmoidata.json", "w") as f:
+with open(data_path, "w") as f:
     json.dump({"cys": data}, f)
