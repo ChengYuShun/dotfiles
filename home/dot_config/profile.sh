@@ -117,6 +117,7 @@ fi
 if [ "$PROXY_AUTH" = "" ]; then
   export ALL_PROXY=socks5h://127.0.0.1:7891
 fi
+export http_proxy=$ALL_PROXY
 
 # Environments.
 export USE_FISH=1
