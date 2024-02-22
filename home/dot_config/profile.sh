@@ -97,11 +97,16 @@ run_if_exists() {
 # SETTINGS
 #
 
-# Homes.
-export XDG_CONFIG_HOME="$HOME/.config"
-export XDG_DATA_HOME="$HOME/.local/share"
-export XDG_CACHE_HOME="$HOME/.cache"
-export GNUPGHOME="${XDG_CONFIG_HOME}/gnupg"
+# environment.d
+spc=" "
+for kvpair in $(cat "$HOME/.config/environment.d/00-profile.conf" \
+                | sed 's/^[ \t]*//;s/[ \t]*$//'                   \
+                | grep -v '^#'                                    \
+                | grep -v '^$'                                    \
+                | sed 's/ /${spc}/g'); do
+  export "$(eval echo $kvpair)"
+done
+unset -v spc
 
 # Proxies.
 if [ -f "$XDG_CONFIG_HOME/clash/settings-private.yaml" ]; then
@@ -122,12 +127,8 @@ export http_proxy=$ALL_PROXY
 # Environments.
 export USE_FISH=1
 export EDITOR=nvim
-export CARGO_HOME="${XDG_DATA_HOME}/cargo"
 _insert_path QT_PLUGIN_PATH "/usr/lib/qt/plugins"
 _insert_path QT_PLUGIN_PATH "/usr/lib/qt6/plugins"
-export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent"
-export ZDOTDIR="$XDG_CONFIG_HOME/zsh"
-export AGDA_DIR=$XDG_CONFIG_HOME/agda
 
 # Host specific settings.
 if [ $(cat /etc/hostname) = "pretty-arch" ]; then
