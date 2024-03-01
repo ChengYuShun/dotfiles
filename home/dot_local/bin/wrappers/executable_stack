@@ -1,0 +1,3 @@
+#!/bin/env sh
+
+exec env https_proxy="$PROXY_AUTH@127.0.0.1:7890" ~/.local/bin/stack "$@"
