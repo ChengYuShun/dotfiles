@@ -471,7 +471,10 @@ frame, current terminal."
 ;;;; org
 (use-package org
   :commands (org-mode)
-  :bind (("C-x a" . org-agenda))
+  :bind (("C-x a" . org-agenda)
+         :map org-mode-map
+         ("C-c l" . org-store-link)
+         ("C-c C-l" . org-insert-link))
   :hook (org-mode . (lambda () (display-fill-column-indicator-mode -1)))
   :config
   (setq org-startup-indented t)
