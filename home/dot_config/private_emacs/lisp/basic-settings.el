@@ -45,7 +45,7 @@
 (setq-default indent-tabs-mode nil)
 (setq-default tab-width 4)
 
-;;; Display fill column indicator.
+;;;; Display fill column indicator.
 (let ((callback (lambda ()
                   (set-fill-column 79)
                   (display-fill-column-indicator-mode 1))))
@@ -64,6 +64,13 @@
   (set-fontset-font t 'unicode "Consolas")
   (set-fontset-font t 'emoji "Segoe UI Emoji")
   (set-fontset-font t 'han "微软雅黑"))
+
+;;;; Bind key for re-enabling font-lock-mode
+(defun font-lock-mode-restart ()
+  (interactive)
+  (font-lock-mode 0)
+  (font-lock-mode 1))
+(keymap-global-set "C-x r C-f C-l" 'font-lock-mode-restart)
 
 ;;;; Faces.
 (set-face-background 'default "black")
