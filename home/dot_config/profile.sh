@@ -166,7 +166,6 @@ if [ -n "$XDG_SESSION_TYPE" ] && [ "$XDG_SESSION_TYPE" != tty ]; then
   # Input method.
   export INPUT_METHOD="fcitx"
   export XMODIFIERS="@im=fcitx"
-  export QT_IM_MODULE="fcitx"
 
   # DPI variables.
   case "${DMI_PRODUCT_NAME}" in
