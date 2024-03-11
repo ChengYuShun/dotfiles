@@ -475,19 +475,22 @@ frame, current terminal."
          :map org-mode-map
          ("C-c l" . org-store-link)
          ("C-c C-l" . org-insert-link))
-  :hook (org-mode . (lambda () (display-fill-column-indicator-mode -1)))
+  :hook (org-mode . (lambda ()
+                      (display-fill-column-indicator-mode -1)
+                      (visual-line-mode 1)
+                      (set-fill-column 70)
+                      (org-fragtog-mode)))
   :config
   (setq org-startup-indented t)
-  (set-face-attribute 'outline-1 nil :height 150)
-  (set-face-attribute 'outline-2 nil :height 140)
-  (set-face-attribute 'outline-3 nil :height 130)
-  (set-face-attribute 'outline-4 nil :height 120)
-  (set-face-attribute 'outline-5 nil :height 110)
-  (set-face-attribute 'outline-6 nil :height 100)
+  (plist-put org-format-latex-options :scale 2)
   (setq org-deadline-warning-days 30)
   (setq org-agenda-files '("~/todos"))
   (setq org-agenda-start-on-weekday nil)
   (setq org-log-done t))
+
+;;;; org-fragtog
+(use-package org-fragtog
+  :commands (org-fragtog-mode))
 
 ;;;; outline
 (use-package outline
