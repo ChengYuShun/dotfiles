@@ -1,7 +1,10 @@
-// Keep some history.
+// Keep history.
 user_pref("privacy.clearOnShutdown.cache", false);
+user_pref("privacy.clearOnShutdown.cookies", false);
 user_pref("privacy.clearOnShutdown.downloads", false);
+user_pref("privacy.clearOnShutdown.formdata", false);
 user_pref("privacy.clearOnShutdown.history", false);
+user_pref("privacy.clearOnShutdown.sessions", false);
 
 // Enable popup windows.
 user_pref("dom.disable_open_during_load", false);
