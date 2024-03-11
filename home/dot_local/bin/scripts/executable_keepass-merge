@@ -1,0 +1,3 @@
+#!/usr/bin/sh
+
+exec flock ${HOME}/keepass/master.lock keepass-merge-raw

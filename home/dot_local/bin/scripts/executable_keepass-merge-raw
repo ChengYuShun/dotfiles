@@ -1,0 +1,19 @@
+#!/usr/bin/sh
+
+keepass_dir=$HOME/keepass
+
+if ! cmp $keepass_dir/master.kdbx $keepass_dir/passwords.kdbx 1>/dev/null; then
+  # Backup master.
+  cp --backup=numbered $keepass_dir/master.kdbx $keepass_dir/master.kdbx.backup
+  # Merge databases.
+  if keepassxc-cli merge --same-credentials \
+                   $keepass_dir/master.kdbx \
+                   $keepass_dir/passwords.kdbx &&
+      ! cmp $keepass_dir/master.kdbx $keepass_dir/passwords.kdbx 1>/dev/null
+  then
+      cp --backup=numbered \
+          $keepass_dir/master.kdbx \
+          $keepass_dir/passwords.kdbx
+      http-proxied rclone copy $keepass_dir/master.kdbx Dropbox:
+  fi
+fi

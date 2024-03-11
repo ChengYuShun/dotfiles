@@ -1,0 +1,9 @@
+# -*- mode: conf -*-
+
+[Unit]
+Description=KeePass database download regularly
+After=clash.target
+
+[Timer]
+OnStartupSec=0
+OnUnitInactiveSec=1000
