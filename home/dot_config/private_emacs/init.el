@@ -486,7 +486,8 @@ frame, current terminal."
   (setq org-deadline-warning-days 30)
   (setq org-agenda-files '("~/todos"))
   (setq org-agenda-start-on-weekday nil)
-  (setq org-log-done t))
+  (setq org-log-done t)
+  (setq org-export-with-smart-quotes t))
 
 ;;;; org-fragtog
 (use-package org-fragtog
