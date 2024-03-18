@@ -359,6 +359,9 @@ frame, current terminal."
     (kbd "<backtab>") nil
     (kbd "<backtab>") 'hs-hide-level))
 
+;;;; htmlize
+(use-package htmlize)
+
 ;;;; ivy
 (use-package ivy
   :demand t
@@ -487,7 +490,10 @@ frame, current terminal."
   (setq org-agenda-files '("~/todos"))
   (setq org-agenda-start-on-weekday nil)
   (setq org-log-done t)
-  (setq org-export-with-smart-quotes t))
+  (setq org-export-with-smart-quotes t)
+  (org-babel-do-load-languages 'org-babel-load-languages
+                               '((emacs-lisp . t)
+                                 (python . t))))
 
 ;;;; org-fragtog
 (use-package org-fragtog
@@ -522,24 +528,25 @@ frame, current terminal."
   (evil-define-key 'motion python-mode-map "==" 'yapfify-buffer))
 
 ;;;; rustic.
-;; (use-package rustic
-;;   :after (simple hideshow evil-collection)
-;;   :demand t
-;;   :hook ((rust-mode) .
-;;          (lambda ()
-;;            (hs-minor-mode 1)
-;;            (indent-tabs-mode -1)
-;;            (setq tab-width 4)))
-;;   :bind (:map
-;;          rustic-mode-map
-;;          ("C-c b" . rustic-cargo-build)
-;;          ("C-c c" . rustic-cargo-check)
-;;          ("C-c t" . rustic-cargo-test)
-;;          ("C-c r" . rustic-cargo-run))
-;;   :config
-;;   (evil-collection-define-key 'motion 'rustic-mode-map
-;;     (kbd "==") 'lsp-format-buffer)
-;;   (setq lsp-rust-analyzer-diagnostics-disabled ["inactive-code"]))
+(use-package rustic
+  :after (hideshow evil-collection)
+  :demand t
+  :hook ((rust-mode) .
+         (lambda ()
+           (hs-minor-mode 1)
+           (indent-tabs-mode -1)
+           (setq tab-width 4)))
+  :bind (:map
+         rustic-mode-map
+         ("C-c b" . rustic-cargo-build)
+         ("C-c c" . rustic-cargo-check)
+         ("C-c t" . rustic-cargo-test)
+         ("C-c r" . rustic-cargo-run))
+  :config
+  (evil-collection-define-key 'motion 'rustic-mode-map
+    (kbd "==") 'lsp-format-buffer)
+  (setq lsp-rust-analyzer-diagnostics-disabled ["inactive-code"])
+  (setq rustic-ansi-faces ansi-color-names-vector))
 
 ;;;; rustic-compile.
 ;; (use-package rustic-compile
