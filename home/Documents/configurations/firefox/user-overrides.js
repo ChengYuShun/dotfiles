@@ -6,6 +6,9 @@ user_pref("privacy.clearOnShutdown.formdata", false);
 user_pref("privacy.clearOnShutdown.history", false);
 user_pref("privacy.clearOnShutdown.sessions", false);
 
+// Do not suggest username or password.
+user_pref("signon.rememberSignons", false);
+
 // Enable popup windows.
 user_pref("dom.disable_open_during_load", false);
 
