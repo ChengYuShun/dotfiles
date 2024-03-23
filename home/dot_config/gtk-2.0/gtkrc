@@ -1,0 +1,4 @@
+# -*- mode: conf -*-
+
+gtk-font-name = "sans-serif 9"
+gtk-theme-name = "Adwaita-dark"
