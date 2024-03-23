@@ -473,6 +473,7 @@ frame, current terminal."
 
 ;;;; org
 (use-package org
+  :after (evil)
   :commands (org-mode)
   :bind (("C-x a" . org-agenda)
          :map org-mode-map
@@ -493,7 +494,15 @@ frame, current terminal."
   (setq org-export-with-smart-quotes t)
   (org-babel-do-load-languages 'org-babel-load-languages
                                '((emacs-lisp . t)
-                                 (python . t))))
+                                 (python . t)))
+  ;; Key bindings for org-agenda.
+  (evil-define-key 'motion org-agenda-mode-map
+    "q" 'org-agenda-quit
+    "j" 'org-agenda-next-item
+    "k" 'org-agenda-previous-item
+    (kbd "RET") 'org-agenda-switch-to
+    (kbd "<tab>") 'org-agenda-goto)
+  (evil-set-initial-state 'org-agenda-mode 'motion))
 
 ;;;; org-fragtog
 (use-package org-fragtog
