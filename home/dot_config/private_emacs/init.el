@@ -495,6 +495,9 @@ frame, current terminal."
   (org-babel-do-load-languages 'org-babel-load-languages
                                '((emacs-lisp . t)
                                  (python . t)))
+  ;; Set folding strategy.
+  (setq org-startup-folded 'nofold
+        org-cycle-hide-drawer-startup t)
   ;; Key bindings for org-agenda.
   (evil-define-key 'motion org-agenda-mode-map
     "q" 'org-agenda-quit
