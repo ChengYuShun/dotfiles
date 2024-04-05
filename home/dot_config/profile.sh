@@ -131,7 +131,7 @@ _insert_path QT_PLUGIN_PATH "/usr/lib/qt/plugins"
 _insert_path QT_PLUGIN_PATH "/usr/lib/qt6/plugins"
 
 # Host specific settings.
-if [ $(cat /etc/hostname) = "pretty-arch" ]; then
+if [ "$(hostname)" = "pretty-arch" ]; then
   export EDITOR="emacsclient -nw"
   insert_path /usr/local/texlive/2023/bin/x86_64-linux
 fi
