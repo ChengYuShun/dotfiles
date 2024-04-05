@@ -75,11 +75,12 @@
 ;;;; Faces.
 (set-face-background 'default "black")
 (set-face-foreground 'default "white")
-(set-face-attribute 'default nil
-                    :height (if (string-prefix-p "MSYS" kernel-name) 100
-                              (if (equal (getenv "DMI_PRODUCT_NAME")
-                                         "HP EliteBook 755 G5")
-                                  96)))
+(set-face-attribute
+ 'default nil
+ :height (cond
+          ((string-prefix-p "MSYS" kernel-name) 100)
+          ((equal (getenv "DMI_PRODUCT_NAME") "HP EliteBook 755 G5") 96)
+          (t 100)))
 
 ;;;; Disable tool-bar-mode
 (tool-bar-mode -1)
