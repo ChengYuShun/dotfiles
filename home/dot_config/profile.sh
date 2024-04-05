@@ -159,6 +159,7 @@ elif [ "$(uname -s)" = 'MSYS_NT-10.0' ]; then
 elif [ "$(uname -s)" = "Darwin" ]; then
   insert_path "/opt/homebrew/sbin"
   insert_path "/opt/homebrew/bin"
+  insert_path "/opt/homebrew/opt/coreutils/libexec/gnubin"
   export PATH
 fi
 
