@@ -1,0 +1,15 @@
+# -*- mode: conf -*-
+
+{{ if eq .cys.machine "HP EliteBook 755 G5" -}}
+context.objects = [
+    { factory = adapter
+        args = {
+            factory.name           = api.alsa.pcm.source
+            node.name              = "microphone"
+            node.description       = "HP Microphone"
+            media.class            = "Audio/Source"
+            api.alsa.path          = "hw:1,0"
+        }
+    }
+]
+{{ end -}}
