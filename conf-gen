@@ -2,6 +2,7 @@
 
 from pathlib import Path
 import json
+import subprocess
 
 data = {}
 data_path = Path.home() / ".local/share/chezmoi/chezmoidata.json"
@@ -24,10 +25,18 @@ if "machine" not in data:
         with open(machine_path, "r") as f:
             data["machine"] = f.read().strip().rstrip("\u0000")
 if "machine" not in data:
-    data["machine"] = input("which machine are you using? ")
+    data["machine"] = input("which machine are you using? ").strip()
 
-with open("/etc/hostname") as f:
-    data["hostname"] = f.read().strip()
+hostname_path = Path("/etc/hostname")
+if hostname_path.is_file():
+    with open(hostname_path) as f:
+        data["hostname"] = f.read().strip()
+else:
+    result = subprocess.run(["hostname"], capture_output=True, text=True)
+    if result.returncode == 0:
+        data["hostname"] = result.stdout.strip()
+    else:
+        data["hostname"] = input("what is your current hostname? ").strip()
 
 if (data["machine"] == "HP EliteBook 755 G5"
         and data["hostname"] == "pretty-arch"):
