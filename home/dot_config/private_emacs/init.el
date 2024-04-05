@@ -505,7 +505,9 @@ frame, current terminal."
     "k" 'org-agenda-previous-item
     (kbd "RET") 'org-agenda-switch-to
     (kbd "<tab>") 'org-agenda-goto)
-  (evil-set-initial-state 'org-agenda-mode 'motion))
+  (evil-set-initial-state 'org-agenda-mode 'motion)
+  ;; Add chemical equation support
+  (setq org-latex-packages-alist '(("" "mhchem" t))))
 
 ;;;; org-fragtog
 (use-package org-fragtog
