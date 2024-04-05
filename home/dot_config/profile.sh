@@ -108,6 +108,7 @@ for kvpair in $(cat "$HOME/.config/environment.d/00-profile.conf" \
 done
 unset -v spc
 
+
 # Proxies.
 if [ -f "$XDG_CONFIG_HOME/clash/settings-private.yaml" ]; then
   PROXY_AUTH=$(yq -r '.["authentication"][0]' \
@@ -155,6 +156,10 @@ elif [ "$(uname -s)" = 'MSYS_NT-10.0' ]; then
   insert_path '/c/Program Files/Python'${PYTHON_VERSION}'/Scripts'
   insert_path '/c/Users/'${USER}'/AppData/Roaming/Python/Python'${PYTHON_VERSION}'/Scripts'
   insert_path '/c/Users/'${USER}'/AppData/Local/Programs/MiKTeX/miktex/bin/x64'
+elif [ "$(uname -s)" = "Darwin" ]; then
+  insert_path "/opt/homebrew/sbin"
+  insert_path "/opt/homebrew/bin"
+  export PATH
 fi
 
 # XDG GUI specific settings.
