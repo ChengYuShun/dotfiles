@@ -1,4 +1,4 @@
-#!/usr/bin/sh
+#!/bin/sh
 
 . "$XDG_CONFIG_HOME/pacman/makepkg.conf"
 

@@ -1,4 +1,4 @@
-#!/bin/env sh
+#!/usr/bin/env sh
 
 master_url=$(cat "$HOME/keepass/master-url.txt")
 exec http-proxied flock "$HOME/keepass/master.lock" wget $master_url\?dl=1 -O "$HOME/keepass/master.kdbx"
