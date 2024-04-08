@@ -109,22 +109,6 @@ done
 unset -v spc
 
 
-# Proxies.
-if [ -f "$XDG_CONFIG_HOME/clash/settings-private.yaml" ]; then
-  PROXY_AUTH=$(yq -r '.["authentication"][0]' \
-                  "$XDG_CONFIG_HOME/clash/settings-private.yaml")
-  if [ "$PROXY_AUTH" = null ]; then
-    unset -v PROXY_AUTH
-  else
-    export PROXY_AUTH
-    export ALL_PROXY=socks5h://$PROXY_AUTH@127.0.0.1:7891
-  fi
-fi
-if [ "$PROXY_AUTH" = "" ]; then
-  export ALL_PROXY=socks5h://127.0.0.1:7891
-fi
-export http_proxy=$ALL_PROXY
-
 # Environments.
 export USE_FISH=1
 export EDITOR=nvim
@@ -205,6 +189,22 @@ insert_path "$HOME/.local/bin/scripts"
 insert_path "$HOME/.local/bin/wrappers"
 insert_path "$HOME/.local/bin/control"
 export PATH
+
+# Proxies.
+if [ -f "$XDG_CONFIG_HOME/clash/settings-private.yaml" ]; then
+  PROXY_AUTH=$(yq -r '.["authentication"][0]' \
+                  "$XDG_CONFIG_HOME/clash/settings-private.yaml")
+  if [ "$PROXY_AUTH" = null ]; then
+    unset -v PROXY_AUTH
+  else
+    export PROXY_AUTH
+    export ALL_PROXY=socks5h://$PROXY_AUTH@127.0.0.1:7891
+  fi
+fi
+if [ "$PROXY_AUTH" = "" ]; then
+  export ALL_PROXY=socks5h://127.0.0.1:7891
+fi
+export http_proxy=$ALL_PROXY
 
 # Non-standard execution required settings.
 if [ "$XDG_SESSION_TYPE" = "tty" ]; then
