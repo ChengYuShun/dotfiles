@@ -1,6 +1,6 @@
 #!/bin/sh
 
-port=$(yq -r '.["port"]' "$XDG_CONFIG_HOME/clash-localhost/settings-private.yaml")
+port=$(yq -r '.["mixed-port"]' "$XDG_CONFIG_HOME/clash-localhost/settings-private.yaml")
 export ALL_PROXY=http://127.0.0.1:$port
 export http_proxy=$ALL_PROXY
 export https_proxy=$ALL_PROXY
