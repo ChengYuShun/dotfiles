@@ -1,4 +1,8 @@
-#!/usr/bin/env sh
+#!/bin/sh
 
 port=$(yq -r '.["port"]' "$XDG_CONFIG_HOME/clash-localhost/settings-private.yaml")
-exec env http_proxy="http://127.0.0.1:$port" https_proxy="http://127.0.0.1:$port" "$@"
+export ALL_PROXY=http://127.0.0.1:$port
+export http_proxy=$ALL_PROXY
+export https_proxy=$ALL_PROXY
+
+exec "$@"
