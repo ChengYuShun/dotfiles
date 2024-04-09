@@ -1,9 +1,7 @@
 #!/usr/bin/env sh
 
-host=$1
-port=$2
+dest_host=$1
+dest_port=$2
+proxy_port=$(yq -r '.["mixed-port"]' "$XDG_CONFIG_HOME/clash-localhost/settings-private.yaml")
 
-tmpfile=$(mktemp)
-echo "$PROXY_AUTH" > "$tmpfile"
-corkscrew 127.0.0.1 7890 "$host" "$port" "$tmpfile"
-rm "$tmpfile"
+exec nc -X 5 -x localhost:$proxy_port $dest_host $dest_port
