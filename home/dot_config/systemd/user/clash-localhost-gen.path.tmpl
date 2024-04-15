@@ -1,5 +1,6 @@
 [Unit]
 Description=Automatic Clash Config Generator
+After=envvar-setting.target
 
 [Path]
 PathChanged={{ .chezmoi.homeDir }}/.config/clash-localhost/settings.yaml

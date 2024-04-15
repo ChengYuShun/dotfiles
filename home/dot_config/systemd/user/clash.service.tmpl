@@ -2,7 +2,7 @@
 
 [Unit]
 Description=Meta, Another Clash Kernel
-After=network-wait-online.target
+After=envvar-setting.target network-wait-online.target
 
 [Service]
 Type=exec

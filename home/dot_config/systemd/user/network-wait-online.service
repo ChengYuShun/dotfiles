@@ -2,6 +2,7 @@
 
 [Unit]
 Description=network wait online
+After=envvar-setting.target
 
 [Service]
 Type=oneshot

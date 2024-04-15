@@ -1,0 +1,9 @@
+# -*- mode: conf -*-
+
+[Unit]
+Description=Environmental Variables Setting
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/true
+RemainAfterExit=yes

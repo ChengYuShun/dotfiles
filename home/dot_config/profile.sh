@@ -19,6 +19,13 @@
 # SOFTWARE.
 
 #
+# NECESSARY INFORMATION
+#
+
+_uname_s=$(uname -s)
+_uname_o=$(uname -o)
+
+#
 # CONVENIENT FUNCTIONS
 #
 
@@ -93,43 +100,61 @@ run_if_exists() {
   which "$1" 1>/dev/null 2>/dev/null && "$@"
 }
 
+envexp() {
+  _key=$1
+  _val=$2
+
+  if ! [ -n "$_val" ]; then
+    eval "_val=\$$_key"
+  fi
+
+  export "$_key=$_val"
+  if [ "$_uname_s" = "Linux" ]; then
+    systemctl --user set-environment "$_key=$_val"
+  elif [ "$_uname_s" = "Darwin" ]; then
+    launchctl setenv "$_key" "$_val"
+  fi
+
+  unset -v _key
+  unset -b _val
+}
+
 #
 # SETTINGS
 #
 
-# environment.d
-spc=" "
-for kvpair in $(cat "$HOME/.config/environment.d/00-profile.conf" \
-                | sed 's/^[ \t]*//;s/[ \t]*$//'                   \
-                | grep -v '^#'                                    \
-                | grep -v '^$'                                    \
-                | sed 's/ /${spc}/g'); do
-  export "$(eval echo $kvpair)"
-done
-unset -v spc
+# Homes.
+envexp HOME
+envexp XDG_CONFIG_HOME "$HOME/.config"
+envexp XDG_DATA_HOME "$HOME/.local/share"
+envexp XDG_CACHE_HOME "$HOME/.cache"
 
-
-# Environments.
-export USE_FISH=1
-export EDITOR=nvim
+# Environments
+envexp USE_FISH 1
+envexp ZDOTDIR "$XDG_CONFIG_HOME/zsh"
+envexp EDITOR nvim
+envexp GNUPGHOME "$XDG_CONFIG_HOME/gnupg"
+envexp CARGO_HOME "$XDG_DATA_HOME/cargo"
+envexp AGDA_DIR "$XDG_CONFIG_HOME/agda"
 _insert_path QT_PLUGIN_PATH "/usr/lib/qt/plugins"
 _insert_path QT_PLUGIN_PATH "/usr/lib/qt6/plugins"
 
 # Host specific settings.
 if [ "$(hostname)" = "pretty-arch" ]; then
-  export EDITOR="emacsclient -nw"
+  envexp EDITOR "emacsclient -nw"
   insert_path /usr/local/texlive/2023/bin/x86_64-linux
 fi
 
 # OS Specific settings.
-if [ "$(uname -o)" = "GNU/Linux" ]; then
-  export DMI_PRODUCT_NAME=$(cat '/sys/devices/virtual/dmi/id/product_name')
-elif [ "$(uname -s)" = 'MSYS_NT-10.0' ]; then
+if [ "$_uname_o" = "GNU/Linux" ]; then
+  envexp DMI_PRODUCT_NAME "$(cat "/sys/devices/virtual/dmi/id/product_name")"
+  envexp SSH_AUTH_SOCK "$XDG_RUNTIME_DIR/ssh-agent"
+elif [ "$_uname_s" = "MSYS_NT-10.0" ]; then
   # Editor.
-  export EDITOR=vim
+  envexp EDITOR vim
 
   # Python version.
-  export PYTHON_VERSION=310
+  envexp PYTHON_VERSION 310
 
   # Application specific paths.
   insert_path '/c/Program Files/Mozilla Firefox'
@@ -140,55 +165,55 @@ elif [ "$(uname -s)" = 'MSYS_NT-10.0' ]; then
   insert_path '/c/Program Files/Python'${PYTHON_VERSION}'/Scripts'
   insert_path '/c/Users/'${USER}'/AppData/Roaming/Python/Python'${PYTHON_VERSION}'/Scripts'
   insert_path '/c/Users/'${USER}'/AppData/Local/Programs/MiKTeX/miktex/bin/x64'
-elif [ "$(uname -s)" = "Darwin" ]; then
+elif [ "$_uname_s" = "Darwin" ]; then
   insert_path "/opt/homebrew/sbin"
   insert_path "/opt/homebrew/bin"
   insert_path "/opt/homebrew/opt/coreutils/libexec/gnubin"
-  export PATH
+  envexp PATH
 fi
 
 # XDG GUI specific settings.
 if [ -n "$XDG_SESSION_TYPE" ] && [ "$XDG_SESSION_TYPE" != tty ]; then
-  export TERMINAL=alacritty
-  export BROWSER="firefox -P cys"
-  export SSH_ASKPASS=/usr/bin/ksshaskpass
+  envexp TERMINAL alacritty
+  envexp BROWSER "firefox -P cys"
+  envexp SSH_ASKPASS /usr/bin/ksshaskpass
 
   # Input method.
-  export INPUT_METHOD="fcitx"
-  export XMODIFIERS="@im=fcitx"
+  envexp INPUT_METHOD "fcitx"
+  envexp XMODIFIERS "@im=fcitx"
 
   # DPI variables.
   case "${DMI_PRODUCT_NAME}" in
     "HP EliteBook 755 G5" )
-      export DPI=144
-      export DPI_SCALE=1.5
+      envexp DPI 144
+      envexp DPI_SCALE 1.5
       ;;
   esac
 
   # Wayland specific settings.
   if [ "${XDG_SESSION_TYPE}" = "wayland" ]; then
-    export MOZ_ENABLE_WAYLAND=1
-    export GDK_BACKEND=wayland
-    export QT_QPA_PLATFORM=wayland
-    export SDL_VIDEODRIVER=wayland
+    envexp MOZ_ENABLE_WAYLAND 1
+    envexp GDK_BACKEND wayland
+    envexp QT_QPA_PLATFORM wayland
+    envexp SDL_VIDEODRIVER wayland
   fi
 
   # XDG desktop specific settings.
   case "${XDG_CURRENT_DESKTOP}" in
     "GNOME" )
-      export QT_QPA_PLATFORMTHEME=gtk3
+      envexp QT_QPA_PLATFORMTHEME gtk3
       ;;
     "KDE" )
       ;;
   esac
 fi
 
-# Common paths.
+# PATH
 insert_path "$HOME/.local/bin"
 insert_path "$HOME/.local/bin/scripts"
 insert_path "$HOME/.local/bin/wrappers"
 insert_path "$HOME/.local/bin/control"
-export PATH
+envexp PATH
 
 # Proxies.
 if [ -f "$XDG_CONFIG_HOME/clash/settings-private.yaml" ]; then
@@ -197,20 +222,37 @@ if [ -f "$XDG_CONFIG_HOME/clash/settings-private.yaml" ]; then
   if [ "$PROXY_AUTH" = null ]; then
     unset -v PROXY_AUTH
   else
-    export PROXY_AUTH
-    export ALL_PROXY=socks5h://$PROXY_AUTH@127.0.0.1:7891
+    envexp PROXY_AUTH
+    envexp ALL_PROXY "socks5h://$PROXY_AUTH@127.0.0.1:7891"
   fi
 fi
 if [ "$PROXY_AUTH" = "" ]; then
-  export ALL_PROXY=socks5h://127.0.0.1:7891
+  envexp ALL_PROXY socks5h://127.0.0.1:7891
 fi
-export http_proxy=$ALL_PROXY
+envexp http_proxy "$ALL_PROXY"
 
 # Non-standard execution required settings.
 if [ "$XDG_SESSION_TYPE" = "tty" ]; then
   run_if_exists setfont /usr/share/kbd/consolefonts/ter-118n.psf.gz
 fi
-export GEM_HOME="$(run_if_exists ruby -e 'puts Gem.user_dir')"
+if which ruby 1>/dev/null 2>/dev/null; then
+  envexp GEM_HOME "$(ruby -e 'puts Gem.user_dir')"
+fi
 if [ -n "$GEM_HOME" ]; then
   append_path "$GEM_HOME/bin"
 fi
+
+#
+# ENABLE ENVIRONMENT SERVICE
+#
+
+if [ "$_uname_s" = "Linux" ]; then
+  systemctl --user start envvar-setting.service
+fi
+
+#
+# UNSET VARIABLES
+#
+
+unset -v _uname_s
+unset -v _uname_o

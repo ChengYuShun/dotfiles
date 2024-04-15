@@ -2,7 +2,7 @@
 
 [Unit]
 Description=Clash-Meta for localhost
-After=clash.target
+After=envvar-setting.target clash.target
 
 [Service]
 Type=exec

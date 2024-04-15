@@ -2,7 +2,7 @@
 
 [Unit]
 Description=geographical coordinates update regularly
-After=network-wait-online.target
+After=envvar-setting.target network-wait-online.target
 
 [Timer]
 Persistent=true
