@@ -116,7 +116,7 @@ envexp() {
   fi
 
   unset -v _key
-  unset -b _val
+  unset -v _val
 }
 
 #
