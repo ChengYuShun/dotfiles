@@ -210,6 +210,7 @@ fi
 
 # PATH
 insert_path "$HOME/.local/bin"
+insert_path "$HOME/.local/bin/monolith"
 insert_path "$HOME/.local/bin/scripts"
 insert_path "$HOME/.local/bin/wrappers"
 insert_path "$HOME/.local/bin/control"
