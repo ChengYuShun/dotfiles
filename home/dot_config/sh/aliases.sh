@@ -12,22 +12,18 @@ alias sczm='sudo -E chezmoi -D / -S ~/.local/share/chezmoi/root'
 alias sczmcd='env -C ~/.local/share/chezmoi/root $SHELL -i'
 
 # pacman
-alias p='pacman'
-alias sp='sudo pacman'
-alias spyu='sudo pacman -Syu'
-alias spyyu='sudo pacman -Syyu'
-alias sp-c='sudo sh -c\
-  "paccache -r -k 1 --min-atime '"'"'30 days ago'"'"';"\
-  "paccache -r -k 1 --min-atime '"'"'30 days ago'"'"' -u"'
+alias p='pacman --config "$XDG_CONFIG_HOME/pacman.conf"'
+alias sp='sudo pacman --config "$XDG_CONFIG_HOME/pacman.conf"'
+alias spyu='sudo pacman --config "$XDG_CONFIG_HOME/pacman.conf" -Syu'
 
 # others
-alias e="emacsclient -nw"
+alias e='emacsclient -nw'
 alias v='nvim'
-alias c=clear
+alias c='clear'
 alias r='ranger'
 alias net='netctl-auto switch-to'
 alias netl='netctl-auto list'
 alias sqlite3='sqlite3 -init "$XDG_CONFIG_HOME/sqlite/init"'
 alias sqlite='sqlite3'
 alias py='python'
-alias et="exec tmux"
+alias et='exec tmux'
