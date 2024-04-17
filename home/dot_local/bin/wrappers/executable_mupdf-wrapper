@@ -1,0 +1,3 @@
+#!/bin/sh
+
+mupdf -Y "${DPI_SCALE}" "$@"

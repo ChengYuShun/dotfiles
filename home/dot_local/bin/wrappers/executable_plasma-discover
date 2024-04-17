@@ -1,0 +1,3 @@
+#!/bin/sh
+
+exec env https_proxy="" /usr/bin/plasma-discover "$@"
