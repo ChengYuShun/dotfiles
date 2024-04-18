@@ -160,23 +160,27 @@
          ("gk" . evil-previous-visual-line)
          ("g <up>" . evil-previous-visual-line)
          ;; buffers.
-         ("<SPC>" . nil) ; Unset <SPC>.
-         ("<SPC> k" . kill-buffer)
-         ("<SPC> b" . switch-to-buffer)
-         ("<SPC> <left>" . previous-buffer)
-         ("<SPC> <right>" . next-buffer)
-         ("<SPC> f" . find-file)
-         ("<SPC> s" . save-buffer)
-         ("<SPC> c" . save-buffers-kill-terminal)
+         ("SPC" . nil) ; Unset SPC.
+         ("SPC k" . kill-buffer)
+         ("SPC b" . switch-to-buffer)
+         ("SPC <left>" . previous-buffer)
+         ("SPC <right>" . next-buffer)
+         ("SPC f" . find-file)
+         ("SPC s" . save-buffer)
+         ("SPC c" . save-buffers-kill-terminal)
          ;; windows.
-         ("<SPC> 0" . delete-window)
-         ("<SPC> 1" . delete-other-windows)
-         ("<SPC> 2" . split-window-below)
-         ("<SPC> 3" . split-window-right)
-         ("<SPC> r" . window-swap-states)
-         ("<SPC> o" . other-window)
+         ("SPC 0" . delete-window)
+         ("SPC 1" . delete-other-windows)
+         ("SPC 2" . split-window-below)
+         ("SPC 3" . split-window-right)
+         ("SPC r" . window-swap-states)
+         ("SPC o" . other-window)
          ;; Word counting.
-         ("<SPC> w" . count-words)
+         ("SPC w" . count-words)
+         ;; magit
+         ("SPC g" . magit-status)
+         ;; org-agenda
+         ("SPC a" . org-agenda)
          ;; Comment line.
          ("gc" . comment-line)
          ;; Tab and jumping.
@@ -452,7 +456,7 @@ frame, current terminal."
 
 ;;;; magit
 (use-package magit
-  :commands (magit)
+  :commands (magit magit-status)
   :bind (:map
          magit-status-mode-map
          ("SPC" . nil))
@@ -474,9 +478,8 @@ frame, current terminal."
 ;;;; org
 (use-package org
   :after (evil)
-  :commands (org-mode)
-  :bind (("C-x a" . org-agenda)
-         :map org-mode-map
+  :commands (org-mode org-agenda)
+  :bind (:map org-mode-map
          ("C-c l" . org-store-link)
          ("C-c C-l" . org-insert-link))
   :hook (org-mode . (lambda ()
