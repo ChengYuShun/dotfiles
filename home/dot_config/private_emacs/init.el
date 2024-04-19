@@ -181,6 +181,11 @@
          ("SPC g" . magit-status)
          ;; org-agenda
          ("SPC a" . org-agenda)
+         ;; org-roam
+         ("SPC n c" . org-roam-capture)
+         ("SPC n a" . org-roam-node-find)
+         ("SPC n f" . cys/org-roam-node-find)
+         ("SPC n u" . cys/org-roam-draft-find)
          ;; Comment line.
          ("gc" . comment-line)
          ;; Tab and jumping.
@@ -515,6 +520,61 @@ frame, current terminal."
 ;;;; org-fragtog
 (use-package org-fragtog
   :commands (org-fragtog-mode))
+
+;;;; org-roam
+(use-package org-roam
+  :custom
+  (org-roam-directory (file-truename "~/org-roam"))
+  :commands (org-roam-capture
+             org-roam-node-find
+             cys/org-roam-node-find
+             cys/org-roam-draft-find)
+  :bind (:map org-mode-map
+         ("C-c n i" . org-roam-node-insert)
+         ("C-c n l" . org-roam-buffer-toggle)
+         ("C-c n d" . cys/org-roam-node-delete)
+         ("C-c t a" . org-roam-tag-add)
+         ("C-c t r" . org-roam-tag-remove)
+         ("C-c a a" . org-roam-alias-add))
+  :config
+  (org-roam-db-autosync-enable)
+
+  ;; set org-roam-capture-templates
+  (setq org-roam-capture-templates
+        '(("d" "draft" plain "%?"
+           :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
+                              "#+title: ${title}\n#+filetags: :draft:")
+           :unnarrowed t)))
+
+  (defun cys/org-roam-filter-by-tag (tag-name)
+    "Give a function testing whether a node has TAG-NAME."
+    (eval `(lambda (node) (member ,tag-name (org-roam-node-tags node)))))
+
+  (defun cys/org-roam-block-by-tag (tag-name)
+    "Give a function testing whether a node does not have TAG-NAME."
+    (eval `(lambda (node) (not (member ,tag-name (org-roam-node-tags node))))))
+
+  (defun cys/org-roam-node-find ()
+    "Find a finished node."
+    (interactive)
+    (org-roam-node-find
+     nil nil
+     (cys/org-roam-block-by-tag "draft")))
+
+  (defun cys/org-roam-draft-find ()
+    "Find a draft node."
+    (interactive)
+    (org-roam-node-find
+     nil nil
+     (cys/org-roam-filter-by-tag "draft")))
+
+  (defun cys/org-roam-node-delete ()
+    "Delete a node."
+    (interactive)
+    (save-buffer)
+    (let ((file-name (buffer-file-name)))
+      (kill-buffer)
+      (delete-file file-name))))
 
 ;;;; outline
 (use-package outline
