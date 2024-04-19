@@ -142,8 +142,7 @@
   (setq evil-want-C-u-scroll t)
   (setq evil-undo-system 'undo-tree)
   :demand t
-  :bind (:map
-         evil-motion-state-map
+  :bind (:map evil-motion-state-map
          ;; next/previous visual line.
          ("j" . evil-next-visual-line)
          ("<down>" . evil-next-visual-line)
@@ -159,6 +158,8 @@
          ("g <down>" . evil-next-visual-line)
          ("gk" . evil-previous-visual-line)
          ("g <up>" . evil-previous-visual-line)
+         ;; no return please
+         ("RET" . nil)
          ;; buffers.
          ("SPC" . nil) ; Unset SPC.
          ("SPC k" . kill-buffer)
@@ -186,8 +187,6 @@
          ("SPC n a" . org-roam-node-find)
          ("SPC n f" . cys/org-roam-node-find)
          ("SPC n u" . cys/org-roam-draft-find)
-         ;; Comment line.
-         ("gc" . comment-line)
          ;; Tab and jumping.
          ("C-f" . nil)
          ("C-f" . evil-jump-foward)
@@ -199,15 +198,24 @@
          ;; Formatting.
          ("=" . nil)
          ;; Goto definition/declaration.
-         ("gd" . nil)
-         ("gD" . nil)
+         ("g d" . nil)
+         ("g D" . nil)
+         ;; Comment line.
+         ("g c" . comment-line)
+         ;; navigation bindings
+         ("RET" . cys/evil-open-link)
+         ("g u" . cys/evil-go-up)
+         ("g j" . cys/evil-goto-next)
+         ("g k" . cys/evil-goto-prev)
+         ("g b" . cys/evil-go-back)
 
          :map
          evil-insert-state-map
          ;; Auto comment.
          ("<return>" . comment-indent-new-line))
+
   :config
-  (message "evil loaded.")
+
   (evil-define-command evil-quit (&optional force)
     "Kill the current buffer, and close the current window, current
 frame, current terminal."
@@ -226,6 +234,32 @@ frame, current terminal."
             (if force
                (save-buffers-kill-terminal)
               (save-buffers-kill-terminal))))))))
+
+  (defun cys/evil-go-up ()
+    "Stub function, intended to be used to go back up."
+    (interactive)
+    nil)
+
+  (defun cys/evil-goto-next ()
+    "Stub function, intended to be used to go to the next page."
+    (interactive)
+    nil)
+
+  (defun cys/evil-goto-prev ()
+    "Stub function, intended to be used to go to the previous page."
+    (interactive)
+    nil)
+
+  (defun cys/evil-open-link ()
+    "Stub function, intended to be used to follow a link."
+    (interactive)
+    nil)
+
+  (defun cys/evil-go-back ()
+    "Stub function, intended to be used to go back to the previous page."
+    (interactive)
+    nil)
+
   (evil-mode 1))
 
 ;;;; evil-collection
@@ -257,7 +291,13 @@ frame, current terminal."
            evil-collection-mode-hooks)
   ;; info
   (puthash 'info
-           (lambda () (evil-define-key 'normal Info-mode-map (kbd "SPC") nil))
+           (lambda ()
+             (evil-define-key 'normal Info-mode-map
+               (kbd "SPC") nil
+               [remap cys/evil-open-link] 'Info-follow-nearest-node
+               [remap cys/evil-go-up] 'Info-up
+               [remap cys/evil-goto-next] 'Info-next
+               [remap cys/evil-goto-prev] 'Info-prev))
            evil-collection-mode-hooks)
   ;; man
   (puthash 'man
@@ -503,10 +543,17 @@ frame, current terminal."
   (org-babel-do-load-languages 'org-babel-load-languages
                                '((emacs-lisp . t)
                                  (python . t)))
-  ;; Set folding strategy.
+
+  ;; set folding strategy
   (setq org-startup-folded 'nofold
         org-cycle-hide-drawer-startup t)
-  ;; Key bindings for org-agenda.
+
+  ;; key bindings for org-mode
+  (evil-define-key 'normal org-mode-map
+    [remap cys/evil-open-link] 'org-open-at-point
+    [remap cys/evil-go-back] 'org-mark-ring-goto)
+
+  ;; key bindings for org-agenda-mode
   (evil-define-key 'motion org-agenda-mode-map
     "q" 'org-agenda-quit
     "j" 'org-agenda-next-item
@@ -514,7 +561,8 @@ frame, current terminal."
     (kbd "RET") 'org-agenda-switch-to
     (kbd "<tab>") 'org-agenda-goto)
   (evil-set-initial-state 'org-agenda-mode 'motion)
-  ;; Add chemical equation support
+
+  ;; add chemical equation support
   (setq org-latex-packages-alist '(("" "mhchem" t)))
 
   ;; add custom key bindings for org-capture-mode (for whatever reason, it
