@@ -515,7 +515,18 @@ frame, current terminal."
     (kbd "<tab>") 'org-agenda-goto)
   (evil-set-initial-state 'org-agenda-mode 'motion)
   ;; Add chemical equation support
-  (setq org-latex-packages-alist '(("" "mhchem" t))))
+  (setq org-latex-packages-alist '(("" "mhchem" t)))
+
+  ;; add custom key bindings for org-capture-mode (for whatever reason, it
+  ;; appears that we cannot define key bindings for org-capture-mode by using
+  ;; the :bind keyword provided by use-package)
+  (defun cys/org-capture-define-key ()
+    (define-key org-capture-mode-map [remap evil-quit]
+                'org-capture-kill)
+    (define-key org-capture-mode-map [remap evil-save-modified-and-close]
+                'org-capture-finalize)
+    (remove-hook  'org-capture-mode-hook 'cys/org-capture-define-key))
+  (add-hook 'org-capture-mode-hook 'cys/org-capture-define-key))
 
 ;;;; org-fragtog
 (use-package org-fragtog
