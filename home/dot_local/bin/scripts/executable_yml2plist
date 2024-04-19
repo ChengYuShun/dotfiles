@@ -1,0 +1,162 @@
+#!/usr/bin/env python3
+"""The converter from YAML to property list.
+
+=======
+License
+=======
+
+Copyright 2024  Yushun Cheng ``<chengys@disroot.org>``
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the “Software”), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+"""
+
+from typing import Any, BinaryIO
+import xml.etree.ElementTree as ET
+from datetime import datetime, date, time, UTC, timedelta
+import base64
+
+NormalizedData = (bool | int | float | str | bytes | datetime
+                  | list["NormalizedData"] | dict[str, "NormalizedData"])
+
+
+def normalize_data(data: Any) -> NormalizedData:
+    if (isinstance(data, bool) or isinstance(data, int)
+            or isinstance(data, float) or isinstance(data, str)
+            or isinstance(data, bytes)):
+        return data
+    elif isinstance(data, date):
+        return datetime.combine(data, time(), tzinfo=UTC)
+    elif isinstance(data, datetime):
+        return normalize_datetime(data)
+    elif isinstance(data, list):
+        return list(map(normalize_data, data))
+    elif isinstance(data, dict):
+        ret = {}
+        for k, v in data.items():
+            if not isinstance(str, k):
+                raise TypeError(f"dict keys must be str, not {type(k)}")
+            ret[k] = normalize_data(v)
+        return ret
+    else:
+        raise TypeError(f"type {type(data)} not supported")
+
+
+def normalize_datetime(dt: datetime) -> datetime:
+
+    # Convert to UTC.
+    offset = dt.utcoffset()
+    dst = dt.dst()
+    if offset is None:
+        raise TypeError("datetime must have utcoffset")
+    if dst is not None:
+        raise TypeError("datetime must not have dst")
+    dt = dt.replace(tzinfo=UTC) - offset
+
+    # Round microseconds.
+    if dt.microsecond >= 500000:
+        dt += timedelta(seconds=1)
+    dt = dt.replace(microsecond=0)
+
+    # Return datetime.
+    return dt
+
+
+def write_to_file(plist_data: NormalizedData, stream: BinaryIO) -> None:
+    stream.write(b'<?xml version="1.0" encoding="UTF-8"?>\n'
+                 b'<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"'
+                 b' "http://www.apple.com/DTDs/PropertyList-1.0.dtd">\n')
+    to_xml_element(plist_data).write(
+        stream,
+        encoding="utf-8",
+        xml_declaration=False,
+    )
+
+
+def to_xml_element(plist_data: NormalizedData) -> ET.ElementTree:
+    root = ET.Element("plist")
+    root.set("version", "1.0")
+    to_xml_subelement(plist_data, root)
+    return ET.ElementTree(root)
+
+
+def to_xml_subelement(plist_data: NormalizedData, parent: ET.Element) -> None:
+    if isinstance(plist_data, bool):
+        if plist_data is True:
+            ET.SubElement(parent, "true")
+        else:
+            ET.SubElement(parent, "false")
+    elif isinstance(plist_data, int):
+        ET.SubElement(parent, "integer").text = str(plist_data)
+    elif isinstance(plist_data, float):
+        ET.SubElement(parent, "real").text = format(plist_data, "G")
+    elif isinstance(plist_data, str):
+        ET.SubElement(parent, "string").text = plist_data
+    elif isinstance(plist_data, bytes):
+        data = ET.SubElement(parent, "data")
+        data.text = base64.b64encode(plist_data).decode("ASCII")
+    elif isinstance(plist_data, datetime):
+        ET.SubElement(parent, "date").text = datetime_to_iso8601(plist_data)
+    elif isinstance(plist_data, list):
+        array = ET.SubElement(parent, "array")
+        for item in plist_data:
+            to_xml_subelement(item, array)
+    elif isinstance(plist_data, dict):
+        dict_ = ET.SubElement(parent, "dict")
+        for k, v in plist_data.items():
+            ET.SubElement(dict_, "key").text = k
+            to_xml_subelement(v, dict_)
+    else:
+        raise TypeError(f"type {type(plist_data)} not supported")
+
+
+def datetime_to_iso8601(dt: datetime) -> str:
+    """Convert the datetime to an ISO 8601 str that is recognized by plist."""
+    return "{:04d}-{:02d}-{:02d}T{:02d}:{:02d}:{:02d}Z".format(
+        dt.year, dt.month, dt.day, dt.hour, dt.minute, dt.second)
+
+
+if __name__ == "__main__":
+    from argparse import ArgumentParser
+    import sys
+    import yaml
+
+    parser = ArgumentParser("yml2plist",
+                            description="convert YAML to property list")
+    parser.add_argument("--input",
+                        "-i",
+                        help="input file, or stdin if not specified")
+    parser.add_argument("--output",
+                        "-o",
+                        help="output file, or stdout if not specified")
+
+    args = parser.parse_args()
+    ipath = args.input
+    opath = args.output
+
+    if ipath is None:
+        data = yaml.load(sys.stdin, Loader=yaml.CLoader)
+    else:
+        with open(ipath, "r") as ifile:
+            data = normalize_data(yaml.load(ifile, Loader=yaml.CLoader))
+
+    if opath is None:
+        write_to_file(data, sys.stdout.buffer)
+    else:
+        with open(opath, "wb") as ofile:
+            write_to_file(data, ofile)
