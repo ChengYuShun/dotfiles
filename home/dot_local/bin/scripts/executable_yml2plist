@@ -49,7 +49,7 @@ def normalize_data(data: Any) -> NormalizedData:
     elif isinstance(data, dict):
         ret = {}
         for k, v in data.items():
-            if not isinstance(str, k):
+            if not isinstance(k, str):
                 raise TypeError(f"dict keys must be str, not {type(k)}")
             ret[k] = normalize_data(v)
         return ret
