@@ -1,9 +1,16 @@
-{{ if not (eq .cys.desktop "") -}}
 [font]
+{{ if eq .chezmoi.os "darwin" -}}
+size = 13
+{{- else -}}
 size = 9.5
+{{- end }}
 
 [font.normal]
+{{ if eq .chezmoi.os "darwin" -}}
+family = "SF Mono"
+{{- else -}}
 family = "monospace"
+{{- end }}
 
 [colors.primary]
 background = "#000000"
@@ -38,9 +45,10 @@ white = "#eaeaea"
 yellow = "#e7c547"
 
 [scrolling]
-{{ if eq .cys.desktop "KDE" -}}
-multiplier = 6
+multiplier = {{ if eq .cys.desktop "KDE" -}}
+    6
+{{- else if eq .chezmoi.os "darwin" -}}
+    1
 {{- else -}}
-multiplier = 10
+    10
 {{- end }}
-{{ end -}}
