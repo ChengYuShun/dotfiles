@@ -2,9 +2,8 @@
 
 [Unit]
 Description=network wait online
-After=envvar-setting.target
 
 [Service]
 Type=oneshot
-ExecStart=/usr/bin/nm-online -s -q
+ExecStart=nm-online -s -q
 RemainAfterExit=yes

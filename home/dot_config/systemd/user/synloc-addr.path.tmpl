@@ -2,7 +2,7 @@
 
 [Unit]
 Description=geographical address update automatically
-After=envvar-setting.target network-wait-online.target
+After=network-wait-online.target
 
 [Path]
 PathChanged={{ .chezmoi.homeDir }}/.config/synloc/latitude

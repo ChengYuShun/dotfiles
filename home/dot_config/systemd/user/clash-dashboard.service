@@ -1,0 +1,11 @@
+# -*- mode: conf -*-
+
+[Unit]
+Description=Clash Dashboard
+After=clash.target
+
+[Service]
+Type=exec
+Restart=on-abort
+ExecStart=env python3 -m http.server --bind localhost 3000
+WorkingDirectory=~/.local/share/clash-dashboard

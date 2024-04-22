@@ -3,11 +3,10 @@
 [Unit]
 Description=Emacs text editor
 Documentation=info:emacs man:emacs(1) https://gnu.org/software/emacs/
-After=envvar-setting.target
 
 [Service]
 Type=notify
-ExecStart=/usr/bin/env emacs-wrapper --fg-daemon
+ExecStart=sh ${HOME}/.config/sh/profexec.sh profile emacs-wrapper --fg-daemon
 
 # Emacs will exit with status 15 after having received SIGTERM, which
 # is the default "KillSignal" value systemd uses to stop services.

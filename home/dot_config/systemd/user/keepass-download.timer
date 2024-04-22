@@ -2,7 +2,7 @@
 
 [Unit]
 Description=KeePass database download regularly
-After=envvar-setting.target clash.target
+After=clash.target
 
 [Timer]
 OnStartupSec=0

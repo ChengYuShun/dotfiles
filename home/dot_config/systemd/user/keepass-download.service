@@ -5,4 +5,4 @@ Description=KeePass database download
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/env ${HOME}/.local/bin/scripts/keepass-download
+ExecStart=sh ${HOME}/.config/sh/profexec.sh path keepass-download
