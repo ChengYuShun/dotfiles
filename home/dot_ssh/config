@@ -16,5 +16,6 @@ Host gitlab.freedesktop.org
   User git
   IdentityFile ~/.ssh/xdg-gitlab
 
-Match all
-  ProxyCommand ssh-connect %h %p
+Host lipid.local
+  User cys
+  IdentityFile ~/.ssh/lipid

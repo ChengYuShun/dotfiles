@@ -1,7 +1,0 @@
-#!/usr/bin/env sh
-
-dest_host=$1
-dest_port=$2
-proxy_port=$(yq -r '.["mixed-port"]' "$XDG_CONFIG_HOME/clash-localhost/settings-private.yaml")
-
-exec nc -X 5 -x localhost:$proxy_port $dest_host $dest_port
