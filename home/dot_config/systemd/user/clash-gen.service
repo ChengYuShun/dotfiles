@@ -1,6 +1,0 @@
-[Unit]
-Description=Clash Config Generator
-
-[Service]
-Type=simple
-ExecStart=/bin/env clash-gen

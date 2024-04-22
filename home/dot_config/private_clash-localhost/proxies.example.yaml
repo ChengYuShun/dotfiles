@@ -1,6 +1,0 @@
-Clash:
-  - type: socks5
-    server: 127.0.0.1
-    port: 7891
-    username: ???
-    password: ???

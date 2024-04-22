@@ -1,7 +1,0 @@
-#!/bin/sh
-
-if [ "$(uname -s)" = "Darwin" ]; then
-  exec http-proxied /opt/homebrew/bin/python3 "$@"
-else
-  exec http-proxied /usr/bin/python3 "$@"
-fi
