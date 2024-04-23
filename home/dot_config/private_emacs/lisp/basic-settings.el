@@ -23,7 +23,7 @@
 ;;; Code:
 
 ;;;; Get kernel name.
-(defvar kernel-name (shell-command-to-string "uname -s"))
+(defvar kernel-name (string-trim (shell-command-to-string "uname -s")))
 
 ;;;; Disable warnings
 (setq warning-suppress-types '((comp)))
@@ -80,6 +80,7 @@
  :height (cond
           ((string-prefix-p "MSYS" kernel-name) 100)
           ((equal (getenv "DMI_PRODUCT_NAME") "HP EliteBook 755 G5") 96)
+          ((equal kernel-name "Darwin") 130)
           (t 100)))
 
 ;;;; Disable tool-bar-mode
