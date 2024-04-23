@@ -1,3 +1,4 @@
+{{ if eq .chezmoi.os "linux" -}}
 # Name Service Switch configuration file.
 # See nsswitch.conf(5) for details.
 
@@ -8,7 +9,7 @@ gshadow: files systemd
 
 publickey: files
 
-hosts: mymachines resolve [!UNAVAIL=return] files myhostname dns mdns_minimal
+hosts: mymachines mdns_minimal [NOTFOUND=return] resolve [!UNAVAIL=return] files myhostname dns
 networks: files
 
 protocols: files
@@ -17,3 +18,4 @@ ethers: files
 rpc: files
 
 netgroup: files
+{{- end }}

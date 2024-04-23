@@ -16,6 +16,6 @@ Host gitlab.freedesktop.org
   User git
   IdentityFile ~/.ssh/xdg-gitlab
 
-Host lipid.local
+Host lipid.private
   User cys
   IdentityFile ~/.ssh/lipid
