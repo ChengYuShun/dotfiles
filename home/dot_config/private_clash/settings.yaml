@@ -23,7 +23,12 @@ dns:
   fake-ip-filter:
     - "*.local"
 
+# TUN requires elevated permissions.
+#
 # On Linux, run `sudo setcap cap_net_admin=eip /path/to/clash-meta/kernel`.
+#
+# On macOS, run `sudo chown root:admin /path/to/clash-meta/kernel` 
+# and `sudo chmod +s /path/to/clash-meta/kernel`.
 tun:
   enable: true
   stack: mixed
