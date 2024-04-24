@@ -3,6 +3,9 @@ envsrc() {
     . ~/.config/profile.d/$1.sh
     envexp $1_HAS_BEEN_SET_BY_CYS YES
   fi
+  if [ -n "$PATH_FOR_MAC" ]; then
+    export PATH="$PATH_FOR_MAC"
+  fi
 }
 
 envexp() {

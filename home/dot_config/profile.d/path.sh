@@ -118,3 +118,10 @@ envexp INFOPATH
 envexp QT_PLUGIN_PATH
 envexp PYTHON_VERSION 310
 envexp GEM_HOME
+
+# Apparently, macOS overwrites the PATH variable for each application.  We set
+# an additional environment variable, PATH_FOR_MAC, for the configured PATH to
+# be taken by other programs.
+if [ "$UNAME_S" = Darwin ]; then
+  envexp PATH_FOR_MAC "$PATH"
+fi

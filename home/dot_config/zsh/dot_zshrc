@@ -1,10 +1,10 @@
 #!/usr/bin/zsh
 
-# if ! [ -n "$TMUX" ]; then
-#   exec tmux -L $XDG_SESSION_ID new-session -A
-# fi
+if [ -n "$PATH_FOR_MAC" ]; then
+  export PATH="$PATH_FOR_MAC"
+fi
 
-if [ -n "$USE_FISH" ]; then
+if [ -n "$USE_FISH" ] && which fish >/dev/null 2>&1; then
   exec fish
 fi
 

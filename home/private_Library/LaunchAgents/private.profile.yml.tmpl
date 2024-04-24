@@ -1,0 +1,5 @@
+{{ if eq .chezmoi.os "darwin" -}}
+Label: private.profile
+ProgramArguments: [sh, -c, "sh ~/.config/sh/profexec.sh profile /usr/bin/true"]
+RunAtLoad: true
+{{- end }}
