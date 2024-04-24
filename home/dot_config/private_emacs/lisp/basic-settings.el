@@ -107,11 +107,15 @@
 
 ;;;; Backups and auto-saves.
 ;; Save #*# files to $XDG_CONFIG_HOME/emacs/auto-saves.
-(setq auto-save-file-name-transforms
-      '((".*" "~/.config/emacs/auto-saves/" t)))
+(let ((auto-save-dir "~/.config/emacs/auto-saves"))
+  (make-directory auto-save-dir 'parents)
+  (setq auto-save-file-name-transforms
+        `((".*" ,auto-save-dir t))))
 ;; Save *~ files to $XDG_CONFIG_HOME/emacs/backups.
-(setq backup-directory-alist
-      '(("." . "~/.config/emacs/backups")))
+(let ((backup-dir "~/.config/emacs/backups"))
+  (make-directory backup-dir 'parents)
+  (setq backup-directory-alist
+        `(("." . ,backup-dir))))
 
 ;;;; Handle text/template.
 (add-to-list 'auto-mode-alist '("\\.tmpl\\'" nil t))
