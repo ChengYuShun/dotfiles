@@ -93,6 +93,7 @@ elif [ "$UNAME_S" = Darwin ]; then
   insert_path /opt/homebrew/sbin
   insert_path /opt/homebrew/bin
   insert_path /opt/homebrew/opt/coreutils/libexec/gnubin
+  insert_path /Library/Tex/texbin
 fi
 
 # common paths
