@@ -534,7 +534,6 @@ frame, current terminal."
                       (org-fragtog-mode)))
   :config
   (setq org-startup-indented t)
-  (plist-put org-format-latex-options :scale 2)
   (setq org-deadline-warning-days 30)
   (setq org-agenda-files '("~/todos"))
   (setq org-agenda-start-on-weekday nil)
@@ -543,6 +542,14 @@ frame, current terminal."
   (org-babel-do-load-languages 'org-babel-load-languages
                                '((emacs-lisp . t)
                                  (python . t)))
+
+  ;; latex preview settings
+  (setq org-preview-latex-image-directory
+        (concat (file-name-as-directory user-emacs-directory) "ltximg/"))
+  (setq org-preview-latex-default-process 'dvisvgm)
+  (plist-put org-format-latex-options :scale 2)
+  (plist-put org-format-latex-options :foreground nil)
+  (plist-put org-format-latex-options :background nil)
 
   ;; set folding strategy
   (setq org-startup-folded 'nofold
