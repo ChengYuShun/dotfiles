@@ -1,0 +1,8 @@
+# -*- mode: conf -*-
+
+# Appearance
+set font "monospace 9.5"
+
+# Behavior
+set incremental-search false
+map <C-i> recolor
