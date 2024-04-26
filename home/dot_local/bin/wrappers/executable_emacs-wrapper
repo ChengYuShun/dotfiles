@@ -1,10 +1,15 @@
 #!/bin/sh
 
-env GDK_BACKEND=x11 emacs --init-directory="$XDG_CONFIG_HOME/emacs" "$@"
-exit_status="$?"
-
-if [ "$exit_status" = 0 ] || [ "$exit_status" = 15 ]; then
-  exit 0
+if [ "$UNAME_S" = "Darwin" ]; then
+  # we have to manually handle exit status on macOS, since launchd does not
+  # support configuring successful exit status.
+  env emacs --init-directory="$XDG_CONFIG_HOME/emacs" "$@"
+  exit_status="$?"
+  if [ "$exit_status" = 0 ] || [ "$exit_status" = 15 ]; then
+    exit 0
+  else
+    exit "$exit_status"
+  fi
 else
-  exit "$exit_status"
+  exec env GDK_BACKEND=x11 emacs --init-directory="$XDG_CONFIG_HOME/emacs" "$@"
 fi
