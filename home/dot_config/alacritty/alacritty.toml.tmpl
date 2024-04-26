@@ -46,6 +46,11 @@ red = "#d54e53"
 white = "#eaeaea"
 yellow = "#e7c547"
 
+[window]
+{{ if eq .chezmoi.os "darwin" -}}
+option_as_alt = "OnlyLeft"
+{{- end }}
+
 [scrolling]
 multiplier = {{ if eq .cys.desktop "KDE" -}}
     6
