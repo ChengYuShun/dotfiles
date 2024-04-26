@@ -1,0 +1,52 @@
+# -*- mode: sh -*-
+
+# APPEARANCE
+xsetroot -cursor_name left_ptr
+# DPI settings.
+if [ "${DMI_PRODUCT_NAME}" = 'HP EliteBook 755 G5' ]; then
+  export DPI=$(dpi)
+  xrandr --dpi "$DPI"
+  echo "Xft.dpi: $DPI" | xrdb -merge
+  echo 'Xcursor.size: 36' | xrdb -merge
+  export GDK_DPI_SCALE=1.5
+  export QT_USE_PHYSICAL_DPI=1
+fi
+# gtk
+export GTK2_RC_FILES=$XDG_CONFIG_HOME/gtk-2.0/gtkrc
+# qt
+export QT_QPA_PLATFORMTHEME=gtk3
+
+# SOUND
+# beep.
+xset b off
+xset r rate 300 50
+
+# CONTROL
+# Keyboard
+setxkbmap -option caps:swapescape
+
+# I-Bus input method.
+export GTK_IM_MODULE=ibus
+export QT_IM_MODULE=ibus
+export XMODIFIERS=@im=ibus
+
+ibus-daemon -drx
+
+# Touchpad
+export MOZ_USE_XINPUT2=1
+xinput disable 13
+syndaemon -i 0.5 -R -K -d
+xinput enable 13
+
+case "${XDG_CURRENT_DESKTOP}" in
+  'dwm' )
+    xbindkeys -f "$XDG_CONFIG_HOME/xbindkeys/xbindkeysrc"
+    dex -a
+    exec dwmblocks&
+    dwm
+    ;;
+  'i3' )
+    exec i3
+esac
+
+# vim: syntax=sh
