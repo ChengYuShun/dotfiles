@@ -547,7 +547,9 @@ frame, current terminal."
   (setq org-preview-latex-image-directory
         (concat (file-name-as-directory user-emacs-directory) "ltximg/"))
   (setq org-preview-latex-default-process 'dvisvgm)
-  (plist-put org-format-latex-options :scale 2)
+  (plist-put org-format-latex-options
+             :scale (cond ((eq kernel-name "Darwin") 1.5)
+                          (t 1)))
   (plist-put org-format-latex-options :foreground nil)
   (plist-put org-format-latex-options :background nil)
 
