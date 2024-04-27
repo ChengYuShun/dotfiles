@@ -548,7 +548,7 @@ frame, current terminal."
         (concat (file-name-as-directory user-emacs-directory) "ltximg/"))
   (setq org-preview-latex-default-process 'dvisvgm)
   (plist-put org-format-latex-options
-             :scale (cond ((eq kernel-name "Darwin") 1.5)
+             :scale (cond ((equal kernel-name "Darwin") 1.5)
                           (t 1)))
   ;; 'default or 'auto doesn't work on macOS
   (plist-put org-format-latex-options :foreground nil)

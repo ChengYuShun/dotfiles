@@ -96,7 +96,7 @@
 (add-to-list
  'delete-frame-functions
  (lambda (frame)
-   (when (eq 2 (length (frame-list)))
+   (when (eql 2 (length (frame-list)))
      (setq case-fold-search nil)
      (dolist (buffer (buffer-list))
        (let ((name (buffer-name buffer)))
