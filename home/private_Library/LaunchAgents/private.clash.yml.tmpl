@@ -1,0 +1,7 @@
+{{ if eq .chezmoi.os "darwin" -}}
+Label: private.clash
+ProgramArguments: [sh, -c, 'sh ~/.config/sh/profexec.sh path clash-meta -d ~/.config/clash']
+RunAtLoad: true
+StandardOutPath: /Users/cys/clash.out
+StandardErrorPath: /Users/cys/clash.err
+{{- end }}

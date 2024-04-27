@@ -1,0 +1,21 @@
+#!/bin/sh
+
+if [ "$(uname -s)" != Darwin ]; then
+  exit 0
+fi
+
+to_plist() {
+  name=$1
+  yml="$name.yml"
+  plist="$name.plist"
+  if ! [ -e "$plist" ] || [ "$yml" -nt "$plist" ]; then
+    yml2plist --input "$yml" --output "$plist"
+  fi
+}
+
+# {{ include "private_Library/LaunchAgents/private.profile.yml.tmpl" | sha256sum }}
+to_plist ~/Library/LaunchAgents/private.profile
+# {{ include "private_Library/LaunchAgents/private.emacs.yml.tmpl" | sha256sum }}
+to_plist ~/Library/LaunchAgents/private.emacs
+# {{ include "private_Library/LaunchAgents/private.clash.yml.tmpl" | sha256sum }}
+to_plist ~/Library/LaunchAgents/private.clash

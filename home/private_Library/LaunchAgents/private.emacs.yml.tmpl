@@ -1,0 +1,6 @@
+{{ if eq .chezmoi.os "darwin" -}}
+Label: private.emacs
+ProgramArguments: [sh, -c, 'exec sh ~/.config/sh/profexec.sh profile emacs-wrapper --fg-daemon']
+KeepAlive:
+  SuccessfulExit: true
+{{- end }}
