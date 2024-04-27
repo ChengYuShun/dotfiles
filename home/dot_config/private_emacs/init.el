@@ -719,6 +719,9 @@ frame, current terminal."
 ;;     :config
 ;;     (setq smtpmail-local-domain (system-name))))
 
+;;;; swift-mode
+(use-package swift-mode)
+
 ;;;; tide
 ;; (use-package tide)
 
