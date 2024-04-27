@@ -8,11 +8,6 @@ if [ -n "$USE_FISH" ] && which fish >/dev/null 2>&1; then
   exec fish
 fi
 
-# Always prefer alacritty-direct.
-if [ "$TERM" = "alacritty" ]; then
-  export TERM=alacritty-direct
-fi
-
 source $XDG_CONFIG_HOME/sh/aliases.sh
 source $XDG_CONFIG_HOME/sh/functions.sh
 

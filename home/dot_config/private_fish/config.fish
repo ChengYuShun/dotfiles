@@ -5,11 +5,6 @@ if status is-interactive
     source $FISH_CONFIG_HOME'/aliases.fish'
     alias spu='sudo-pacman-update'
 
-    # Always prefer alacritty-direct.
-    if [ "$TERM" = "alacritty" ]
-        set -x TERM alacritty-direct
-    end
-
     fish_vi_key_bindings
 end
 
