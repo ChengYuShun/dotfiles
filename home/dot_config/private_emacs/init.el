@@ -535,7 +535,7 @@ frame, current terminal."
   :config
   (setq org-startup-indented t)
   (setq org-deadline-warning-days 30)
-  (setq org-agenda-files '("~/todos"))
+  (setq org-agenda-files '("~/org-agenda/"))
   (setq org-agenda-start-on-weekday nil)
   (setq org-log-done t)
   (setq org-export-with-smart-quotes t)
