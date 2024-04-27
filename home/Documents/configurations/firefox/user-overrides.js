@@ -29,3 +29,6 @@ user_pref("network.http.referer.XOriginPolicy", 0);
 
 // Enable userChrome.css and userContent.css
 user_pref("toolkit.legacyUserProfileCustomizations.stylesheets", true);
+
+// do not quit fullscreen when I click esc
+user_pref("browser.fullscreen.exit_on_escape", false);
