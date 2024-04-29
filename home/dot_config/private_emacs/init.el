@@ -543,6 +543,9 @@ frame, current terminal."
                                '((emacs-lisp . t)
                                  (python . t)))
 
+  ;; open links in the current window
+  (setf (cdr (assoc 'file org-link-frame-setup)) 'find-file)
+
   ;; LaTeX preview settings
   (setq org-preview-latex-image-directory
         (concat (file-name-as-directory user-emacs-directory) "ltximg/"))
