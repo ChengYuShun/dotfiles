@@ -426,7 +426,9 @@ frame, current terminal."
          ("<return>"      . ivy-immediate-done)
          ("<right>"       . ivy-partial-or-done))
   :config
-  (ivy-mode 1))
+  (ivy-mode 1)
+  (setq ivy-re-builders-alist
+        '((t . ivy--regex-ignore-order))))
 
 ;;;; js
 (use-package js
