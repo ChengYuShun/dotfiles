@@ -14,5 +14,8 @@ __pycache__/
 # Agda
 *.agdai
 
-# Misc
+# Dolphin
 .directory
+
+# macOS
+.DS_Store
