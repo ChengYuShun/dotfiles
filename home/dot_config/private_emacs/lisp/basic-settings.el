@@ -122,3 +122,7 @@
 
 ;;;; Use a space to separate words of different origins.
 (setq fill-separate-heterogeneous-words-with-space t)
+
+;;;; disable s-q on macOS for quitting (whoever added that binding was ******)
+(when (equal kernel-name "Darwin")
+  (keymap-global-set "s-q" nil))
