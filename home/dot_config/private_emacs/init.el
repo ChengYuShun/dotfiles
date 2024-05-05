@@ -51,10 +51,13 @@
   :commands (adoc-mode))
 
 ;;;; agda-mode
-;; (when (executable-find "agda-mode")
-;;   (load-file
-;;    (let ((coding-system-for-read 'utf-8))
-;;      (shell-command-to-string "agda-mode locate"))))
+(when (or (executable-find "agda-mode")
+          (and (executable-find "stack")
+               (eql 0 (call-process "stack" nil nil nil
+                                    "exec" "--" "which" "agda-mode"))))
+  (load-file
+   (let ((coding-system-for-read 'utf-8))
+     (shell-command-to-string "agda-mode-wrapper locate"))))
 
 ;;;; ahk-mode.
 (when (string-prefix-p "MSYS" kernel-name)
