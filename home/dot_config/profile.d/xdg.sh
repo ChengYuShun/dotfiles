@@ -5,8 +5,6 @@ envexp XDG_CACHE_HOME "$HOME/.cache"
 
 # misc.
 envexp ZDOTDIR "$XDG_CONFIG_HOME/zsh"
-envexp GNUPGHOME "$XDG_CONFIG_HOME/gnupg"
-envexp CARGO_HOME "$XDG_CONFIG_HOME/cargo"
 envexp AGDA_DIR "$XDG_CONFIG_HOME/agda"
 envexp STACK_XDG 1
 

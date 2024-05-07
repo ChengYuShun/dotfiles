@@ -97,6 +97,8 @@ elif [ "$UNAME_S" = Darwin ]; then
 fi
 
 # common paths
+CARGO_HOME="$HOME/.cargo"
+insert_path "$CARGO_HOME/bin"
 insert_path "$HOME/.local/bin"
 insert_path "$HOME/.local/bin/monolith"
 insert_path "$HOME/.local/bin/scripts"
@@ -119,6 +121,7 @@ envexp INFOPATH
 envexp QT_PLUGIN_PATH
 envexp PYTHON_VERSION 310
 envexp GEM_HOME
+envexp CARGO_HOME
 
 # Apparently, macOS overwrites the PATH variable for each application.  We set
 # an additional environment variable, PATH_FOR_MAC, for the configured PATH to
