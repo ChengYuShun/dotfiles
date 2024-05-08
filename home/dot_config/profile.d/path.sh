@@ -78,6 +78,8 @@ if [ "$UNAME_S" = Linux ]; then
   _insert_path QT_PLUGIN_PATH /usr/lib/qt/plugins
   _insert_path QT_PLUGIN_PATH /usr/lib/qt6/plugins
 elif [ "$UNAME_S" = Msys ]; then
+  # Python version
+  PYTHON_VERSION=310
   # mingw64 paths
   insert_path "/c/Program Files/Mozilla Firefox"
   insert_path /mingw64/bin
@@ -96,30 +98,30 @@ elif [ "$UNAME_S" = Darwin ]; then
   insert_path /Library/Tex/texbin
 fi
 
-# common paths
+# a programming language called ruby
+export PATH
+if which ruby 1>/dev/null 2>/dev/null; then
+  GEM_HOME="$(ruby -e "puts Gem.user_dir")"
+  append_path "$GEM_HOME/bin"
+fi
+
+# a programming language called rust
 CARGO_HOME="$HOME/.cargo"
 insert_path "$CARGO_HOME/bin"
+
+# common paths
 insert_path "$HOME/.local/bin"
 insert_path "$HOME/.local/bin/monolith"
 insert_path "$HOME/.local/bin/scripts"
 insert_path "$HOME/.local/bin/wrappers"
 insert_path "$HOME/.local/bin/control"
 
-# a programming language called ruby...
-export PATH
-if which ruby 1>/dev/null 2>/dev/null; then
-  GEM_HOME="$(ruby -e "puts Gem.user_dir")"
-fi
-if [ -n "$GEM_HOME" ]; then
-  append_path "$GEM_HOME/bin"
-fi
-
 # export variables
 envexp PATH
 envexp MANPATH
 envexp INFOPATH
 envexp QT_PLUGIN_PATH
-envexp PYTHON_VERSION 310
+envexp PYTHON_VERSION
 envexp GEM_HOME
 envexp CARGO_HOME
 
