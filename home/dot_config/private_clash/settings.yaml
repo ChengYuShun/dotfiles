@@ -1,7 +1,7 @@
 port: 7890
 socks-port: 7891
 external-controller: localhost:9090
-allow-lan: true
+allow-lan: false  # the SOCKS5 is not secure even with authentication
 ipv6: true
 
 profiles:
