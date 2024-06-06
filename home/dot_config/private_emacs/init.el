@@ -551,10 +551,26 @@ frame, current terminal."
   ;; open links in the current window
   (setf (cdr (assoc 'file org-link-frame-setup)) 'find-file)
 
+  ;; custom LaTeX preview backend
+  (unless (assoc 'cys-svg org-preview-latex-process-alist)
+    (setq org-preview-latex-process-alist
+          (cons '(cys-svg) org-preview-latex-process-alist)))
+  (setf (cdr (assoc 'cys-svg org-preview-latex-process-alist))
+        '(:programs
+          ("latex" "pdftocairo" "inkscape")
+          :description "pdf > svg"
+          :message "you need to install the programs: latex, pdftocairo and inkscape."
+          :image-input-type "pdf" :image-output-type "svg"
+          :image-size-adjust (1.7 . 1.5)
+          :latex-compiler
+          ("pdflatex -interaction nonstopmode -output-directory %o %f")
+          :image-converter
+          ("ltxpdf2svg %f %O %S '#ffffff'")))
+
   ;; LaTeX preview settings
   (setq org-preview-latex-image-directory
         (concat (file-name-as-directory user-emacs-directory) "ltximg/"))
-  (setq org-preview-latex-default-process 'dvisvgm)
+  (setq org-preview-latex-default-process 'cys-svg)
   (plist-put org-format-latex-options
              :scale (cond ((equal kernel-name "Darwin") 1.5)
                           (t 1)))
@@ -580,8 +596,9 @@ frame, current terminal."
     (kbd "<tab>") 'org-agenda-goto)
   (evil-set-initial-state 'org-agenda-mode 'motion)
 
-  ;; add chemical equation support
-  (setq org-latex-packages-alist '(("" "mhchem" t)))
+  ;; add a few packages
+  (setq org-latex-packages-alist '(("" "mhchem" t)
+                                   ("" "tikz-cd" t)))
 
   ;; add custom key bindings for org-capture-mode (for whatever reason, it
   ;; appears that we cannot define key bindings for org-capture-mode by using
