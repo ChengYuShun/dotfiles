@@ -125,7 +125,8 @@
 
 ;;;; disable s-q on macOS for quitting (whoever added that binding was ******)
 (when (equal kernel-name "Darwin")
-  (keymap-global-set "s-q" nil))
+  (keymap-global-set "s-q" nil)
+  (keymap-global-set "s-w" nil))
 
 ;;;; man window switching method
 (setq Man-notify-method 'thrifty)
