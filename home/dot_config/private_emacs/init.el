@@ -575,8 +575,8 @@ frame, current terminal."
              :scale (cond ((equal kernel-name "Darwin") 1.5)
                           (t 1)))
   ;; 'default or 'auto doesn't work on macOS
-  (plist-put org-format-latex-options :foreground nil)
-  (plist-put org-format-latex-options :background nil)
+  (plist-put org-format-latex-options :foreground "Black")
+  (plist-put org-format-latex-options :background "Transparent")
 
   ;; set folding strategy
   (setq org-startup-folded 'nofold
