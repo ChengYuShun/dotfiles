@@ -137,6 +137,10 @@
   :hook (emacs-lisp-mode
          . (lambda () (outline-minor-mode 1) (indent-tabs-mode -1))))
 
+;;;; epresent
+(use-package epresent
+  :commands (epresent-run))
+
 ;;;; evil
 (use-package evil
   :init
