@@ -143,12 +143,15 @@
 
 ;;;; evil
 (use-package evil
+
   :init
   (setq evil-want-keybinding nil)
   (setq evil-want-C-i-jump nil)
   (setq evil-want-C-u-scroll t)
   (setq evil-undo-system 'undo-tree)
+
   :demand t
+
   :bind (:map evil-motion-state-map
          ;; next/previous visual line.
          ("j" . evil-next-visual-line)
@@ -167,8 +170,9 @@
          ("g <up>" . evil-previous-visual-line)
          ;; no return please
          ("RET" . nil)
-         ;; buffers.
-         ("SPC" . nil) ; Unset SPC.
+         ;; unbind space
+         ("SPC" . nil)
+         ;; buffers
          ("SPC k" . kill-buffer)
          ("SPC b" . switch-to-buffer)
          ("SPC <left>" . previous-buffer)
@@ -190,10 +194,7 @@
          ;; org-agenda
          ("SPC a" . org-agenda)
          ;; org-roam
-         ("SPC n c" . org-roam-capture)
-         ("SPC n a" . org-roam-node-find)
-         ("SPC n f" . cys/org-roam-node-find)
-         ("SPC n u" . cys/org-roam-draft-find)
+         ("SPC n" . cys/org-roam-node-find-global)
          ;; Tab and jumping.
          ("C-f" . nil)
          ("C-f" . evil-jump-foward)
@@ -216,8 +217,7 @@
          ("g k" . cys/evil-goto-prev)
          ("g b" . cys/evil-go-back)
 
-         :map
-         evil-insert-state-map
+         :map evil-insert-state-map
          ;; Auto comment.
          ("<return>" . comment-indent-new-line))
 
@@ -534,8 +534,18 @@ frame, current terminal."
   :after (evil)
   :commands (org-mode org-agenda)
   :bind (:map org-mode-map
-         ("C-c l" . org-store-link)
-         ("C-c C-l" . org-insert-link))
+         ("C-c l" . nil)
+         ("C-c l y" . org-store-link)
+         ("C-c l p" . org-insert-link)
+         ;; reserved for org-roam
+         ("C-c n i g" . cys/org-roam-node-insert-global)
+         ("C-c n i n" . cys/org-roam-node-insert-non-global)
+         ("C-c n l y" . cys/org-roam-link-store)
+         ("C-c n l p" . cys/org-roam-link-paste)
+         ("C-c n l o" . cys/org-roam-link-open)
+         ("C-c n b" . org-roam-buffer-toggle)
+         ("C-c n d" . cys/org-roam-node-delete)
+         ("C-c n g" . cys/org-roam-global-toggle))
   :hook (org-mode . (lambda ()
                       (display-fill-column-indicator-mode -1)
                       (visual-line-mode 1)
@@ -621,58 +631,132 @@ frame, current terminal."
 
 ;;;; org-roam
 (use-package org-roam
-  :custom
-  (org-roam-directory (file-truename "~/org-roam"))
-  :commands (org-roam-capture
-             org-roam-node-find
-             cys/org-roam-node-find
-             cys/org-roam-draft-find)
-  :bind (:map org-mode-map
-         ("C-c n i" . org-roam-node-insert)
-         ("C-c n l" . org-roam-buffer-toggle)
-         ("C-c n d" . cys/org-roam-node-delete)
-         ("C-c t a" . org-roam-tag-add)
-         ("C-c t r" . org-roam-tag-remove)
-         ("C-c a a" . org-roam-alias-add))
+
+  :custom (org-roam-directory (file-truename "~/org-roam"))
+
+  :commands (cys/org-roam-node-find-global)
+
   :config
+
   (org-roam-db-autosync-enable)
 
-  ;; set org-roam-capture-templates
   (setq org-roam-capture-templates
-        '(("d" "draft" plain "%?"
-           :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
-                              "#+title: ${title}\n#+filetags: :draft:")
+        '(("g" "global" plain ""
+           :target (file+head "%<%Y%m%d%H%M%S>-${id}.org"
+                              "#+title: ${title}\n#+filetags: :global:\n")
+           :unnarrowed t)
+          ("n" "non-global" plain ""
+           :target (file+head "%<%Y%m%d%H%M%S>-${id}.org"
+                              "#+title: ${title}\n")
            :unnarrowed t)))
 
-  (defun cys/org-roam-filter-by-tag (tag-name)
-    "Give a function testing whether a node has TAG-NAME."
-    (eval `(lambda (node) (member ,tag-name (org-roam-node-tags node)))))
+  (defun cys/org-roam-filter-global (node)
+    (member "global" (org-roam-node-tags node)))
 
-  (defun cys/org-roam-block-by-tag (tag-name)
-    "Give a function testing whether a node does not have TAG-NAME."
-    (eval `(lambda (node) (not (member ,tag-name (org-roam-node-tags node))))))
-
-  (defun cys/org-roam-node-find ()
-    "Find a finished node."
+  (defun cys/org-roam-node-find-global ()
+    "Find a global node."
     (interactive)
-    (org-roam-node-find
-     nil nil
-     (cys/org-roam-block-by-tag "draft")))
+    (org-roam-node-find nil nil #'cys/org-roam-filter-global nil
+                        :templates `(,(nth 0 org-roam-capture-templates))))
 
-  (defun cys/org-roam-draft-find ()
-    "Find a draft node."
+  (defun cys/org-roam-node-insert-global ()
+    "Insert a global node."
     (interactive)
-    (org-roam-node-find
-     nil nil
-     (cys/org-roam-filter-by-tag "draft")))
+    (org-roam-node-insert #'cys/org-roam-filter-global
+                          :templates `(,(nth 0 org-roam-capture-templates))))
 
-  (defun cys/org-roam-node-delete ()
+  (defun cys/org-roam-node-insert-non-global ()
+    "Insert a non-global node."
+    (interactive)
+    (org-roam-node-insert #'(lambda (node) nil)
+                          :templates `(,(nth 1 org-roam-capture-templates))))
+
+  (defvar cys/org-roam-stored-link nil
+    "The stored link in the form (ID . DESC).")
+
+  (defun cys/org-roam-insert-link (id desc)
+    "Insert a link using `org-insert-link'."
+    (org-insert-link nil (concat "id:" id)
+                     (if (equal desc "")
+                         (read-string "Link Description: ")
+                       desc)))
+
+  (defun cys/org-roam-link-store ()
+    "Store the link at the position."
+    (interactive)
+    (let* ((node (org-roam-node-at-point))
+           (id (org-roam-node-id node))
+           (title (org-roam-node-title node)))
+      (setq cys/org-roam-stored-link (cons id title))
+      (message "Stored link \"%s\" to ID %s" title id)))
+
+  (defun cys/org-roam-link-paste ()
+    "Insert the stored link at the position"
+    (interactive)
+    (if cys/org-roam-stored-link
+        (cys/org-roam-insert-link (car cys/org-roam-stored-link)
+                                  (cdr cys/org-roam-stored-link))
+      (org-roam-node-insert)))
+
+  (defun cys/org-roam-link-open ()
+    "Open the stored link in the current buffer."
+    (interactive)
+    (if cys/org-roam-stored-link
+        (org-roam-id-open (car cys/org-roam-stored-link))
+      (cys/org-roam-node-find-global)))
+
+  (defun cys/org-roam-node-delete (&optional show-prompt)
     "Delete a node."
+    (interactive "p")
+    (when (or (not show-prompt)
+              (yes-or-no-p "Do you really want to delete this note?"))
+      (save-buffer)
+      (let ((file-name (buffer-file-name)))
+        (kill-buffer)
+        (delete-file file-name))))
+
+  (defun cys/org-roam-global-toggle ()
+    "Toggle the global tag for the node at point."
     (interactive)
-    (save-buffer)
-    (let ((file-name (buffer-file-name)))
-      (kill-buffer)
-      (delete-file file-name))))
+    (let ((node (org-roam-node-at-point)))
+      (if (member "global" (org-roam-node-tags node))
+          (org-roam-tag-remove '("global"))
+        (org-roam-tag-add '("global")))))
+
+  ;;
+  ;; functions that are no longer used
+  ;;
+
+  ;; (cl-defmethod org-roam-node-title-or-id ((node org-roam-node))
+  ;;   "Return the title line of NODE."
+  ;;   (let ((title (org-roam-node-title node)))
+  ;;     (if (equal title "")
+  ;;         (subst-char-in-string ?- (string-to-char " ")
+  ;;                               (org-roam-node-id node))
+  ;;       title)))
+
+  ;; (defun cys/org-roam-filter-by-tag (tag-name)
+  ;;   "Give a function testing whether a node has TAG-NAME."
+  ;;   (eval `(lambda (node) (member ,tag-name (org-roam-node-tags node)))))
+
+  ;; (defun cys/org-roam-block-by-tag (tag-name)
+  ;;   "Give a function testing whether a node does not have TAG-NAME."
+  ;;   (eval `(lambda (node) (not (member ,tag-name (org-roam-node-tags node))))))
+
+  ;; (defun cys/org-roam-node-find-not-drafted ()
+  ;;   "Find a finished node."
+  ;;   (interactive)
+  ;;   (org-roam-node-find
+  ;;    nil nil
+  ;;    (cys/org-roam-block-by-tag "draft")))
+
+  ;; (defun cys/org-roam-draft-find ()
+  ;;   "Find a draft node."
+  ;;   (interactive)
+  ;;   (org-roam-node-find
+  ;;    nil nil
+  ;;    (cys/org-roam-filter-by-tag "draft")))
+  )
 
 ;;;; org-roam-ui
 (use-package org-roam-ui
