@@ -702,7 +702,7 @@ frame, current terminal."
     "Open the stored link in the current buffer."
     (interactive)
     (if cys/org-roam-stored-link
-        (org-roam-id-open (car cys/org-roam-stored-link))
+        (org-roam-id-open (car cys/org-roam-stored-link) nil)
       (cys/org-roam-node-find-global)))
 
   (defun cys/org-roam-node-delete (&optional show-prompt)
