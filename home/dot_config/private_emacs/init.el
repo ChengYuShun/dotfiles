@@ -542,9 +542,9 @@ frame, current terminal."
          ;; reserved for org-roam
          ("C-c n i g" . cys/org-roam-node-insert-global)
          ("C-c n i n" . cys/org-roam-node-insert-non-global)
-         ("C-c n l y" . cys/org-roam-link-store)
-         ("C-c n l p" . cys/org-roam-link-paste)
-         ("C-c n l o" . cys/org-roam-link-open)
+         ("C-c n l y" . org-roam-link-store)
+         ("C-c n l p" . org-roam-link-paste)
+         ("C-c n l o" . org-roam-link-open)
          ("C-c n b" . org-roam-buffer-toggle)
          ("C-c n d" . cys/org-roam-node-delete)
          ("C-c n g" . cys/org-roam-global-toggle))
@@ -634,6 +634,16 @@ frame, current terminal."
 ;;;; org-roam
 (use-package org-roam
 
+  :straight (org-roam :type git
+                      :host github
+                      :repo "org-roam/org-roam"
+                      :branch "main"
+                      :remote "origin"
+                      :fork (:host github
+                             :repo "ChengYuShun/org-roam"
+                             :branch "cys"
+                             :remote "github"))
+
   :custom (org-roam-directory (file-truename "~/org-roam"))
 
   :commands (cys/org-roam-node-find-global)
@@ -672,40 +682,6 @@ frame, current terminal."
     (interactive)
     (org-roam-node-insert #'(lambda (node) nil)
                           :templates `(,(nth 1 org-roam-capture-templates))))
-
-  (defvar cys/org-roam-stored-link nil
-    "The stored link in the form (ID . DESC).")
-
-  (defun cys/org-roam-insert-link (id desc)
-    "Insert a link using `org-insert-link'."
-    (org-insert-link nil (concat "id:" id)
-                     (if (equal desc "")
-                         (read-string "Link Description: ")
-                       desc)))
-
-  (defun cys/org-roam-link-store ()
-    "Store the link at the position."
-    (interactive)
-    (let* ((node (org-roam-node-at-point))
-           (id (org-roam-node-id node))
-           (title (org-roam-node-title node)))
-      (setq cys/org-roam-stored-link (cons id title))
-      (message "Stored link \"%s\" to ID %s" title id)))
-
-  (defun cys/org-roam-link-paste ()
-    "Insert the stored link at the position"
-    (interactive)
-    (if cys/org-roam-stored-link
-        (cys/org-roam-insert-link (car cys/org-roam-stored-link)
-                                  (cdr cys/org-roam-stored-link))
-      (org-roam-node-insert)))
-
-  (defun cys/org-roam-link-open ()
-    "Open the stored link in the current buffer."
-    (interactive)
-    (if cys/org-roam-stored-link
-        (org-roam-id-open (car cys/org-roam-stored-link) nil)
-      (cys/org-roam-node-find-global)))
 
   (defun cys/org-roam-node-delete (&optional show-prompt)
     "Delete a node."
