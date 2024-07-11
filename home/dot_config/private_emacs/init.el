@@ -537,6 +537,8 @@ frame, current terminal."
          ("C-c l" . nil)
          ("C-c l y" . org-store-link)
          ("C-c l p" . org-insert-link)
+         ("C-c l t" . org-toggle-link-display)
+         ("C-c m" . org-latex-preview)
          ;; reserved for org-roam
          ("C-c n i g" . cys/org-roam-node-insert-global)
          ("C-c n i n" . cys/org-roam-node-insert-non-global)
