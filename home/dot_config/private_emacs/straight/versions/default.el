@@ -34,7 +34,7 @@
  ("nongnu-elpa" . "28fde34f7d8c24a0ac07876e53e7f0c4b1d5e32d")
  ("org" . "50e34dde10ba6d88615b2892e2b33ac7a02e1366")
  ("org-fragtog" . "562f6590843eeab30ac8aa2ced285aff8d590861")
- ("org-roam" . "e25e641f49342d222acf657c5035e07d07f4660f")
+ ("org-roam" . "9eb440c36020d36c30ab74d9417b377fa17df394")
  ("org-roam-ui" . "5ac74960231db0bf7783c2ba7a19a60f582e91ab")
  ("php-mode" . "4792988a120d6ac515ba16605278d04cb8be0d69")
  ("project" . "093f42a1b612eaae0d2bdd475663c14973fe0325")
