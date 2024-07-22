@@ -1,4 +1,30 @@
 #!/bin/sh
 
-master_url=$(cat "$HOME/keepass/master-url.txt")
-exec flock "$HOME/keepass/master.lock" wget $master_url\?dl=1 -O "$HOME/keepass/master.kdbx"
+keepass_dir="$HOME/keepass"
+tmp_dir="$(mktemp -d)"
+tmp_dest="$tmp_dir/master.kdbx"
+master_url=$(cat "$keepass_dir/master-url.txt")
+dest="$keepass_dir/master.kdbx"
+lock="$keepass_dir/master.lock"
+
+# download and move to the right path.
+if wget $master_url\?dl=1 -O "$tmp_dest" &&
+    [ -f "$tmp_dest" ] &&
+    [ -s "$tmp_dest" ]
+then
+  flock "$lock" mv-when-differ "$tmp_dest" "$dest"
+  success=1
+else
+  success=0
+  echo "failed to download master.kdbx"
+fi
+
+# remove the temporary directory
+rm -rf "$tmp_dir"
+
+# exit with a nice code
+if [ "$success" = 1 ]; then
+  exit 0
+else
+  exit 1
+fi
