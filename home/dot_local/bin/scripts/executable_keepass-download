@@ -8,7 +8,7 @@ dest="$keepass_dir/master.kdbx"
 lock="$keepass_dir/master.lock"
 
 # download and move to the right path.
-if wget $master_url\?dl=1 -O "$tmp_dest" &&
+if wget "$master_url?dl=1" -O "$tmp_dest" &&
     [ -f "$tmp_dest" ] &&
     [ -s "$tmp_dest" ]
 then
