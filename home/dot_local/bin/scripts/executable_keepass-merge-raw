@@ -4,12 +4,14 @@ keepass_dir="$HOME/keepass"
 master="$keepass_dir/master.kdbx"
 passwords="$keepass_dir/passwords.kdbx"
 
-if ! cmp "$master" "$passwords" 1>/dev/null; then
+if ! cmp "$passwords" "$master" 1>/dev/null; then
   # backup master
-  cp --backup=numbered "$master" "$master.backup"
+  cp --backup=numbered "$passwords" "$passwords.backup"
   # merge databases
-  if keepassxc-cli merge --same-credentials "$master" "$passwords"; then
-      cp --backup=numbered "$master" "$passwords"
-      echo "Please manually upload master.kdbx to Dropbox!"
+  if keepassxc-cli merge --same-credentials "$passwords" "$master" &&
+      ! cmp "$passwords" "$master"
+  then
+    cp --backup=numbered "$passwords" "$master"
+    echo "Please manually upload master.kdbx to Dropbox!"
   fi
 fi
