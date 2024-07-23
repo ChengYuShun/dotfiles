@@ -4,14 +4,25 @@ keepass_dir="$HOME/keepass"
 master="$keepass_dir/master.kdbx"
 passwords="$keepass_dir/passwords.kdbx"
 
-if ! cmp "$passwords" "$master" 1>/dev/null; then
-  # backup master
-  cp --backup=numbered "$passwords" "$passwords.backup"
+if ! cmp "$master" "$passwords" 1>/dev/null; then
+  # create the temporary file
+  tmpfile=$(mktemp)
+  # move master to the temporary file
+  cp -f "$master" "$tmpfile"
   # merge databases
-  if keepassxc-cli merge --same-credentials "$passwords" "$master" &&
-      ! cmp "$passwords" "$master"
-  then
-    cp --backup=numbered "$passwords" "$master"
-    echo "Please manually upload master.kdbx to Dropbox!"
+  if keepassxc-cli merge --same-credentials "$master" "$passwords"; then
+    if ! cmp "$master" "$passwords" 1>/dev/null; then
+      cp --backup=numbered "$master" "$passwords"
+    fi
+    # see if we should upload master afterwards
+    if ! cmp "$master" "$tmpfile"; then
+      echo "Please manually upload master.kdbx to Dropbox!"
+    else
+      echo "No need to upload master.kdbx to Dropbox."
+    fi
+    # backup master
+    cp --backup=numbered "$tmpfile" "$master.backup"
   fi
+  # delete the temporary file
+  rm -f "$tmpfile"
 fi
