@@ -92,10 +92,14 @@ elif [ "$UNAME_S" = Msys ]; then
   # MiKTeX
   insert_path "/c/Users/$USER/AppData/Local/Programs/MiKTeX/miktex/bin/x64"
 elif [ "$UNAME_S" = Darwin ]; then
-  insert_path /opt/homebrew/sbin
-  insert_path /opt/homebrew/bin
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+  # coreutils
   insert_path /opt/homebrew/opt/coreutils/libexec/gnubin
+  insert_man /opt/homebrew/opt/coreutils/libexec/gnuman
+  insert_info /opt/homebrew/opt/coreutils/share/info
+  # MacTeX
   insert_path /Library/Tex/texbin
+  insert_man /Library/Tex/texbin/man
 fi
 
 # a programming language called ruby
