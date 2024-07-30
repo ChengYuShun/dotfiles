@@ -538,7 +538,14 @@ frame, current terminal."
          ("C-c l y" . org-store-link)
          ("C-c l p" . org-insert-link)
          ("C-c l t" . org-toggle-link-display)
-         ("C-c m" . org-latex-preview)
+         ;; LaTeX preview
+         ("C-c m t" . cys/org-toggle-latex-preview)
+         ("C-c m s" . cys/org-show-latex-preview)
+         ("C-c m h" . cys/org-hide-latex-preview)
+         ;; inline images
+         ("C-c i t" . org-toggle-inline-images)
+         ("C-c i s" . org-display-inline-images)
+         ("C-c i h" . org-remove-inline-images)
          ;; reserved for org-roam
          ("C-c n i g" . cys/org-roam-node-insert-global)
          ("C-c n i n" . cys/org-roam-node-insert-non-global)
@@ -553,79 +560,7 @@ frame, current terminal."
                       (visual-line-mode 1)
                       (set-fill-column 70)
                       (org-fragtog-mode)))
-  :config
-  (setq org-startup-indented t)
-  (setq org-deadline-warning-days 30)
-  (setq org-agenda-files '("~/org-agenda/"))
-  (setq org-agenda-start-on-weekday nil)
-  (setq org-log-done t)
-  (setq org-export-with-smart-quotes t)
-  (org-babel-do-load-languages 'org-babel-load-languages
-                               '((emacs-lisp . t)
-                                 (python . t)))
-
-  ;; open links in the current window
-  (setf (cdr (assoc 'file org-link-frame-setup)) 'find-file)
-
-  ;; custom LaTeX preview backend
-  (unless (assoc 'cys-svg org-preview-latex-process-alist)
-    (setq org-preview-latex-process-alist
-          (cons '(cys-svg) org-preview-latex-process-alist)))
-  (setf (cdr (assoc 'cys-svg org-preview-latex-process-alist))
-        '(:programs
-          ("latex" "pdftocairo" "inkscape")
-          :description "pdf > svg"
-          :message "you need to install the programs: latex, pdftocairo and inkscape."
-          :image-input-type "pdf" :image-output-type "svg"
-          :image-size-adjust (1.7 . 1.5)
-          :latex-compiler
-          ("pdflatex -interaction nonstopmode -output-directory %o %f")
-          :image-converter
-          ("ltxpdf2svg %f %O %S '#ffffff'")))
-
-  ;; LaTeX preview settings
-  (setq org-preview-latex-image-directory
-        (concat (file-name-as-directory user-emacs-directory) "ltximg/"))
-  (setq org-preview-latex-default-process 'cys-svg)
-  (plist-put org-format-latex-options
-             :scale (cond ((equal kernel-name "Darwin") 1.5)
-                          (t 1)))
-  ;; 'default or 'auto doesn't work on macOS
-  (plist-put org-format-latex-options :foreground "Black")
-  (plist-put org-format-latex-options :background "Transparent")
-
-  ;; set folding strategy
-  (setq org-startup-folded 'nofold
-        org-cycle-hide-drawer-startup t)
-
-  ;; key bindings for org-mode
-  (evil-define-key 'normal org-mode-map
-    [remap cys/evil-open-link] 'org-open-at-point
-    [remap cys/evil-go-back] 'org-mark-ring-goto)
-
-  ;; key bindings for org-agenda-mode
-  (evil-define-key 'motion org-agenda-mode-map
-    "q" 'org-agenda-quit
-    "j" 'org-agenda-next-item
-    "k" 'org-agenda-previous-item
-    (kbd "RET") 'org-agenda-switch-to
-    (kbd "<tab>") 'org-agenda-goto)
-  (evil-set-initial-state 'org-agenda-mode 'motion)
-
-  ;; add a few packages
-  (setq org-latex-packages-alist '(("" "mhchem" t)
-                                   ("" "tikz-cd" t)))
-
-  ;; add custom key bindings for org-capture-mode (for whatever reason, it
-  ;; appears that we cannot define key bindings for org-capture-mode by using
-  ;; the :bind keyword provided by use-package)
-  (defun cys/org-capture-define-key ()
-    (define-key org-capture-mode-map [remap evil-quit]
-                'org-capture-kill)
-    (define-key org-capture-mode-map [remap evil-save-modified-and-close]
-                'org-capture-finalize)
-    (remove-hook  'org-capture-mode-hook 'cys/org-capture-define-key))
-  (add-hook 'org-capture-mode-hook 'cys/org-capture-define-key))
+  :config (load "org-config"))
 
 ;;;; org-fragtog
 (use-package org-fragtog
