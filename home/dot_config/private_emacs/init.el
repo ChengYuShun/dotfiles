@@ -135,8 +135,13 @@
 ;;;; elisp-mode
 (use-package elisp-mode
   :straight nil
-  :hook (emacs-lisp-mode
-         . (lambda () (outline-minor-mode 1) (indent-tabs-mode -1))))
+  :hook (emacs-lisp-mode . cys/emacs-lisp-mode-hook)
+  :config
+  (defun cys/emacs-lisp-mode-hook ()
+    "Initialize Emacs Lisp mode."
+    (outline-minor-mode 1)
+    (indent-tabs-mode -1)
+    (setq-local tab-width 8)))
 
 ;;;; epresent
 (use-package epresent
