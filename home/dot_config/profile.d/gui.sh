@@ -1,3 +1,4 @@
+# Linux
 if [ -n "$XDG_SESSION_TYPE" ] && [ "$XDG_SESSION_TYPE" != tty ]; then
   envexp TERMINAL alacritty
   envexp BROWSER "firefox -P cys"
@@ -26,4 +27,11 @@ if [ -n "$XDG_SESSION_TYPE" ] && [ "$XDG_SESSION_TYPE" != tty ]; then
       envexp QT_QPA_PLATFORMTHEME gtk3
       ;;
   esac
+fi
+
+# Darwin
+if [ "$UNAME_S" = Darwin ]; then
+  envsrc path
+  envsrc xdg
+  envexp DPI "$(swift-exec screen-dpi)"
 fi

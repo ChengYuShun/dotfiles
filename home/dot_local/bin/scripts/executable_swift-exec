@@ -1,0 +1,16 @@
+#!/bin/sh
+
+scr_dir="$XDG_DATA_HOME/swift-scripts"
+bin_dir="$scr_dir/bin"
+name="$1"
+scr_path="$scr_dir/$name.swift"
+bin_path="$bin_dir/$name"
+
+mkdir -p "$scr_dir"
+mkdir -p "$bin_dir"
+
+if ! [ -x "$bin_path" ] || [ "$scr_path" -nt "$bin_path" ]; then
+  swiftc -o "$bin_path" -O "$scr_path" && exec "$bin_path"
+else
+  exec "$bin_path"
+fi
