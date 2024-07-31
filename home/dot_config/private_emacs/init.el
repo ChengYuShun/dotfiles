@@ -43,6 +43,7 @@
 ;;;; Load basic-settings.el
 (add-to-list 'load-path (concat user-emacs-directory "lisp"))
 (load "basic-settings")
+(load "common-utils")
 
 ;;; Packages:
 
