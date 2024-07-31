@@ -130,3 +130,7 @@
 
 ;;;; man window switching method
 (setq Man-notify-method 'thrifty)
+
+;;;; Set initial frame size.
+(cys/alist-set default-frame-alist 'width 75)
+(cys/alist-set default-frame-alist 'height 25)

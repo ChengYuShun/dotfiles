@@ -49,7 +49,7 @@
                                (python . t)))
 
 ;;;; org-roam
-(setf (cdr (assoc 'file org-link-frame-setup)) 'find-file-other-frame)
+(cys/alist-set org-link-frame-setup 'file 'find-file-other-frame)
 ;; add custom key bindings for org-capture-mode (for whatever reason, it
 ;; appears that we cannot define key bindings for org-capture-mode by using
 ;; the :bind keyword provided by use-package)
@@ -67,20 +67,19 @@
                                  ("" "tikz-cd" t)))
 
 ;;;;; SVG preview
-(unless (assoc 'cys-svg org-preview-latex-process-alist)
-  (setq org-preview-latex-process-alist
-        (cons '(cys-svg) org-preview-latex-process-alist)))
-(setf (cdr (assoc 'cys-svg org-preview-latex-process-alist))
-      '(:programs
-        ("latex" "pdftocairo" "inkscape")
-        :description "pdf > svg"
-        :message "you need to install the programs: latex, pdftocairo and inkscape."
-        :image-input-type "pdf" :image-output-type "svg"
-        :image-size-adjust (1.7 . 1.5)
-        :latex-compiler
-        ("pdflatex -interaction nonstopmode -output-directory %o %f")
-        :image-converter
-        ("ltxpdf2svg %f %O %S '#ffffff'")))
+(cys/alist-set
+ org-preview-latex-process-alist
+ 'cys-svg
+ '(:programs
+   ("latex" "pdftocairo" "inkscape")
+   :description "pdf > svg"
+   :message "you need to install the programs: latex, pdftocairo and inkscape."
+   :image-input-type "pdf" :image-output-type "svg"
+   :image-size-adjust (1.7 . 1.5)
+   :latex-compiler
+   ("pdflatex -interaction nonstopmode -output-directory %o %f")
+   :image-converter
+   ("ltxpdf2svg %f %O %S '#ffffff'")))
 (setq org-preview-latex-image-directory
       (concat (file-name-as-directory user-emacs-directory) "ltximg/"))
 (setq org-preview-latex-default-process 'cys-svg)

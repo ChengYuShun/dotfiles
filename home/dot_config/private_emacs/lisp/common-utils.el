@@ -21,6 +21,18 @@
 
 ;;; Code:
 
+;;;; random symbol
+(defun cys/randsym (&optional length)
+  "Generate a random symbol with LENGTH.
+
+If LENGTH is nil, it is defaulted to 12"
+  (let ((res "")
+        (length (or length 12)))
+    (dotimes (i length (make-symbol res))
+      (setq res (concat res (string (+ ?A (random 26))))))))
+
+;;;; temporary file
+
 (defmacro cys/with-temp-dir (path-var &rest body)
   "Execuate BODY with a temporary directory safely.
 
@@ -53,3 +65,49 @@ The value of the last argument of BODY will be returned."
      (unwind-protect
          (progn ,@body)
        (delete-file ,path-var))))
+
+;;;; associate list
+
+(defmacro cys/alist-set (alist-place key-exp val-exp &optional no-delete-exp)
+  "Update the association list.
+
+ALIST-PLACE is the place that stores the alist to be updated.
+
+((eval KEY-EXP) . (eval VAL-EXP)) will be updated to the alist.
+
+If (eval NO-DELETE-EXP) is nil, the first cons with its car being
+KEY will be deleted.  If (eval NO-DELETE-EXP) is non-nil, the
+cons will not be deleted."
+  (let (;; the key
+        (key-var (cys/randsym))
+        ;; the value
+        (val-var (cys/randsym))
+        ;; place to which ref-var refers
+        (dat-place-var (cys/randsym))
+        ;; reference to the rest of alist to be searched, e.g. (cdr
+        ;; DAT-PLACE-VAR)
+        ;;
+        ;; This value may be evaluated, so it must not contain other lists.
+        (rest-ref-var (cys/randsym))
+        ;; whether we have found the cons
+        (found-var (cys/randsym)))
+    `(let ((,key-var ,key-exp)
+           (,val-var ,val-exp)
+           (,dat-place-var nil)
+           (,rest-ref-var ',alist-place)
+           (,found-var nil))
+       ;; find the cons
+       (while (and (not ,found-var) (eval ,rest-ref-var))
+         (if (equal (caar (eval ,rest-ref-var)) ,key-var)
+             (setq ,found-var t)
+           (setq ,dat-place-var (eval ,rest-ref-var))
+           (setq ,rest-ref-var '(cdr ,dat-place-var))))
+       ;; update the cons
+       (if (or ,val-var (eval ,no-delete-exp))
+           (if ,found-var
+               (setf (cdar (eval ,rest-ref-var)) ,val-var)
+             (eval (,'\` (setf (,'\, ,rest-ref-var)
+                               (list (cons ,key-var ,val-var))))))
+         (when ,found-var
+           (eval (,'\` (setf (,'\, ,rest-ref-var)
+                             (cdr (eval ,rest-ref-var))))))))))
