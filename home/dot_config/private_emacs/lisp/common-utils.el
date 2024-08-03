@@ -21,16 +21,6 @@
 
 ;;; Code:
 
-;;;; random symbol
-(defun cys/randsym (&optional length)
-  "Generate a random symbol with LENGTH.
-
-If LENGTH is nil, it is defaulted to 12"
-  (let ((res "")
-        (length (or length 12)))
-    (dotimes (i length (make-symbol res))
-      (setq res (concat res (string (+ ?A (random 26))))))))
-
 ;;;; temporary file
 
 (defmacro cys/with-temp-dir (path-var &rest body)
@@ -79,18 +69,18 @@ If (eval NO-DELETE-EXP) is nil, the first cons with its car being
 KEY will be deleted.  If (eval NO-DELETE-EXP) is non-nil, the
 cons will not be deleted."
   (let (;; the key
-        (key-var (cys/randsym))
+        (key-var (gensym "key-"))
         ;; the value
-        (val-var (cys/randsym))
+        (val-var (gensym "val-"))
         ;; place to which ref-var refers
-        (dat-place-var (cys/randsym))
+        (dat-place-var (gensym "dat-place-"))
         ;; reference to the rest of alist to be searched, e.g. (cdr
         ;; DAT-PLACE-VAR)
         ;;
         ;; This value may be evaluated, so it must not contain other lists.
-        (rest-ref-var (cys/randsym))
+        (rest-ref-var (gensym "rest-ref-"))
         ;; whether we have found the cons
-        (found-var (cys/randsym)))
+        (found-var (gensym "found-")))
     `(let ((,key-var ,key-exp)
            (,val-var ,val-exp)
            (,dat-place-var nil)
