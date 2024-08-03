@@ -281,7 +281,7 @@ frame, current terminal."
   :config
   (message "evil-collection loaded.")
   ;; Hook for each mode.
-  (defvar evil-collection-mode-hooks (make-hash-table))
+  (defvar cys/evil-collection-mode-hooks (make-hash-table))
   ;; dired
   (puthash 'dired
            (lambda ()
@@ -289,18 +289,18 @@ frame, current terminal."
                (kbd "SPC") nil
                (kbd "h") 'dired-up-directory
                (kbd "l") 'dired-find-file))
-           evil-collection-mode-hooks)
+           cys/evil-collection-mode-hooks)
   ;; flycheck
   (puthash 'flycheck
            (lambda ()
              (evil-define-key* 'motion flycheck-mode-map
                (kbd "]d") 'flycheck-next-error
                (kbd "[d") 'flycheck-previous-error))
-           evil-collection-mode-hooks)
+           cys/evil-collection-mode-hooks)
   ;; help
   (puthash 'help
            (lambda () (evil-define-key 'normal help-mode-map (kbd "SPC") nil))
-           evil-collection-mode-hooks)
+           cys/evil-collection-mode-hooks)
   ;; info
   (puthash 'info
            (lambda ()
@@ -309,15 +309,16 @@ frame, current terminal."
                [remap cys/evil-open-link] 'Info-follow-nearest-node
                [remap cys/evil-go-up] 'Info-up
                [remap cys/evil-goto-next] 'Info-next
-               [remap cys/evil-goto-prev] 'Info-prev))
-           evil-collection-mode-hooks)
+               [remap cys/evil-goto-prev] 'Info-prev
+               [remap cys/evil-go-back] 'Info-last))
+           cys/evil-collection-mode-hooks)
   ;; man
   (puthash 'man
            (lambda () (evil-define-key* 'normal Man-mode-map
                         (kbd "SPC") nil
                         (kbd "u") 'scroll-down-command
                         (kbd "d") 'scroll-up-command))
-           evil-collection-mode-hooks)
+           cys/evil-collection-mode-hooks)
   ;; outline
   (puthash 'outline
            (lambda ()
@@ -327,7 +328,7 @@ frame, current terminal."
                (kbd "C-i") 'outline-toggle-subtree
                (kbd "<backtab>") nil
                (kbd "<backtab>") 'outline-show-children))
-           evil-collection-mode-hooks)
+           cys/evil-collection-mode-hooks)
   ;; term
   (puthash 'term
            (lambda ()
@@ -336,15 +337,15 @@ frame, current terminal."
              (define-key term-mode-map (kbd "M-x") nil)
              (evil-define-key 'normal term-mode-map
                (kbd "RET") 'term-send-input))
-           evil-collection-mode-hooks)
+           cys/evil-collection-mode-hooks)
   ;; view
   (puthash 'view
            (lambda () (evil-define-key 'normal view-mode-map (kbd "SPC") nil))
-           evil-collection-mode-hooks)
+           cys/evil-collection-mode-hooks)
   ;; Add to `evil-collection-setup-hook'.
   (add-hook 'evil-collection-setup-hook
             (lambda (mode _mode-keymaps &rest _rest)
-              (let ((callback (gethash mode evil-collection-mode-hooks)))
+              (let ((callback (gethash mode cys/evil-collection-mode-hooks)))
                 (when (functionp callback)
                   (eval `(,callback))))))
   ;; Initialize evil-collection.
