@@ -140,7 +140,6 @@
   (defun cys/emacs-lisp-mode-hook ()
     "Initialize Emacs Lisp mode."
     (outline-minor-mode 1)
-    (indent-tabs-mode -1)
     (setq-local tab-width 8)))
 
 ;;;; epresent
@@ -445,7 +444,6 @@ frame, current terminal."
 
 ;;;; js
 (use-package js
-  :hook (js-mode . (lambda () (indent-tabs-mode -1)))
   :config
   (setq js-indent-level 4))
 
@@ -510,7 +508,6 @@ frame, current terminal."
 
 ;;;; lua-mode.
 (use-package lua-mode
-  :hook (lua-mode . (lambda () (indent-tabs-mode -1)))
   :config
   (setq lua-indent-level 4))
 
@@ -721,7 +718,6 @@ frame, current terminal."
   :hook ((rust-mode) .
          (lambda ()
            (hs-minor-mode 1)
-           (indent-tabs-mode -1)
            (setq tab-width 4)))
   :bind (:map
          rustic-mode-map
@@ -747,10 +743,7 @@ frame, current terminal."
 
 ;;;; sh-script.
 (use-package sh-script
-  :hook ((sh-mode) .
-         (lambda ()
-           (setq tab-width sh-basic-offset)
-           (indent-tabs-mode -1)))
+  :hook ((sh-mode) . (lambda () (setq tab-width sh-basic-offset)))
   :config
   (setq sh-basic-offset 2))
 
