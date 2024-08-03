@@ -93,6 +93,8 @@ elif [ "$UNAME_S" = Msys ]; then
   insert_path "/c/Users/$USER/AppData/Local/Programs/MiKTeX/miktex/bin/x64"
 elif [ "$UNAME_S" = Darwin ]; then
   eval "$(/opt/homebrew/bin/brew shellenv)"
+  insert_man /usr/share/man
+  insert_man /opt/homebrew/share/man
   # coreutils
   insert_path /opt/homebrew/opt/coreutils/libexec/gnubin
   insert_man /opt/homebrew/opt/coreutils/libexec/gnuman
