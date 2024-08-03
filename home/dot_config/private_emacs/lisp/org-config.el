@@ -21,6 +21,9 @@
 
 ;;; Code:
 
+;;;; load requirements
+(require 'common-utils)
+
 ;;;; basic config
 (setq org-startup-indented t)
 (setq org-export-with-smart-quotes t)
@@ -112,3 +115,8 @@
 
 ;;;; inline images
 (setq org-startup-with-inline-images t)
+
+;;;; finish up
+(provide 'org-config)
+
+;;; org-config.el ends here

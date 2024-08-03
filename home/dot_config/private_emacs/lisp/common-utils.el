@@ -101,3 +101,8 @@ cons will not be deleted."
          (when ,found-var
            (eval (,'\` (setf (,'\, ,rest-ref-var)
                              (cdr (eval ,rest-ref-var))))))))))
+
+;;;; finish up
+(provide 'common-utils)
+
+;;; common-utils.el ends here

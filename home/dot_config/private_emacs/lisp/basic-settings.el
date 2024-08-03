@@ -22,6 +22,9 @@
 
 ;;; basic
 
+;;;; load files
+(require 'common-utils)
+
 ;;;; kernel name
 (defvar kernel-name (string-trim (shell-command-to-string "uname -s")))
 
@@ -139,3 +142,7 @@
   (keymap-global-set "s-q" nil)
   (keymap-global-set "s-w" nil))
 
+;;; finish up
+(provide 'basic-settings)
+
+;;; basic-settings.el ends here
