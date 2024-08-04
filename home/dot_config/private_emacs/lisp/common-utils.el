@@ -69,38 +69,38 @@ If (eval NO-DELETE-EXP) is nil, the first cons with its car being
 KEY will be deleted.  If (eval NO-DELETE-EXP) is non-nil, the
 cons will not be deleted."
   (let (;; the key
-        (key-var (gensym "key-"))
+        (key-sym (gensym "key-"))
         ;; the value
-        (val-var (gensym "val-"))
+        (val-sym (gensym "val-"))
         ;; place to which ref-var refers
-        (dat-place-var (gensym "dat-place-"))
+        (dat-place-sym (gensym "dat-place-"))
         ;; reference to the rest of alist to be searched, e.g. (cdr
         ;; DAT-PLACE-VAR)
         ;;
         ;; This value may be evaluated, so it must not contain other lists.
-        (rest-ref-var (gensym "rest-ref-"))
+        (rest-ref-sym (gensym "rest-ref-"))
         ;; whether we have found the cons
-        (found-var (gensym "found-")))
-    `(let ((,key-var ,key-exp)
-           (,val-var ,val-exp)
-           (,dat-place-var nil)
-           (,rest-ref-var ',alist-place)
-           (,found-var nil))
+        (found-sym (gensym "found-")))
+    `(let ((,key-sym ,key-exp)
+           (,val-sym ,val-exp)
+           (,dat-place-sym nil)
+           (,rest-ref-sym ',alist-place)
+           (,found-sym nil))
        ;; find the cons
-       (while (and (not ,found-var) (eval ,rest-ref-var))
-         (if (equal (caar (eval ,rest-ref-var)) ,key-var)
-             (setq ,found-var t)
-           (setq ,dat-place-var (eval ,rest-ref-var))
-           (setq ,rest-ref-var '(cdr ,dat-place-var))))
+       (while (and (not ,found-sym) (eval ,rest-ref-sym))
+         (if (equal (caar (eval ,rest-ref-sym)) ,key-sym)
+             (setq ,found-sym t)
+           (setq ,dat-place-sym (eval ,rest-ref-sym))
+           (setq ,rest-ref-sym '(cdr ,dat-place-sym))))
        ;; update the cons
-       (if (or ,val-var (eval ,no-delete-exp))
-           (if ,found-var
-               (setf (cdar (eval ,rest-ref-var)) ,val-var)
-             (eval (,'\` (setf (,'\, ,rest-ref-var)
-                               (list (cons ,key-var ,val-var))))))
-         (when ,found-var
-           (eval (,'\` (setf (,'\, ,rest-ref-var)
-                             (cdr (eval ,rest-ref-var))))))))))
+       (if (or ,val-sym (eval ,no-delete-exp))
+           (if ,found-sym
+               (setf (cdar (eval ,rest-ref-sym)) ,val-sym)
+             (eval (,'\` (setf (,'\, ,rest-ref-sym)
+                               (list (cons ,key-sym ,val-sym))))))
+         (when ,found-sym
+           (eval (,'\` (setf (,'\, ,rest-ref-sym)
+                             (cdr (eval ,rest-ref-sym))))))))))
 
 ;;;; finish up
 (provide 'common-utils)
