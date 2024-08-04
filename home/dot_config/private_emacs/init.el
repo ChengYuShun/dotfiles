@@ -299,7 +299,10 @@ frame, current terminal."
            cys/evil-collection-mode-hooks)
   ;; help
   (puthash 'help
-           (lambda () (evil-define-key 'normal help-mode-map (kbd "SPC") nil))
+           (lambda ()
+             (evil-define-key 'normal help-mode-map
+               (kbd "SPC") nil
+               [remap cys/evil-go-back] 'help-go-back))
            cys/evil-collection-mode-hooks)
   ;; info
   (puthash 'info
