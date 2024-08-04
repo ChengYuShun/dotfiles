@@ -576,6 +576,10 @@ frame, current terminal."
 ;;;; org-roam
 (use-package org-roam
 
+  :init
+  (defvar cys/org-roam-repo (file-truename "~/org-roam")
+    "The repository of Org-roam Zettels.")
+
   :straight (org-roam :type git
                       :host github
                       :repo "org-roam/org-roam"
@@ -586,7 +590,7 @@ frame, current terminal."
                              :branch "cys"
                              :remote "github"))
 
-  :custom (org-roam-directory (file-truename "~/org-roam"))
+  :custom (org-roam-directory (concat cys/org-roam-repo "/zettels"))
 
   :commands (cys/org-roam-node-find-global)
 
