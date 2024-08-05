@@ -606,15 +606,19 @@ frame, current terminal."
 
   (org-roam-db-autosync-enable)
 
-  (setq org-roam-capture-templates
-        '(("g" "global" plain ""
-           :target (file+head "%<%Y%m%d%H%M%S>-${id}.org"
-                              "#+title: ${title}\n#+filetags: :global:\n")
-           :unnarrowed t)
-          ("n" "non-global" plain ""
-           :target (file+head "%<%Y%m%d%H%M%S>-${id}.org"
-                              "#+title: ${title}\n")
-           :unnarrowed t)))
+  (let ((common-head (concat ":PROPERTIES:\n"
+                             ":CREATION_TIME: %<%FT%T%z>\n"
+                             ":END:\n"
+                             "#+title: ${title}\n"))
+        (file-name "${slug-dash}${id}.org"))
+    (setq org-roam-capture-templates
+          `(("g" "global" plain "%?"
+             :target (file+head ,file-name
+                                ,(concat common-head "#+filetags: :global:\n"))
+             :unnarrowed t)
+            ("n" "non-global" plain "%?"
+             :target (file+head ,file-name ,common-head)
+             :unnarrowed t))))
 
   (defun cys/org-roam-filter-global (node)
     (member "global" (org-roam-node-tags node)))
@@ -655,17 +659,16 @@ frame, current terminal."
           (org-roam-tag-remove '("global"))
         (org-roam-tag-add '("global")))))
 
+  (cl-defmethod org-roam-node-slug-dash ((node org-roam-node))
+    "Return the title line of NODE."
+    (let ((slug (org-roam-node-slug node)))
+      (if slug
+          (concat slug "-")
+        "")))
+
   ;;
   ;; functions that are no longer used
   ;;
-
-  ;; (cl-defmethod org-roam-node-title-or-id ((node org-roam-node))
-  ;;   "Return the title line of NODE."
-  ;;   (let ((title (org-roam-node-title node)))
-  ;;     (if (equal title "")
-  ;;         (subst-char-in-string ?- (string-to-char " ")
-  ;;                               (org-roam-node-id node))
-  ;;       title)))
 
   ;; (defun cys/org-roam-filter-by-tag (tag-name)
   ;;   "Give a function testing whether a node has TAG-NAME."
