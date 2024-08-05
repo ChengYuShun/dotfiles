@@ -118,6 +118,18 @@
 (cys/alist-set default-frame-alist 'width 75)
 (cys/alist-set default-frame-alist 'height 25)
 
+;;;; DPI
+(dolist (display (x-display-list))
+  (let ((dpi (string-to-number (getenv "DPI")))
+        (pixel-width (display-pixel-width display))
+        (pixel-height (display-pixel-height display))
+        (mm-width nil)
+        (mm-height nil))
+    (setq mm-width (round (* (/ pixel-width dpi) 25.4))
+          mm-height (round (* (/ pixel-height dpi) 25.4)))
+    (cys/alist-set display-mm-dimensions-alist display
+                   (cons mm-width mm-height))))
+
 ;;; control
 
 ;;;; no delay for echoing keystrokes
