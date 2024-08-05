@@ -64,21 +64,26 @@
   (remove-hook  'org-capture-mode-hook 'cys/org-capture-define-key))
 (add-hook 'org-capture-mode-hook 'cys/org-capture-define-key)
 
-;;;; latex preview
+;;;; Latex preview
+
+;;;;; basic settings
 (setq org-startup-with-latex-preview t)
-(setq org-latex-packages-alist '(("" "mhchem" t)
-                                 ("" "tikz-cd" t)))
+(setq org-latex-packages-alist
+      '(("" "mhchem" t)
+        ("" "tikz-cd" t)))
 
 ;;;;; SVG preview
 (cys/alist-set
  org-preview-latex-process-alist
  'cys-svg
- '(:programs
+ `(:programs
    ("latex" "pdftocairo" "inkscape")
    :description "pdf > svg"
    :message "you need to install the programs: latex, pdftocairo and inkscape."
    :image-input-type "pdf" :image-output-type "svg"
-   :image-size-adjust (1.7 . 1.5)
+   :image-size-adjust
+   ,(let ((scale (/ (float (string-to-number (getenv "DPI"))) 72.0)))
+      (cons scale scale))
    :latex-compiler
    ("pdflatex -interaction nonstopmode -output-directory %o %f")
    :image-converter
@@ -86,14 +91,12 @@
 (setq org-preview-latex-image-directory
       (concat (file-name-as-directory user-emacs-directory) "ltximg/"))
 (setq org-preview-latex-default-process 'cys-svg)
-(plist-put org-format-latex-options
-           :scale (cond ((equal kernel-name "Darwin") 1.5)
-                        (t 1)))
+(plist-put org-format-latex-options :scale 1.1)
 ;; 'default or 'auto doesn't work on macOS
 (plist-put org-format-latex-options :foreground "Black")
 (plist-put org-format-latex-options :background "Transparent")
 
-;;;;; functions for changing preview state
+;;;; functions for changing preview state
 (defvar-local cys/org-latex-preview-is-on t
   "Whether LaTeX preview is on in the current buffer.")
 (defun cys/org-show-latex-preview ()

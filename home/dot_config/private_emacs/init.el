@@ -540,6 +540,14 @@ frame, current terminal."
 (use-package org
   :after (evil)
   :commands (org-mode org-agenda)
+  :straight (org :type git
+                 :repo "https://git.savannah.gnu.org/git/emacs/org-mode.git"
+                 :branch "main"
+                 :remote "origin"
+                 :fork (:host github
+                        :repo "ChengYuShun/org-mode"
+                        :branch "cys"
+                        :remote "github"))
   :bind (:map org-mode-map
          ("C-c l" . nil)
          ("C-c l y" . org-store-link)

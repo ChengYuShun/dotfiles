@@ -32,7 +32,7 @@
  ("markdown-mode" . "8aab017f4790f7a1e0d8403239cce989c88412f6")
  ("melpa" . "b32886c36b1953c1448cee2d0c9536b2ebfdacaa")
  ("nongnu-elpa" . "28fde34f7d8c24a0ac07876e53e7f0c4b1d5e32d")
- ("org" . "50e34dde10ba6d88615b2892e2b33ac7a02e1366")
+ ("org" . "7568b899c92aa567171fe16c94bfd5bdd973c5d4")
  ("org-fragtog" . "562f6590843eeab30ac8aa2ced285aff8d590861")
  ("org-roam" . "8de4f4407a6e666d80ce615f31e21b6ac001ce14")
  ("org-roam-ui" . "5ac74960231db0bf7783c2ba7a19a60f582e91ab")
