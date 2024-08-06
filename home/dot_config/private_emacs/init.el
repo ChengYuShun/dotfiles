@@ -42,8 +42,8 @@
 
 ;;;; Load basic-settings.el
 (add-to-list 'load-path (concat user-emacs-directory "lisp"))
-(require 'common-utils)
-(require 'basic-settings)
+(require 'cys/common-utils)
+(require 'cys/basic-settings)
 
 ;;; Packages:
 
@@ -575,7 +575,7 @@ frame, current terminal."
                       (visual-line-mode 1)
                       (set-fill-column 70)
                       (org-fragtog-mode)))
-  :config (require 'org-config))
+  :config (require 'cys/org-config))
 
 ;;;; org-fragtog
 (use-package org-fragtog

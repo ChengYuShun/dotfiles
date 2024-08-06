@@ -22,7 +22,7 @@
 ;;; Code:
 
 ;;;; load requirements
-(require 'common-utils)
+(require 'cys/common-utils)
 
 ;;;; basic config
 (setq org-startup-indented t)
@@ -120,6 +120,6 @@
 (setq org-startup-with-inline-images t)
 
 ;;;; finish up
-(provide 'org-config)
+(provide 'cys/org-config)
 
 ;;; org-config.el ends here

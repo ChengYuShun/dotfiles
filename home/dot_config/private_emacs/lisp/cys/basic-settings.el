@@ -23,7 +23,7 @@
 ;;; basic
 
 ;;;; load files
-(require 'common-utils)
+(require 'cys/common-utils)
 
 ;;;; kernel name
 (defvar kernel-name (string-trim (shell-command-to-string "uname -s")))
@@ -155,6 +155,6 @@
   (keymap-global-set "s-w" nil))
 
 ;;; finish up
-(provide 'basic-settings)
+(provide 'cys/basic-settings)
 
 ;;; basic-settings.el ends here

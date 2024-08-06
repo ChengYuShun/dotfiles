@@ -103,6 +103,6 @@ cons will not be deleted."
                              (cdr (eval ,rest-ref-sym))))))))))
 
 ;;;; finish up
-(provide 'common-utils)
+(provide 'cys/common-utils)
 
 ;;; common-utils.el ends here
