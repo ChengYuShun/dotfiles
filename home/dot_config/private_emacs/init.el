@@ -17,7 +17,7 @@
 ;; You should have received a copy of the GNU General Public License along with
 ;; this file.  If not, see <https://www.gnu.org/licenses/>.
 
-;;; Prelude:
+;;; prelude
 
 ;;;; Bootstrap straight.el
 (defvar bootstrap-version)
@@ -38,6 +38,7 @@
 
 ;;;; Install use-package.
 (straight-use-package 'use-package)
+(setq straight-allow-recipe-inheritance t)
 (setq straight-use-package-by-default t)
 
 ;;;; Load basic-settings.el
@@ -45,7 +46,167 @@
 (require 'cys/common-utils)
 (require 'cys/basic-settings)
 
-;;; Packages:
+;;; packages with a custom recipe
+
+;;;; org
+(use-package org
+  :after (evil)
+  :commands (org-mode org-agenda)
+  :straight (org :type git
+                 :repo "https://git.savannah.gnu.org/git/emacs/org-mode.git"
+                 :branch "main"
+                 :remote "origin"
+                 :fork (:host github
+                        :repo "ChengYuShun/org-mode"
+                        :branch "cys"
+                        :remote "github"))
+  :bind (:map org-mode-map
+         ("C-c l" . nil)
+         ("C-c l y" . org-store-link)
+         ("C-c l p" . org-insert-link)
+         ("C-c l t" . org-toggle-link-display)
+         ;; LaTeX preview
+         ("C-c m t" . cys/org-toggle-latex-preview)
+         ("C-c m s" . cys/org-show-latex-preview)
+         ("C-c m h" . cys/org-hide-latex-preview)
+         ;; inline images
+         ("C-c i t" . org-toggle-inline-images)
+         ("C-c i s" . org-display-inline-images)
+         ("C-c i h" . org-remove-inline-images)
+         ;; reserved for org-roam
+         ("C-c n i g" . cys/org-roam-node-insert-global)
+         ("C-c n i n" . cys/org-roam-node-insert-non-global)
+         ("C-c n l y" . org-roam-link-store)
+         ("C-c n l p" . org-roam-link-paste)
+         ("C-c n l o" . org-roam-link-open)
+         ("C-c n b" . org-roam-buffer-toggle)
+         ("C-c n d" . cys/org-roam-node-delete)
+         ("C-c n g" . cys/org-roam-global-toggle))
+  :hook (org-mode . (lambda ()
+                      (display-fill-column-indicator-mode -1)
+                      (visual-line-mode 1)
+                      (set-fill-column 70)
+                      (org-fragtog-mode)))
+  :config (require 'cys/org-config))
+
+;;;; org-roam
+(use-package org-roam
+
+  :init
+  (defvar cys/org-roam-repo (file-truename "~/org-roam")
+    "The repository of Org-roam Zettels.")
+
+  :straight (org-roam :type git
+                      :host github
+                      :repo "org-roam/org-roam"
+                      :branch "main"
+                      :remote "origin"
+                      :fork (:host github
+                             :repo "ChengYuShun/org-roam"
+                             :branch "cys"
+                             :remote "github"))
+
+  :custom (org-roam-directory (concat cys/org-roam-repo "/zettels"))
+
+  :commands (cys/org-roam-node-find-global)
+
+  :config
+
+  (org-roam-db-autosync-enable)
+
+  (let ((common-head (concat ":PROPERTIES:\n"
+                             ":CREATION_TIME: %<%FT%T%z>\n"
+                             ":END:\n"
+                             "#+title: ${title}\n"))
+        (file-name "${slug-dash}${id}.org"))
+    (setq org-roam-capture-templates
+          `(("g" "global" plain "%?"
+             :target (file+head ,file-name
+                                ,(concat common-head "#+filetags: :global:\n"))
+             :unnarrowed t)
+            ("n" "non-global" plain "%?"
+             :target (file+head ,file-name ,common-head)
+             :unnarrowed t))))
+
+  (defun cys/org-roam-filter-global (node)
+    (member "global" (org-roam-node-tags node)))
+
+  (defun cys/org-roam-node-find-global ()
+    "Find a global node."
+    (interactive)
+    (org-roam-node-find nil nil #'cys/org-roam-filter-global nil
+                        :templates `(,(nth 0 org-roam-capture-templates))))
+
+  (defun cys/org-roam-node-insert-global ()
+    "Insert a global node."
+    (interactive)
+    (org-roam-node-insert #'cys/org-roam-filter-global
+                          :templates `(,(nth 0 org-roam-capture-templates))))
+
+  (defun cys/org-roam-node-insert-non-global ()
+    "Insert a non-global node."
+    (interactive)
+    (org-roam-node-insert #'(lambda (node) nil)
+                          :templates `(,(nth 1 org-roam-capture-templates))))
+
+  (defun cys/org-roam-node-delete (&optional show-prompt)
+    "Delete a node."
+    (interactive "p")
+    (when (or (not show-prompt)
+              (yes-or-no-p "Do you really want to delete this note?"))
+      (save-buffer)
+      (let ((file-name (buffer-file-name)))
+        (kill-buffer)
+        (delete-file file-name))))
+
+  (defun cys/org-roam-global-toggle ()
+    "Toggle the global tag for the node at point."
+    (interactive)
+    (let ((node (org-roam-node-at-point)))
+      (if (member "global" (org-roam-node-tags node))
+          (org-roam-tag-remove '("global"))
+        (org-roam-tag-add '("global")))))
+
+  (cl-defmethod org-roam-node-slug-dash ((node org-roam-node))
+    "Return the title line of NODE."
+    (let ((slug (org-roam-node-slug node)))
+      (if (and slug (not (equal slug "")))
+          (concat slug "-")
+        "")))
+
+  ;;
+  ;; functions that are no longer used
+  ;;
+
+  ;; (defun cys/org-roam-filter-by-tag (tag-name)
+  ;;   "Give a function testing whether a node has TAG-NAME."
+  ;;   (eval `(lambda (node) (member ,tag-name (org-roam-node-tags node)))))
+
+  ;; (defun cys/org-roam-block-by-tag (tag-name)
+  ;;   "Give a function testing whether a node does not have TAG-NAME."
+  ;;   (eval `(lambda (node) (not (member ,tag-name (org-roam-node-tags node))))))
+
+  ;; (defun cys/org-roam-node-find-not-drafted ()
+  ;;   "Find a finished node."
+  ;;   (interactive)
+  ;;   (org-roam-node-find
+  ;;    nil nil
+  ;;    (cys/org-roam-block-by-tag "draft")))
+
+  ;; (defun cys/org-roam-draft-find ()
+  ;;   "Find a draft node."
+  ;;   (interactive)
+  ;;   (org-roam-node-find
+  ;;    nil nil
+  ;;    (cys/org-roam-filter-by-tag "draft")))
+  )
+
+;;;; yapfify
+(use-package yapfify
+  :straight (:host github :repo "ChengYuShun/yapfify.el" :branch "no_modify")
+  :commands (yapfify-buffer))
+
+;;; packages without custom recipe
 
 ;;;; adoc-mode
 (use-package adoc-mode
@@ -536,162 +697,9 @@ frame, current terminal."
                   paragraph-separate (concat magic-str paragraph-separate))))
   (add-hook 'markdown-mode-hook 'math-paragraph))
 
-;;;; org
-(use-package org
-  :after (evil)
-  :commands (org-mode org-agenda)
-  :straight (org :type git
-                 :repo "https://git.savannah.gnu.org/git/emacs/org-mode.git"
-                 :branch "main"
-                 :remote "origin"
-                 :fork (:host github
-                        :repo "ChengYuShun/org-mode"
-                        :branch "cys"
-                        :remote "github"))
-  :bind (:map org-mode-map
-         ("C-c l" . nil)
-         ("C-c l y" . org-store-link)
-         ("C-c l p" . org-insert-link)
-         ("C-c l t" . org-toggle-link-display)
-         ;; LaTeX preview
-         ("C-c m t" . cys/org-toggle-latex-preview)
-         ("C-c m s" . cys/org-show-latex-preview)
-         ("C-c m h" . cys/org-hide-latex-preview)
-         ;; inline images
-         ("C-c i t" . org-toggle-inline-images)
-         ("C-c i s" . org-display-inline-images)
-         ("C-c i h" . org-remove-inline-images)
-         ;; reserved for org-roam
-         ("C-c n i g" . cys/org-roam-node-insert-global)
-         ("C-c n i n" . cys/org-roam-node-insert-non-global)
-         ("C-c n l y" . org-roam-link-store)
-         ("C-c n l p" . org-roam-link-paste)
-         ("C-c n l o" . org-roam-link-open)
-         ("C-c n b" . org-roam-buffer-toggle)
-         ("C-c n d" . cys/org-roam-node-delete)
-         ("C-c n g" . cys/org-roam-global-toggle))
-  :hook (org-mode . (lambda ()
-                      (display-fill-column-indicator-mode -1)
-                      (visual-line-mode 1)
-                      (set-fill-column 70)
-                      (org-fragtog-mode)))
-  :config (require 'cys/org-config))
-
 ;;;; org-fragtog
 (use-package org-fragtog
   :commands (org-fragtog-mode))
-
-;;;; org-roam
-(use-package org-roam
-
-  :init
-  (defvar cys/org-roam-repo (file-truename "~/org-roam")
-    "The repository of Org-roam Zettels.")
-
-  :straight (org-roam :type git
-                      :host github
-                      :repo "org-roam/org-roam"
-                      :branch "main"
-                      :remote "origin"
-                      :fork (:host github
-                             :repo "ChengYuShun/org-roam"
-                             :branch "cys"
-                             :remote "github"))
-
-  :custom (org-roam-directory (concat cys/org-roam-repo "/zettels"))
-
-  :commands (cys/org-roam-node-find-global)
-
-  :config
-
-  (org-roam-db-autosync-enable)
-
-  (let ((common-head (concat ":PROPERTIES:\n"
-                             ":CREATION_TIME: %<%FT%T%z>\n"
-                             ":END:\n"
-                             "#+title: ${title}\n"))
-        (file-name "${slug-dash}${id}.org"))
-    (setq org-roam-capture-templates
-          `(("g" "global" plain "%?"
-             :target (file+head ,file-name
-                                ,(concat common-head "#+filetags: :global:\n"))
-             :unnarrowed t)
-            ("n" "non-global" plain "%?"
-             :target (file+head ,file-name ,common-head)
-             :unnarrowed t))))
-
-  (defun cys/org-roam-filter-global (node)
-    (member "global" (org-roam-node-tags node)))
-
-  (defun cys/org-roam-node-find-global ()
-    "Find a global node."
-    (interactive)
-    (org-roam-node-find nil nil #'cys/org-roam-filter-global nil
-                        :templates `(,(nth 0 org-roam-capture-templates))))
-
-  (defun cys/org-roam-node-insert-global ()
-    "Insert a global node."
-    (interactive)
-    (org-roam-node-insert #'cys/org-roam-filter-global
-                          :templates `(,(nth 0 org-roam-capture-templates))))
-
-  (defun cys/org-roam-node-insert-non-global ()
-    "Insert a non-global node."
-    (interactive)
-    (org-roam-node-insert #'(lambda (node) nil)
-                          :templates `(,(nth 1 org-roam-capture-templates))))
-
-  (defun cys/org-roam-node-delete (&optional show-prompt)
-    "Delete a node."
-    (interactive "p")
-    (when (or (not show-prompt)
-              (yes-or-no-p "Do you really want to delete this note?"))
-      (save-buffer)
-      (let ((file-name (buffer-file-name)))
-        (kill-buffer)
-        (delete-file file-name))))
-
-  (defun cys/org-roam-global-toggle ()
-    "Toggle the global tag for the node at point."
-    (interactive)
-    (let ((node (org-roam-node-at-point)))
-      (if (member "global" (org-roam-node-tags node))
-          (org-roam-tag-remove '("global"))
-        (org-roam-tag-add '("global")))))
-
-  (cl-defmethod org-roam-node-slug-dash ((node org-roam-node))
-    "Return the title line of NODE."
-    (let ((slug (org-roam-node-slug node)))
-      (if (and slug (not (equal slug "")))
-          (concat slug "-")
-        "")))
-
-  ;;
-  ;; functions that are no longer used
-  ;;
-
-  ;; (defun cys/org-roam-filter-by-tag (tag-name)
-  ;;   "Give a function testing whether a node has TAG-NAME."
-  ;;   (eval `(lambda (node) (member ,tag-name (org-roam-node-tags node)))))
-
-  ;; (defun cys/org-roam-block-by-tag (tag-name)
-  ;;   "Give a function testing whether a node does not have TAG-NAME."
-  ;;   (eval `(lambda (node) (not (member ,tag-name (org-roam-node-tags node))))))
-
-  ;; (defun cys/org-roam-node-find-not-drafted ()
-  ;;   "Find a finished node."
-  ;;   (interactive)
-  ;;   (org-roam-node-find
-  ;;    nil nil
-  ;;    (cys/org-roam-block-by-tag "draft")))
-
-  ;; (defun cys/org-roam-draft-find ()
-  ;;   "Find a draft node."
-  ;;   (interactive)
-  ;;   (org-roam-node-find
-  ;;    nil nil
-  ;;    (cys/org-roam-filter-by-tag "draft")))
-  )
 
 ;;;; org-roam-ui
 (use-package org-roam-ui
@@ -794,8 +802,3 @@ frame, current terminal."
 ;;;; yaml-mode.
 (use-package yaml-mode
   :commands (yaml-mode))
-
-;;;; yapfify
-(use-package yapfify
-  :straight (:host github :repo "ChengYuShun/yapfify.el" :branch "no_modify")
-  :commands (yapfify-buffer))
