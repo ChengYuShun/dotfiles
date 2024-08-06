@@ -662,7 +662,7 @@ frame, current terminal."
   (cl-defmethod org-roam-node-slug-dash ((node org-roam-node))
     "Return the title line of NODE."
     (let ((slug (org-roam-node-slug node)))
-      (if slug
+      (if (and slug (not (equal slug "")))
           (concat slug "-")
         "")))
 
