@@ -102,6 +102,20 @@ cons will not be deleted."
            (eval (,'\` (setf (,'\, ,rest-ref-sym)
                              (cdr (eval ,rest-ref-sym))))))))))
 
+(defmacro cys/alist-set-many (alist-place &rest key-val-exps)
+  "Update the association list.
+
+KEY-VAL-EXPS are key expressions and value expressions."
+  (let ((macro-calls nil))
+    (while key-val-exps
+      (let ((key-exp (car key-val-exps))
+            (val-exp (cadr key-val-exps)))
+        (setq key-val-exps (cddr key-val-exps))
+        (setq macro-calls
+              (cons `(cys/alist-set ,alist-place ,key-exp ,val-exp)
+                    macro-calls))))
+    (cons 'progn macro-calls)))
+
 ;;;; finish up
 (provide 'cys/common-utils)
 
