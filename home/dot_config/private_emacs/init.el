@@ -127,7 +127,7 @@
      (shell-command-to-string "agda-mode-wrapper locate"))))
 
 ;;;; ahk-mode.
-(when (string-prefix-p "MSYS" kernel-name)
+(when (eq system-type 'windows-nt)
   (use-package ahk-mode
     :commands (ahk-mode)))
 
@@ -190,7 +190,7 @@
          ("<right>"       . company-complete-common))
   :config
   (setq company-idle-delay 0.05)
-  (unless (string-prefix-p "MSYS" kernel-name)
+  (unless (eq system-type 'windows-nt)
     (global-company-mode)))
 
 ;;;; conf-mode
@@ -589,7 +589,7 @@ frame, current terminal."
          ("SPC" . nil))
   :hook (git-commit-mode . (lambda () (set-fill-column 69)))
   :config
-  (when (string-prefix-p "MSYS" kernel-name)
+  (when (eq system-type 'windows-nt)
     (setq magit-git-executable "C:\\msys64\\usr\\bin\\git.exe")))
 
 ;;;; markdown-mode
@@ -680,7 +680,7 @@ frame, current terminal."
   (setq sh-basic-offset 2))
 
 ;;;; smtpmail.
-;; (unless (string-prefix-p "MSYS" kernel-name)
+;; (unless (eq system-type 'windows-nt)
 ;;   (use-package smtpmail
 ;;     :config
 ;;     (setq smtpmail-local-domain (system-name))))

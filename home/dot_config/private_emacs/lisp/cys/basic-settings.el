@@ -25,9 +25,6 @@
 ;;;; load files
 (require 'cys/common-utils)
 
-;;;; kernel name
-(defvar kernel-name (string-trim (shell-command-to-string "uname -s")))
-
 ;;;; disable warnings
 (setq warning-suppress-types '((comp)))
 
@@ -95,7 +92,7 @@
                      ("Source Han Mono SC" . 1.2)))
   (add-to-list 'face-font-rescale-alist font-pair))
 
-(when (string-prefix-p "MSYS" kernel-name)
+(when (eq system-type 'window-nt)
   (set-fontset-font t 'unicode "Consolas")
   (set-fontset-font t 'emoji "Segoe UI Emoji")
   (set-fontset-font t 'han "微软雅黑"))
@@ -106,9 +103,9 @@
 (set-face-attribute
  'default nil
  :height (cond
-          ((string-prefix-p "MSYS" kernel-name) 100)
+          ((eq system-type 'windows-nt) 100)
           ((equal (getenv "DMI_PRODUCT_NAME") "HP EliteBook 755 G5") 96)
-          ((equal kernel-name "Darwin") 130)
+          ((eq system-type 'darwin) 130)
           (t 100)))
 
 ;;;; disable tool-bar-mode
@@ -150,7 +147,7 @@
 (setq Man-notify-method 'thrifty)
 
 ;;;; disable s-q on macOS for quitting (whoever added that binding was ******)
-(when (equal kernel-name "Darwin")
+(when (eq system-type 'darwin)
   (keymap-global-set "s-q" nil)
   (keymap-global-set "s-w" nil))
 
