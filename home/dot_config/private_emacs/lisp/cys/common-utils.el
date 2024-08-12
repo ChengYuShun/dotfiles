@@ -56,6 +56,24 @@ The value of the last argument of BODY will be returned."
          (progn ,@body)
        (delete-file ,path-var))))
 
+;;;; with current buffer visible
+
+(defmacro cys/with-current-buffer-visible (buffer-or-name &rest body)
+  "Execute the forms in BODY with BUFFER-OR-NAME temporarily current.
+
+We also make this buffer visible during the execution."
+  (let ((former-buffer-sym (gensym "former-buffer-"))
+        (buffer-sym (gensym "buffer-"))
+        (display-action-sym (gensym "display-action-")))
+    `(let ((,former-buffer-sym (current-buffer))
+           (,buffer-sym (get-buffer ,buffer-or-name))
+           (,display-action-sym '((display-buffer-same-window)
+                                  . ((inhibit-same-window . nil)))))
+       (display-buffer ,buffer-sym ,display-action-sym)
+       (unwind-protect
+           (with-current-buffer ,buffer-sym (progn ,@body))
+         (display-buffer ,former-buffer-sym ,display-action-sym)))))
+
 ;;;; associate list
 
 (defmacro cys/alist-set (alist-place key-exp val-exp &optional no-delete-exp)

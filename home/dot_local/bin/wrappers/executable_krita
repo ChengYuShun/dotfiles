@@ -1,0 +1,11 @@
+#!/bin/sh
+
+UNAME_S="$(uname -s)"
+
+if [ "$UNAME_S" = "Linux" ]; then
+  exec /usr/bin/krita "$@"
+elif [ "$UNAME_S" = "Darwin" ]; then
+  exec /Applications/krita.app/Contents/MacOS/krita "$@"
+fi
+
+exit 1

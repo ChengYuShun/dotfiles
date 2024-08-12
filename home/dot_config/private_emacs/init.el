@@ -58,28 +58,6 @@
                         :repo "ChengYuShun/org-mode"
                         :branch "cys"
                         :remote "github"))
-  :bind (:map org-mode-map
-         ("C-c l" . nil)
-         ("C-c l y" . org-store-link)
-         ("C-c l p" . org-insert-link)
-         ("C-c l t" . org-toggle-link-display)
-         ;; LaTeX preview
-         ("C-c m t" . cys/org-toggle-latex-preview)
-         ("C-c m s" . cys/org-show-latex-preview)
-         ("C-c m h" . cys/org-hide-latex-preview)
-         ;; inline images
-         ("C-c i t" . org-toggle-inline-images)
-         ("C-c i s" . org-display-inline-images)
-         ("C-c i h" . org-remove-inline-images)
-         ;; reserved for org-roam
-         ("C-c n i g" . cys/org-roam-node-insert-global)
-         ("C-c n i n" . cys/org-roam-node-insert-non-global)
-         ("C-c n l y" . org-roam-link-store)
-         ("C-c n l p" . org-roam-link-paste)
-         ("C-c n l o" . org-roam-link-open)
-         ("C-c n b" . org-roam-buffer-toggle)
-         ("C-c n d" . cys/org-roam-node-delete)
-         ("C-c n g" . cys/org-roam-global-toggle))
   :hook (org-mode . (lambda ()
                       (display-fill-column-indicator-mode -1)
                       (visual-line-mode 1)

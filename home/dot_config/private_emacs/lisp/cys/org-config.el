@@ -33,6 +33,35 @@
   [remap cys/evil-open-link] 'org-open-at-point
   [remap cys/evil-go-back] 'org-mark-ring-goto)
 
+;;;; key bindings
+(dolist (pair '(;; link
+                ("C-c l" . nil)
+                ("C-c l y" . org-store-link)
+                ("C-c l p" . org-insert-link)
+                ("C-c l t" . org-toggle-link-display)
+                ;; LaTeX preview
+                ("C-c m t" . cys/org-toggle-latex-preview)
+                ("C-c m s" . cys/org-show-latex-preview)
+                ("C-c m h" . cys/org-hide-latex-preview)
+                ;; inline images
+                ("C-c i t" . org-toggle-inline-images)
+                ("C-c i s" . org-display-inline-images)
+                ("C-c i h" . org-remove-inline-images)
+                ;; reserved for org-roam
+                ("C-c n i g" . cys/org-roam-node-insert-global)
+                ("C-c n i n" . cys/org-roam-node-insert-non-global)
+                ("C-c n l y" . org-roam-link-store)
+                ("C-c n l p" . org-roam-link-paste)
+                ("C-c n l o" . org-roam-link-open)
+                ("C-c n k i" . cys/org-roam-diagram-insert)
+                ("C-c n k c" . cys/org-roam-diagram-modify)
+                ("C-c n k d" . cys/org-roam-diagram-delete)
+                ("C-c n k x" . cys/org-roam-diagram-finish)
+                ("C-c n b" . org-roam-buffer-toggle)
+                ("C-c n d" . cys/org-roam-node-delete)
+                ("C-c n g" . cys/org-roam-global-toggle)))
+  (keymap-set org-mode-map (car pair) (cdr pair)))
+
 ;;;; org-agenda
 (setq org-deadline-warning-days 30)
 (setq org-agenda-files '("~/org-agenda/"))

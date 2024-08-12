@@ -1,0 +1,38 @@
+#!/usr/bin/env python3
+
+if __name__ == "__main__":
+    from PIL import Image
+    from argparse import ArgumentParser
+    import numpy as np
+
+    parser = ArgumentParser(description="remove the black background of a PNG")
+    parser.add_argument("input_path", type=str, help="path to the input PNG")
+    parser.add_argument("output_path", type=str, help="path to the output PNG")
+    args = parser.parse_args()
+
+    # open the input image
+    with Image.open(args.input_path) as im:
+
+        dpi = im.info.get("dpi", None)
+
+        # get ready to do the maths
+        image = im.convert(mode="RGB")
+        arr = np.asarray(image) / 255
+        new_rgba = np.zeros(arr.shape[0:-1] + (4, ))
+
+        # calculate lightness
+        l = 0.5 / 256
+        for i in range(3):
+            l = np.maximum(l, arr[:, :, i])
+        new_rgba[:, :, 3] = l
+
+        # calculate the pixels
+        for i in range(3):
+            new_rgba[:, :, i] = arr[:, :, i] / new_rgba[:, :, 3]
+        pixels = np.round(new_rgba * 255).astype(np.int8)
+
+        # store the pixels
+        image = Image.fromarray(pixels, mode="RGBA")
+
+        # save the image
+        image.save(args.output_path, dpi=dpi)
