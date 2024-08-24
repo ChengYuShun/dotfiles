@@ -153,10 +153,10 @@ starts."
 
 If OVERWRITE is nil, do not overwrite if DST-PATH already exists
 as a file; otherwise, overwrite the file at DST-PATH, if any."
-  (when (file-exists-p dst-path)
-    (if overwrite
-        (delete-file dst-path)
-      (error "DST-PATH already exists as a file.")))
+  (if (file-exists-p dst-path)
+      (unless overwrite
+        (error "DST-PATH already exists as a file."))
+    (setq overwrite nil))
   (cys/with-temp-dir mid-dir
     (let* ((quoted-src-path (shell-quote-argument (file-truename src-path)))
            (quoted-dst-path (shell-quote-argument (file-truename dst-path)))
@@ -171,12 +171,15 @@ as a file; otherwise, overwrite the file at DST-PATH, if any."
            (command-3 (concat "magick convert "
                               quoted-mid-2-path
                               " -trim "
-                              "-alpha set -bordercolor none -border 0x20 "
                               "-quality 105 "
                               quoted-dst-path)))
-      (call-process-shell-command command-1)
-      (call-process-shell-command command-2)
-      (call-process-shell-command command-3))))
+      (unless (eql (call-process-shell-command command-1) 0)
+        (error "krita command error"))
+      (unless (eql (call-process-shell-command command-2) 0)
+        (error "png-rm-black-bg command error"))
+      (when overwrite (delete-file dst-path))
+      (unless (eql (call-process-shell-command command-3) 0)
+        (error "magick error")))))
 
 (defun cys/org-roam-diagram-interrupt (&optional buffer prompt-p)
   "Remove the diagram being edited in BUFFER, if any.
