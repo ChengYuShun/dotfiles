@@ -93,13 +93,20 @@
                      ("Noto Color Emoji" . 0.95)
                      ("微软雅黑" . 1.1)
                      ("Source Han Sans CN" . 1.2)
-                     ("Source Han Mono SC" . 1.2)))
-  (add-to-list 'face-font-rescale-alist font-pair))
+                     ("Source Han Mono SC" . 1.2)
+                     ("Heiti" . 1.2)
+                     ("Heiti SC" . 1.2)
+                     ("Heiti TC" . 1.2)))
+  (cys/alist-set face-font-rescale-alist (car font-pair) (cdr font-pair)))
 
 (when (eq system-type 'window-nt)
   (set-fontset-font t 'unicode "Consolas")
   (set-fontset-font t 'emoji "Segoe UI Emoji")
   (set-fontset-font t 'han "微软雅黑"))
+
+(when (eq system-type 'darwin)
+  (set-fontset-font t 'unicode "Menlo")
+  (set-fontset-font t 'han "Heiti SC"))
 
 ;;;; faces
 (set-face-background 'default "black")
