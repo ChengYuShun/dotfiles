@@ -23,15 +23,13 @@
 
 ;;;; load requirements
 (require 'cys/common-utils)
+(require 'simple)
 
 ;;;; basic config
 (setq org-startup-indented t)
 (setq org-export-with-smart-quotes t)
 (setq org-startup-folded 'nofold
       org-cycle-hide-drawer-startup t)
-(evil-define-key 'normal org-mode-map
-  [remap cys/evil-open-link] 'org-open-at-point
-  [remap cys/evil-go-back] 'org-mark-ring-goto)
 
 ;;;; key bindings
 (dolist (pair '(;; link
@@ -61,6 +59,10 @@
                 ("C-c n d" . cys/org-roam-node-delete)
                 ("C-c n g" . cys/org-roam-global-toggle)))
   (keymap-set org-mode-map (car pair) (cdr pair)))
+(define-key visual-line-mode-map [remap org-fill-paragraph] #'ignore)
+(evil-define-key 'normal org-mode-map
+  [remap cys/evil-open-link] 'org-open-at-point
+  [remap cys/evil-go-back] 'org-mark-ring-goto)
 
 ;;;; org-agenda
 (setq org-deadline-warning-days 30)
