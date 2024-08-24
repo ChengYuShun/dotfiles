@@ -57,7 +57,8 @@
                 ("C-c n k x" . cys/org-roam-diagram-finish)
                 ("C-c n b" . org-roam-buffer-toggle)
                 ("C-c n d" . cys/org-roam-node-delete)
-                ("C-c n g" . cys/org-roam-global-toggle)))
+                ("C-c n g" . cys/org-roam-global-toggle)
+                ("C-c n a" . cys/org-roam-agenda-toggle)))
   (keymap-set org-mode-map (car pair) (cdr pair)))
 (define-key visual-line-mode-map [remap org-fill-paragraph] #'ignore)
 (evil-define-key 'normal org-mode-map
@@ -65,8 +66,7 @@
   [remap cys/evil-go-back] 'org-mark-ring-goto)
 
 ;;;; org-agenda
-(setq org-deadline-warning-days 30)
-(setq org-agenda-files '("~/org-agenda/"))
+(setq org-deadline-warning-days 43)
 (setq org-agenda-start-on-weekday nil)
 (setq org-log-done t)
 (evil-define-key 'motion org-agenda-mode-map
@@ -76,6 +76,10 @@
   (kbd "RET") 'org-agenda-switch-to
   (kbd "<tab>") 'org-agenda-goto)
 (evil-set-initial-state 'org-agenda-mode 'motion)
+(defun cys/org-agenda ()
+  (interactive)
+  (cys/org-roam-agenda-files-update)
+  (org-agenda))
 
 ;;;; babel
 (org-babel-do-load-languages 'org-babel-load-languages

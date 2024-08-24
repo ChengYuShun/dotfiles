@@ -51,7 +51,7 @@
 ;;;; org
 (use-package org
   :after (evil)
-  :commands (org-mode org-agenda)
+  :commands (org-mode cys/org-agenda)
   :straight (org :type git
                  :remote "origin"
                  :fork (:host github
@@ -80,7 +80,7 @@
                              :branch "cys"
                              :remote "github"))
   :custom (org-roam-directory (concat cys/org-roam-repo "/zettels"))
-  :commands (cys/org-roam-node-find-global)
+  :commands (cys/org-roam-node-find-global cys/org-roam-agenda-files-update)
   :config
   (require 'cys/org-roam-config))
 
@@ -241,7 +241,7 @@
          ;; magit
          ("SPC g" . magit-status)
          ;; org-agenda
-         ("SPC a" . org-agenda)
+         ("SPC a" . cys/org-agenda)
          ;; org-roam
          ("SPC n" . cys/org-roam-node-find-global)
          ;; Tab and jumping.

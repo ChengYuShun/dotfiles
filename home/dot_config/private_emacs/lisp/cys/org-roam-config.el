@@ -42,21 +42,51 @@
            :target (file+head ,file-name ,common-head)
            :unnarrowed t))))
 
-;;;; interactive commands
+;;;; common subroutines
 
-(defun cys/org-roam-filter-global (node)
-  (member "global" (org-roam-node-tags node)))
+(cl-defmethod org-roam-node-slug-dash ((node org-roam-node))
+  "Return the title line of NODE."
+  (let ((slug (org-roam-node-slug node)))
+    (if (and slug (not (equal slug "")))
+        (concat slug "-") "")))
+
+(defun cys/org-roam-tag-filter (tag-name)
+  "Return a filter that selects TAG-NAME."
+  (eval `(lambda (node) (member ,tag-name (org-roam-node-tags node)))))
+
+(defconst cys/org-roam-filter-global (cys/org-roam-tag-filter "global")
+  "Filter for the \"global\" tag.")
+
+(defconst cys/org-roam-filter-task (cys/org-roam-tag-filter "agenda")
+  "Filter for the \"agenda\" tag.")
+
+(defun cys/org-roam-tag-toggle (tag-name)
+  "Toggle the tag TAG-NAME.
+
+Return t if the tag was removed, and return nil if the tag was added."
+  (let ((node (org-roam-node-at-point t)))
+    (if (member tag-name (org-roam-node-tags node))
+        (progn (org-roam-tag-remove (list tag-name)) t)
+      (org-roam-tag-add (list tag-name))
+      nil)))
+
+(defun cys/org-roam-agenda-files-update ()
+  (setq org-agenda-files
+        (mapcar #'org-roam-node-file (seq-filter cys/org-roam-filter-task
+                                                 (org-roam-node-list)))))
+
+;;;; interactive commands
 
 (defun cys/org-roam-node-find-global ()
   "Find a global node."
   (interactive)
-  (org-roam-node-find nil nil #'cys/org-roam-filter-global nil
+  (org-roam-node-find nil nil cys/org-roam-filter-global nil
                       :templates `(,(nth 0 org-roam-capture-templates))))
 
 (defun cys/org-roam-node-insert-global ()
   "Insert a global node."
   (interactive)
-  (org-roam-node-insert #'cys/org-roam-filter-global
+  (org-roam-node-insert cys/org-roam-filter-global
                         :templates `(,(nth 0 org-roam-capture-templates))))
 
 (defun cys/org-roam-node-insert-non-global ()
@@ -79,18 +109,15 @@
 (defun cys/org-roam-global-toggle ()
   "Toggle the global tag for the node at point."
   (interactive)
-  (let ((node (org-roam-node-at-point t)))
-    (if (member "global" (org-roam-node-tags node))
-        (org-roam-tag-remove '("global"))
-      (org-roam-tag-add '("global")))))
+  (cys/org-roam-tag-toggle "global"))
 
-;;;; common subroutines
-
-(cl-defmethod org-roam-node-slug-dash ((node org-roam-node))
-  "Return the title line of NODE."
-  (let ((slug (org-roam-node-slug node)))
-    (if (and slug (not (equal slug "")))
-        (concat slug "-") "")))
+(defun cys/org-roam-agenda-toggle ()
+  (interactive)
+  (let* ((node (org-roam-node-at-point))
+         (file (org-roam-node-file node)))
+  (if (cys/org-roam-tag-toggle "agenda")
+      (setq org-agenda-files (delete file org-agenda-files))
+    (add-to-list 'org-agenda-files file))))
 
 ;;;; diagram with Krita
 
