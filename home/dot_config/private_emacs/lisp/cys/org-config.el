@@ -60,13 +60,14 @@
                 ("C-c n g" . cys/org-roam-global-toggle)
                 ("C-c n a" . cys/org-roam-agenda-toggle)))
   (keymap-set org-mode-map (car pair) (cdr pair)))
+(define-key org-mode-map "M" nil)
 (define-key visual-line-mode-map [remap org-fill-paragraph] #'ignore)
 (evil-define-key 'normal org-mode-map
   [remap cys/evil-open-link] 'org-open-at-point
   [remap cys/evil-go-back] 'org-mark-ring-goto)
 
 ;;;; org-agenda
-(setq org-deadline-warning-days 43)
+(setq org-deadline-warning-days 0)
 (setq org-agenda-start-on-weekday nil)
 (setq org-log-done t)
 (evil-define-key 'motion org-agenda-mode-map

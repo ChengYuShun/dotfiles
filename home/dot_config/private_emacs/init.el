@@ -219,6 +219,8 @@
          ("g <up>" . evil-previous-visual-line)
          ;; no return please
          ("RET" . nil)
+         ;; unbind t, since it is quite similar to f
+         ("t" . nil)
          ;; unbind space
          ("SPC" . nil)
          ;; buffers
@@ -271,6 +273,7 @@
          ("<return>" . comment-indent-new-line))
 
   :config
+  (require 'cys/evil-config)
 
   (evil-define-command evil-quit (&optional force)
     "Kill the current buffer, and close the current window, current

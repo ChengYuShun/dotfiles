@@ -27,3 +27,8 @@
 (evil-define-key 'normal visual-line-mode-map
   "j" #'evil-next-visual-line
   "k" #'evil-previous-visual-line)
+
+;;;; finish up
+(provide 'cys/evil-config)
+
+;;; evil-config.el ends here.
