@@ -58,12 +58,14 @@
                         :repo "ChengYuShun/org-mode"
                         :branch "cys"
                         :remote "github"))
-  :hook (org-mode . (lambda ()
-                      (display-fill-column-indicator-mode -1)
-                      (visual-line-mode 1)
-                      (set-fill-column 70)
-                      (org-fragtog-mode)))
-  :config (require 'cys/org-config))
+  :hook (org-mode . cys/org-mode-hook)
+  :config
+  (defun cys/org-mode-hook ()
+    (display-fill-column-indicator-mode -1)
+    (visual-line-mode 1)
+    (set-fill-column 70)
+    (org-fragtog-mode))
+  (require 'cys/org-config))
 
 ;;;; org-roam
 (use-package org-roam

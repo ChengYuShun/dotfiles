@@ -155,6 +155,10 @@
 ;;;; inline images
 (setq org-startup-with-inline-images t)
 
+;;;; icalendar
+(setq org-icalendar-use-scheduled '(todo-start event-if-todo)
+      org-icalendar-timezone "Europe/London")
+
 ;;;; finish up
 (provide 'cys/org-config)
 

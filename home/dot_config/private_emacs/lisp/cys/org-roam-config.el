@@ -131,7 +131,6 @@ any, is not being edited.  This is also the state if no diagram
 is currently associated with the buffer, or trying to be
 associated with the buffer.
 
-
 If it is of the form (inserting \"dir-path\" \"file-name\"), it
 means that currently a dot kra document in directory \"dir-path\"
 with file name \"file-name\" is being edited to be inserted later
