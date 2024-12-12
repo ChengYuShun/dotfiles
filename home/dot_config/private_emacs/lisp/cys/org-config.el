@@ -56,6 +56,7 @@
                 ("C-c n k d" . cys/org-roam-diagram-delete)
                 ("C-c n k x" . cys/org-roam-diagram-finish)
                 ("C-c n b" . org-roam-buffer-toggle)
+                ("C-c n r" . cys/org-roam-node-rename)
                 ("C-c n d" . cys/org-roam-node-delete)
                 ("C-c n g" . cys/org-roam-global-toggle)
                 ("C-c n a" . cys/org-roam-agenda-toggle)))

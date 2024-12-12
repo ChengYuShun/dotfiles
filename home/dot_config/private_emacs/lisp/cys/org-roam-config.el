@@ -71,11 +71,31 @@ Return t if the tag was removed, and return nil if the tag was added."
       nil)))
 
 (defun cys/org-roam-agenda-files-update ()
+  "Update the list of agenda files.
+
+This function works by iterating through all files with the tag
+\"agenda\"."
   (setq org-agenda-files
         (mapcar #'org-roam-node-file (seq-filter cys/org-roam-filter-task
                                                  (org-roam-node-list)))))
 
 ;;;; interactive commands
+
+(defun cys/org-roam-node-rename ()
+  "Rename the current node properly."
+  (interactive)
+  (let* ((node (org-roam-node-at-point))
+         (new-name (concat org-roam-directory
+                           "/"
+                           (org-roam-node-slug-dash node)
+                           (org-roam-node-id node)
+                           ".org"))
+         (old-name (org-roam-node-file node)))
+    (unless (equal new-name old-name)
+      (dired-rename-file old-name new-name nil)
+      (when (member "agenda" (org-roam-node-tags node))
+        (setq org-agenda-files (delete old-name org-agenda-files))
+        (add-to-list 'org-agenda-files new-name)))))
 
 (defun cys/org-roam-node-find-global ()
   "Find a global node."
@@ -100,11 +120,14 @@ Return t if the tag was removed, and return nil if the tag was added."
   (interactive "p")
   (when (or (not show-prompt)
             (yes-or-no-p "Do you really want to delete this note?"))
-    (save-buffer)
-    (cys/org-roam-diagram-delete nil t)
-    (let ((file-name (buffer-file-name)))
+    (let* ((node (org-roam-node-at-point))
+           (file (org-roam-node-file node)))
+      (when (member "agenda" (org-roam-node-tags node))
+        (setq org-agenda-files (delete file org-agenda-files)))
+      (save-buffer)
+      (cys/org-roam-diagram-delete nil t)
       (kill-buffer)
-      (delete-file file-name))))
+      (delete-file file))))
 
 (defun cys/org-roam-global-toggle ()
   "Toggle the global tag for the node at point."
