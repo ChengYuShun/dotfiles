@@ -63,8 +63,7 @@
   (defun cys/org-mode-hook ()
     (display-fill-column-indicator-mode -1)
     (visual-line-mode 1)
-    (set-fill-column 70)
-    (org-fragtog-mode))
+    (set-fill-column 70))
   (require 'cys/org-config))
 
 ;;;; org-roam
@@ -584,10 +583,6 @@ frame, current terminal."
       (setq-local paragraph-start (concat magic-str paragraph-start)
                   paragraph-separate (concat magic-str paragraph-separate))))
   (add-hook 'markdown-mode-hook 'math-paragraph))
-
-;;;; org-fragtog
-(use-package org-fragtog
-  :commands (org-fragtog-mode))
 
 ;;;; org-roam-ui
 (use-package org-roam-ui
