@@ -125,9 +125,22 @@
    ("pdflatex -interaction nonstopmode -output-directory %o %f")
    :image-converter
    ("ltxpdf2svg %f %O %S '#ffffff'")))
+(cys/alist-set
+ org-preview-latex-process-alist
+ 'cys-mathjax
+ `(:programs
+   ("math2svg-server" "math2svg-client")
+   :description "tex > svg"
+   :message "you need to install math2svg"
+   :image-input-type "tex" :image-output-type "svg"
+   :image-size-adjust
+   ,(let ((scale (/ (float (string-to-number (getenv "DPI"))) 144.0)))
+      (cons scale scale))
+   :image-converter
+   ("math2svg-client -i %f -o %O -s %S")))
 (setq org-preview-latex-image-directory
       (concat (file-name-as-directory user-emacs-directory) "ltximg/"))
-(setq org-preview-latex-default-process 'cys-svg)
+(setq org-preview-latex-default-process 'cys-mathjax)
 (plist-put org-format-latex-options :scale 1.1)
 ;; 'default or 'auto doesn't work on macOS
 (plist-put org-format-latex-options :foreground "Black")

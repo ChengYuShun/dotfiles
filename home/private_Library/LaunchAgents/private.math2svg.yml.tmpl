@@ -1,0 +1,6 @@
+{{ if eq .chezmoi.os "darwin" -}}
+Label: private.math2svg
+ProgramArguments: [sh, -c, 'exec sh ~/.config/sh/profexec.sh profile math2svg-server']
+KeepAlive:
+  SuccessfulExit: true
+{{- end }}

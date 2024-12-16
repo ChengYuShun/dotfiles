@@ -33,7 +33,7 @@
  ("markdown-mode" . "8692afc12e13431efb0c302baee1de5bbf4a41e4")
  ("melpa" . "1381d1d86d9e4bf3a492038279bab930b6935e0c")
  ("nongnu-elpa" . "51a73f8ec72f7a3d46d0f9e406ab808664ec97be")
- ("org" . "97f8bc952c23bbec9e58a5b5e7d367effd732bf0")
+ ("org" . "a3656ec5369499ef3b28a2d64ac1fb85a95c8c47")
  ("org-roam" . "c9654120d02a4c73ef5256c2b9b5076827c1677b")
  ("org-roam-ui" . "5ac74960231db0bf7783c2ba7a19a60f582e91ab")
  ("php-mode" . "31f702ee2de35d514fb633c0c37531cb648bff70")

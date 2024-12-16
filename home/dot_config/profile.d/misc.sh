@@ -1,5 +1,6 @@
 USE_FISH=1
 EDITOR=nvim
+MATH_TO_SVG_PORT=4483
 
 # host specific settings
 if [ "$(hostname)" = pretty-arch ]; then
@@ -21,3 +22,4 @@ fi
 envexp USE_FISH
 envexp EDITOR
 envexp DMI_PRODUCT_NAME
+envexp MATH_TO_SVG_PORT
