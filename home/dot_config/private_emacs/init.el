@@ -50,21 +50,32 @@
 
 ;;;; org
 (use-package org
-  :after (evil)
-  :commands (org-mode cys/org-agenda)
   :straight (org :type git
                  :remote "origin"
                  :fork (:host github
                         :repo "ChengYuShun/org-mode"
                         :branch "cys"
                         :remote "github"))
+  :after (evil)
+  :commands (org-mode cys/org-agenda)
   :hook (org-mode . cys/org-mode-hook)
   :config
   (defun cys/org-mode-hook ()
     (display-fill-column-indicator-mode -1)
     (visual-line-mode 1)
-    (set-fill-column 70))
+    (set-fill-column 70)
+    (org-fragtog-mode))
   (require 'cys/org-config))
+
+;;;; org-fragtog
+(use-package org-fragtog
+  :straight (org-fragtog :type git
+                         :remote "origin"
+                         :fork (:host github
+                                :repo "ChengYuShun/org-fragtog"
+                                :branch "cys"
+                                :remote "github"))
+  :commands (org-fragtog-mode))
 
 ;;;; org-roam
 (use-package org-roam
