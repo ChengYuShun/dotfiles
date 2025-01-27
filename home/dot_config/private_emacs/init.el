@@ -56,7 +56,7 @@
                         :repo "ChengYuShun/org-mode"
                         :branch "cys"
                         :remote "github"))
-  :after (evil)
+  :after (evil company-math)
   :commands (org-mode cys/org-agenda)
   :hook (org-mode . cys/org-mode-hook)
   :config
@@ -64,7 +64,11 @@
     (display-fill-column-indicator-mode -1)
     (visual-line-mode 1)
     (set-fill-column 70)
-    (org-fragtog-mode))
+    (org-fragtog-mode)
+    (setq-local company-backends
+                (append '((company-math-symbols-latex company-latex-commands)
+                          (cys/company-shorthand company-dabbrev))
+                        company-backends)))
   (require 'cys/org-config))
 
 ;;;; org-fragtog
@@ -177,11 +181,30 @@
          ("C-SPC"         . company-complete-selection)
          ("RET"           . nil)
          ("<return>"      . nil)
+         ("C-s"           . nil)
          ("<right>"       . company-complete-common))
   :config
-  (setq company-idle-delay 0.05)
-  (unless (eq system-type 'windows-nt)
-    (global-company-mode)))
+  (require 'cys/company-config))
+
+;;;; company-math
+(use-package company-math
+  :after company
+  :demand t
+  :commands (;; Essentially all the company backends in this package.
+             company-latex-commands
+             company-math-symbols-latex
+             company-math-symbols-unicode)
+  :config
+  ;; LaTeX formulas in org-mode are of face `nil', hence adding `nil' to the
+  ;; list to enable completion for org-mode math formulas.
+  (add-to-list 'company-math-allow-latex-symbols-in-faces nil))
+
+;;;; company-prescient
+(use-package company-prescient
+  :after (company prescient)
+  :demand t
+  :config
+  (company-prescient-mode 1))
 
 ;;;; conf-mode
 (use-package conf-mode
@@ -624,6 +647,12 @@ frame, current terminal."
 ;;;; php-mode
 (use-package php-mode
   :commands (php-mode))
+
+;;;; prescient
+(use-package prescient
+  :demand t
+  :config
+  (prescient-persist-mode 1))
 
 ;;;; python
 (use-package python
