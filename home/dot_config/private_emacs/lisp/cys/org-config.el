@@ -152,19 +152,32 @@
 (defun cys/org-show-latex-preview ()
   "Show preview of LaTeX fragments in the buffer."
   (interactive)
-  (org-latex-preview '(16))
-  (setq-local cys/org-latex-preview-is-on t))
+  (if (eq evil-state 'visual)
+      (org--latex-preview-region (marker-position evil-visual-beginning)
+                                 (marker-position evil-visual-end))
+    (org--latex-preview-region (point-min) (point-max))
+    (setq-local cys/org-latex-preview-is-on t)))
 (defun cys/org-hide-latex-preview ()
   "Hide preview of LaTeX fragments in the buffer."
   (interactive)
-  (org-latex-preview '(64))
-  (setq-local cys/org-latex-preview-is-on nil))
+  (if (eq evil-state 'visual)
+      (org-clear-latex-preview (marker-position evil-visual-beginning)
+                               (marker-position evil-visual-end))
+    (org-clear-latex-preview)
+    (setq-local cys/org-latex-preview-is-on nil)))
 (defun cys/org-toggle-latex-preview ()
   "Toggle preview of LaTeX fragments in the buffer."
   (interactive)
   (if cys/org-latex-preview-is-on
       (cys/org-hide-latex-preview)
     (cys/org-show-latex-preview)))
+(defun cys/org-delete-latex-preview ()
+  (interactive)
+  (if (eq evil-state 'visual)
+      (org-delete-latex-preview (marker-position evil-visual-beginning)
+                                (marker-position evil-visual-end))
+    (org-delete-latex-preview)
+    (setq-local cys/org-latex-preview-is-on nil)))
 
 ;;;; inline images
 (setq org-startup-with-inline-images t)
