@@ -28,6 +28,16 @@
   "j" #'evil-next-visual-line
   "k" #'evil-previous-visual-line)
 
+;;;; clean key bindings for `cys/shorthands-mode'
+(dolist (keybinding '("S-<escape>" "S-ESC"
+                      "C-<escape>" "C-ESC"
+                      "S-<return>" "S-RET"))
+  (dolist (mode (list evil-normal-state-map
+                      evil-insert-state-map
+                      evil-motion-state-map
+                      evil-visual-state-map))
+    (keymap-set mode keybinding nil)))
+
 ;;;; finish up
 (provide 'cys/evil-config)
 

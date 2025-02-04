@@ -134,6 +134,18 @@ KEY-VAL-EXPS are key expressions and value expressions."
                     macro-calls))))
     (cons 'progn macro-calls)))
 
+;;;; text insertion
+
+(defun cys/insert-with-space-before (text)
+  (unless (eq (char-before) ? )
+    (insert " "))
+  (insert text))
+
+(defun cys/insert-with-space-or-nothing-before (text)
+  (if (eql (point) (line-beginning-position))
+      (insert text)
+    (cys/insert-with-space-before text)))
+
 ;;;; finish up
 (provide 'cys/common-utils)
 

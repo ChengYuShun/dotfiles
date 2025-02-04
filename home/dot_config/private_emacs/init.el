@@ -45,6 +45,7 @@
 (add-to-list 'load-path (concat user-emacs-directory "lisp"))
 (require 'cys/common-utils)
 (require 'cys/basic-settings)
+(require 'cys/shorthands)
 
 ;;; packages with a custom recipe
 
@@ -65,6 +66,7 @@
     (visual-line-mode 1)
     (set-fill-column 70)
     (org-fragtog-mode)
+    (cys/shorthands-latex-mode 1)
     (setq-local company-backends
                 (append '((company-math-symbols-latex company-latex-commands)
                           (cys/company-shorthand company-dabbrev))
