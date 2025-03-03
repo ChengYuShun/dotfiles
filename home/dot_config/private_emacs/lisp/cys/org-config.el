@@ -118,6 +118,7 @@
 (setq org-latex-packages-alist
       '(("" "mhchem" t)
         ("" "tikz-cd" t)))
+(plist-put org-format-latex-options :justify 'center)
 
 ;;;;; SVG preview
 (cys/alist-set
