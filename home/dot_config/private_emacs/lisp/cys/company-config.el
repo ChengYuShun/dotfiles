@@ -3,7 +3,8 @@
 
 ;;;; basic configs
 (setq company-idle-delay 0.03
-      company-minimum-prefix-length 1)
+      company-minimum-prefix-length 1
+      company-dabbrev-time-limit 0.03)
 (unless (eq system-type 'windows-nt)
   (global-company-mode))
 
