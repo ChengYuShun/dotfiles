@@ -309,7 +309,7 @@ around BEG and END."
 
 (defun cys/shorthands-latex-mat-handler (action)
   (cond
-   ((eq action 'tab) (cys/insert-with-space-or-nothing-before "&& ") t)
+   ((eq action 'tab) (cys/insert-with-space-or-nothing-before "& ") t)
    ((eq action 'return) (cys/insert-with-space-or-nothing-before "\\\\\n") t)
    (t nil)))
 

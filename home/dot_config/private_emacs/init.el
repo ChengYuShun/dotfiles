@@ -133,8 +133,12 @@
 
 ;;;; AUCTeX
 (use-package auctex
-  :hook ((LaTeX-mode) . (lambda () (outline-minor-mode 1)
-                          (TeX-engine-set 'xetex))))
+  :hook ((LaTeX-mode) . cys/auctex-mode-hook)
+  :config
+  (defun cys/auctex-mode-hook ()
+    (outline-minor-mode 1)
+    (TeX-engine-set 'xetex)
+    (cys/shorthands-latex-mode)))
 
 ;;;; bibtex
 (use-package bibtex
