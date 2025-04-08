@@ -27,6 +27,7 @@ import pymupdf
 
 def parse_toc(toc_file, level_indent=2, offset=0):
     res = []
+    dismissed_pages = 0
     if isinstance(level_indent, int):
         level_indent = " " * level_indent
     for line in toc_file.readlines():
@@ -34,10 +35,13 @@ def parse_toc(toc_file, level_indent=2, offset=0):
         while line.startswith(level_indent):
             level += 1
             line = line[len(level_indent):]
-        last_comma = line.rindex(",")
-        title = line[0:last_comma]
-        page_no = int(line[last_comma + 1:]) + offset
-        res.append([level, title, page_no])
+        if line.strip() == "DISMISSED":
+            dismissed_pages += 1
+        else:
+            last_comma = line.rindex(",")
+            title = line[0:last_comma]
+            page_no = int(line[last_comma + 1:]) + offset - dismissed_pages
+            res.append([level, title, page_no])
     return res
 
 
