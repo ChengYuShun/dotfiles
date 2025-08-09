@@ -152,7 +152,7 @@
 (setq org-preview-latex-image-directory
       (concat (file-name-as-directory user-emacs-directory) "ltximg/"))
 (setq org-preview-latex-default-process 'cys-mathjax)
-(plist-put org-format-latex-options :scale 1.1)
+(plist-put org-format-latex-options :scale 0.9)
 ;; 'default or 'auto doesn't work on macOS
 (plist-put org-format-latex-options :foreground "Black")
 (plist-put org-format-latex-options :background "Transparent")
