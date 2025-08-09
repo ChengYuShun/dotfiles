@@ -19,3 +19,11 @@ Host gitlab.freedesktop.org
 Host lipid.private
   User cys
   IdentityFile ~/.ssh/lipid
+
+Host shell.srcf.net
+  User yc663
+  IdentityFile ~/.ssh/srcf
+
+Host pip.srcf.net
+  User yc663
+  IdentityFile ~/.ssh/srcf
