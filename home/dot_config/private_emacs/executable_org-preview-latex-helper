@@ -1,0 +1,42 @@
+#!/bin/sh
+
+echo "This program is not to be run the wrong arguments."
+
+input_filename=$1
+output_filename=$2
+scale=$3
+fg_color=$4
+
+if [ -z $scale ]; then scale="1.0"; fi
+if [ -z $fg_color ]; then fg_color="000000"; fi
+
+# Create temporary directory.
+tmpdir=$(mktemp -d)
+echo "Temporary directory:" $tmpdir
+
+# Main procedure.
+if grep -q '^\s*\\begin{tikzcd}' "$input_filename"; then
+  # Prepare LaTeX file.
+  printf '\\documentclass[crop, tikz, multi=false]{standalone}\n' >> "$tmpdir/main.tex"
+  for package in amsmath amssymb mathrsfs tikz-cd; do
+    printf '\\usepackage{%s}\n' "$package" >> "$tmpdir/main.tex"
+  done
+  printf '\\begin{document}\n' >> "$tmpdir/main.tex"
+  printf '\\color[HTML]{%s}\n' $fg_color >> "$tmpdir/main.tex"
+  cat "$input_filename" >> "$tmpdir/main.tex"
+  printf '\n\\end{document}\n' >> "$tmpdir/main.tex"
+  # Convert the TeX file into SVG.
+  pdflatex -halt-on-error -output-directory="$tmpdir" "$tmpdir/main.tex"
+  pdftocairo -svg "$tmpdir/main.pdf" "$tmpdir/1.svg"
+  final_scale=$(echo "$scale * 110.0 / 72.0" | bc -l)
+  rsvg-convert -f svg -z "$final_scale" "$tmpdir/1.svg" > "$output_filename"
+else
+  math2svg-client -i "$input_filename" -o "$tmpdir/1.svg"
+  sed -E 's/ +(fill|stroke)="currentColor"/ \1="#'$fg_color'"/g' \
+      "$tmpdir/1.svg" > "$tmpdir/2.svg"
+  final_scale=$(echo "$scale * 1.38" | bc -l)
+  rsvg-convert -f svg -z "$final_scale" "$tmpdir/2.svg" > "$output_filename"
+fi
+
+# Remove temporary directory.
+rm -r "$tmpdir"

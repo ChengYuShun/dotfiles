@@ -36,7 +36,7 @@
  ("math-symbol-lists" . "ac3eb053d3b576fcdd192b0ac6ad5090ea3a7079")
  ("melpa" . "2f9993b1a95398e307a7864865be3c894ab7c602")
  ("nongnu-elpa" . "1033e9d77a568101b50de97a5de9102a85e8fcf6")
- ("org" . "b955f2188a6d7b84614c966046efbef54f7e2b17")
+ ("org" . "553311e211bea5db043ac5b9a1ef509fb9011849")
  ("org-fragtog" . "466847443e1e271849b76118c8596f63d3328b3c")
  ("org-roam" . "adcef0f48eaa20bc6d15d2943d22497b8bb4da77")
  ("org-roam-ui" . "5ac74960231db0bf7783c2ba7a19a60f582e91ab")
