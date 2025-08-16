@@ -17,11 +17,21 @@ echo "Temporary directory:" $tmpdir
 # Main procedure.
 if grep -q '^\s*\\begin{tikzcd}' "$input_filename"; then
   # Prepare LaTeX file.
-  printf '\\documentclass[crop, tikz, multi=false]{standalone}\n' >> "$tmpdir/main.tex"
-  for package in amsmath amssymb mathrsfs tikz-cd; do
-    printf '\\usepackage{%s}\n' "$package" >> "$tmpdir/main.tex"
-  done
-  printf '\\begin{document}\n' >> "$tmpdir/main.tex"
+  cat >> "$tmpdir/main.tex" <<EOF
+\documentclass[crop, tikz, multi=false]{standalone}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathrsfs}
+\usepackage{quiver}
+
+\usetikzlibrary{cd, nfold}
+\tikzcdset{
+  diagrams = {/tikz/double/.append style = /tikz/nfold}
+}
+
+\begin{document}
+EOF
   printf '\\color[HTML]{%s}\n' $fg_color >> "$tmpdir/main.tex"
   cat "$input_filename" >> "$tmpdir/main.tex"
   printf '\n\\end{document}\n' >> "$tmpdir/main.tex"
