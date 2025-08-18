@@ -28,6 +28,18 @@
 
 ;;;; template
 
+(defun cys/org-roam-open-last-captured (&optional new-frame)
+  (let* ((marker org-capture-last-stored-marker)
+         (buffer (and marker (marker-buffer marker))))
+    (when buffer
+      (if new-frame
+          (switch-to-buffer-other-frame buffer)
+        (switch-to-buffer buffer))
+      (org-fold-hide-drawer-all))))
+
+(defun cys/org-roam-open-last-captured-new-frame ()
+  (cys/org-roam-open-last-captured t))
+
 (let ((common-head (concat ":PROPERTIES:\n"
                            ":CREATION_TIME: %<%FT%T%z>\n"
                            ":END:\n"
@@ -37,10 +49,12 @@
         `(("g" "global" plain "%?"
            :target (file+head ,file-name
                               ,(concat common-head "#+filetags: :global:\n"))
-           :unnarrowed t)
+           :immediate-finish t
+           :after-finalize (,#'cys/org-roam-open-last-captured))
           ("n" "non-global" plain "%?"
            :target (file+head ,file-name ,common-head)
-           :unnarrowed t))))
+           :immediate-finish t
+           :after-finalize (,#'cys/org-roam-open-last-captured-new-frame)))))
 
 ;;;; common subroutines
 
