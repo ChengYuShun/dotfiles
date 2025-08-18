@@ -121,13 +121,22 @@ This function works by iterating through all files with the tag
   (when (or (not show-prompt)
             (yes-or-no-p "Do you really want to delete this note?"))
     (let* ((node (org-roam-node-at-point))
-           (file (org-roam-node-file node)))
+           (file (org-roam-node-file node))
+           (window (selected-window))
+           (frame (selected-frame)))
       (when (member "agenda" (org-roam-node-tags node))
         (setq org-agenda-files (delete file org-agenda-files)))
-      (save-buffer)
       (cys/org-roam-diagram-delete nil t)
       (kill-buffer)
-      (delete-file file))))
+      (delete-file file)
+      (org-roam-db-clear-file file)
+      (condition-case nil
+          (when window (delete-window window))
+        (error
+         (condition-case nil
+             (when frame (delete-frame frame))
+           (error
+            (message "WTF cannot delete the current frame."))))))))
 
 (defun cys/org-roam-global-toggle ()
   "Toggle the global tag for the node at point."
