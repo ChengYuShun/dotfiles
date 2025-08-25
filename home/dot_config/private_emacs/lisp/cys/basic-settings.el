@@ -26,9 +26,6 @@
 (require 'cys/common-utils)
 (require 'simple)
 
-;;;; disable warnings
-(setq warning-suppress-types '((comp)))
-
 ;;;; ring bell.
 (setq ring-bell-function 'ignore)
 
