@@ -26,6 +26,15 @@
 (require 'cys/common-utils)
 (org-roam-db-autosync-enable)
 
+;;;; backlink buffer
+
+(require 'magit) ;; so that configs for magit can be loaded.
+(defun cys/org-roam-mode-hook ()
+  (visual-line-mode t)
+  (setq-local tab-width 8)
+  (org--latex-preview-region (point-min) (point-max)))
+(add-hook 'org-roam-buffer-postrender-functions #'cys/org-roam-mode-hook)
+
 ;;;; template
 
 (defun cys/org-roam-open-last-captured (&optional new-frame)
