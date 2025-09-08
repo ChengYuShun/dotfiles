@@ -135,6 +135,9 @@
     (cys/alist-set display-mm-dimensions-alist display
                    (cons mm-width mm-height))))
 
+;;;; disable blink-cursor-mode
+(setq blink-cursor-mode nil)
+
 ;;; control
 
 ;;;; no delay for echoing keystrokes
