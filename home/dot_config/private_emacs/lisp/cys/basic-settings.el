@@ -73,6 +73,7 @@
 
 ;;;; visual line mode
 (define-key visual-line-mode-map [remap fill-paragrpah] #'ignore)
+(setq word-wrap-by-category t)  ; correct wrapping algorithm for CJK
 
 ;;;; tab settings
 (setq-default indent-tabs-mode nil)
