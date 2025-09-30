@@ -136,8 +136,11 @@
   :hook ((LaTeX-mode) . cys/auctex-mode-hook)
   :config
   (defun cys/auctex-mode-hook ()
-    (outline-minor-mode 1)
     (TeX-engine-set 'xetex)
+    (display-fill-column-indicator-mode 0)
+    (outline-minor-mode 1)
+    (visual-line-mode 1)
+    (visual-wrap-prefix-mode 1)
     (cys/shorthands-latex-mode)))
 
 ;;;; bibtex
