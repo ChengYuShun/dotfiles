@@ -87,24 +87,27 @@
   (add-hook 'prog-mode-hook callback))
 
 ;;;; font settings
-(dolist (font-pair '(("Segoe UI Emoji" . 1.0)
-                     ("Noto Color Emoji" . 0.95)
-                     ("微软雅黑" . 1.1)
-                     ("Source Han Sans CN" . 1.2)
-                     ("Source Han Mono SC" . 1.2)
-                     ("Heiti" . 1.2)
-                     ("Heiti SC" . 1.2)
-                     ("Heiti TC" . 1.2)))
-  (cys/alist-set face-font-rescale-alist (car font-pair) (cdr font-pair)))
+(defun cys/font-setup ()
+  (dolist (font-pair '(("Segoe UI Emoji" . 1.0)
+                       ("Noto Color Emoji" . 0.95)
+                       ("微软雅黑" . 1.1)
+                       ("Source Han Sans CN" . 1.2)
+                       ("Source Han Mono SC" . 1.2)
+                       ("Heiti" . 1.2)
+                       ("Heiti SC" . 1.2)
+                       ("Heiti TC" . 1.2)))
+    (cys/alist-set face-font-rescale-alist (car font-pair) (cdr font-pair)))
 
-(when (eq system-type 'window-nt)
-  (set-fontset-font t 'unicode "Consolas")
-  (set-fontset-font t 'emoji "Segoe UI Emoji")
-  (set-fontset-font t 'han "微软雅黑"))
+  (when (eq system-type 'window-nt)
+    (set-fontset-font t 'unicode "Consolas")
+    (set-fontset-font t 'emoji "Segoe UI Emoji")
+    (set-fontset-font t 'han "微软雅黑"))
 
-(when (eq system-type 'darwin)
-  (set-fontset-font t 'unicode "Menlo")
-  (set-fontset-font t 'han "Heiti SC"))
+  (when (eq system-type 'darwin)
+    (set-fontset-font t 'unicode "Menlo")
+    (set-fontset-font t 'han "Heiti SC")))
+
+(run-at-time 0.5 nil #'cys/font-setup)
 
 ;;;; faces
 (set-face-background 'default "black")
