@@ -1,3 +1,5 @@
+;; -*- lexical-binding: nil -*-
+
 ;;; color-theme-tomorrow.el --- GNU Emacs port of the Tomorrow Theme.
 
 ;;; MIT License:

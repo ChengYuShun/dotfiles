@@ -1,3 +1,5 @@
+;; -*- lexical-binding: nil -*-
+
 ;;;; load requirements
 (require 'cys/common-utils)
 

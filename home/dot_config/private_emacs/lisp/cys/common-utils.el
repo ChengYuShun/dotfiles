@@ -1,3 +1,5 @@
+;; -*- lexical-binding: nil -*-
+
 ;;; common-utils -- common utilities.
 
 ;; Common utilities.

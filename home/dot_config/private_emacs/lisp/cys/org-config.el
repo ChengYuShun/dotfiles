@@ -1,3 +1,5 @@
+;; -*- lexical-binding: nil -*-
+
 ;;; org-config -- my config for org-mode.
 
 ;; My configurations for org-mode.

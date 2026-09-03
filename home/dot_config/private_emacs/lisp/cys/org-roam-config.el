@@ -1,3 +1,5 @@
+;; -*- lexical-binding: nil -*-
+
 ;;; org-roam-config -- my config for org-roam.
 
 ;; My configurations for org-roam.

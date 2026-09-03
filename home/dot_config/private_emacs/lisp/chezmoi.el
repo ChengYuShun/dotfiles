@@ -1,3 +1,5 @@
+;; -*- lexical-binding: nil -*-
+
 ;;; chezmoi --- Functions for chezmoi.
 
 ;;; License:

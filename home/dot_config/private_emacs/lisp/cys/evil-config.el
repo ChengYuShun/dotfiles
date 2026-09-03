@@ -1,3 +1,5 @@
+;; -*- lexical-binding: nil -*-
+
 ;;; evil-config -- my config for Evil.
 
 ;; My configurations for Evil.

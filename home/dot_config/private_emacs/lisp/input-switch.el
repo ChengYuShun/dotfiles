@@ -1,3 +1,5 @@
+;; -*- lexical-binding: nil -*-
+
 ;;; License:
 
 ;; Copyright (C) 2022  Yushun Cheng <chengys@disroot.org>

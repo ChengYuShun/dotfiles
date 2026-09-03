@@ -1,3 +1,5 @@
+;; -*- lexical-binding: nil -*-
+
 ;;; init.el --- my emacs config file.
 
 ;;; License:

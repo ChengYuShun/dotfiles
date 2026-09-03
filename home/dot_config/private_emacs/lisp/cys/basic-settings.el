@@ -1,3 +1,5 @@
+;; -*- lexical-binding: nil -*-
+
 ;;; basic-settings -- my config for basic Emacs packages.
 
 ;; My configurations for basic Emacs packages, i.e. packages so basic that are

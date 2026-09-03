@@ -1,3 +1,5 @@
+;; -*- lexical-binding: nil -*-
+
 ;;; cys/shorthands.el -- my shorthand system
 
 ;;; Code:
@@ -298,6 +300,7 @@ around BEG and END."
 (defun cys/shorthands-latex-align-handler (action)
   (cond
    ((eq action 'tab) (cys/insert-with-space-or-nothing-before "&") t)
+   ;; need to somehow take fill-column into account.
    ((eq action 'return) (cys/insert-with-space-or-nothing-before "\\\\\n") t)
    (t nil)))
 
