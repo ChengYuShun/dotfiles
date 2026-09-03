@@ -60,6 +60,7 @@
                         :branch "cys"
                         :remote "github"))
   :after (evil company-math)
+  :bind (:map org-mode-map ("C-a" . nil))
   :commands (org-mode cys/org-agenda)
   :hook (org-mode . cys/org-mode-hook)
   :config
@@ -316,7 +317,8 @@
 
          :map evil-insert-state-map
          ;; Auto comment.
-         ("<return>" . comment-indent-new-line))
+         ("<return>" . comment-indent-new-line)
+         ("C-a" . nil))
 
   :config
   (require 'cys/evil-config)
