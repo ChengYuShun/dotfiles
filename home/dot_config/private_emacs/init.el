@@ -619,7 +619,9 @@ frame, current terminal."
   :hook (git-commit-mode . (lambda () (set-fill-column 69)))
   :config
   (when (eq system-type 'windows-nt)
-    (setq magit-git-executable "C:\\msys64\\usr\\bin\\git.exe")))
+    (setq magit-git-executable "C:\\msys64\\usr\\bin\\git.exe"))
+  (cys/alist-set magit-section-initial-visibility-alist
+                 'org-roam-node-section 'hide))
 
 ;;;; markdown-mode
 (use-package markdown-mode
