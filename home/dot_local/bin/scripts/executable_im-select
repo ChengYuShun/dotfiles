@@ -1,0 +1,7 @@
+#!/bin/sh
+
+if [ -z "$1" ]; then
+  swift-exec im-select
+else
+  swift-exec im-select "$1"
+fi

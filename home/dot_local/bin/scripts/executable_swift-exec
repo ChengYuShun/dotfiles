@@ -9,8 +9,9 @@ bin_path="$bin_dir/$name"
 mkdir -p "$scr_dir"
 mkdir -p "$bin_dir"
 
+shift
 if ! [ -x "$bin_path" ] || [ "$scr_path" -nt "$bin_path" ]; then
-  swiftc -o "$bin_path" -O "$scr_path" && exec "$bin_path"
+  swiftc -o "$bin_path" -O "$scr_path" && exec "$bin_path" "$@"
 else
-  exec "$bin_path"
+  exec "$bin_path" "$@"
 fi

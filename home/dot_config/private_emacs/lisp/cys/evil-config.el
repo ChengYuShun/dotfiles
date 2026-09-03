@@ -38,6 +38,18 @@
                       evil-visual-state-map))
     (keymap-set mode keybinding nil)))
 
+;;;; input-method
+(defun cys/evil-im-exit ()
+  (call-process "im-select" nil nil nil "com.apple.keylayout.ABC")
+  (run-at-time 0.03 nil #'call-process "im-select" nil nil nil
+               "com.apple.keylayout.ABC"))
+(defun cys/evil-im-enter ()
+  (call-process "im-select" nil nil nil "im.rime.inputmethod.Squirrel.Hans")
+  (run-at-time 0.03 nil #'call-process "im-select" nil nil nil
+               "im.rime.inputmethod.Squirrel.Hans"))
+(add-hook 'evil-insert-state-entry-hook #'cys/evil-im-enter)
+(add-hook 'evil-insert-state-exit-hook #'cys/evil-im-exit)
+
 ;;;; finish up
 (provide 'cys/evil-config)
 
