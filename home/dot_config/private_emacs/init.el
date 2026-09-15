@@ -476,6 +476,18 @@ frame, current terminal."
 (use-package go-mode
   :commands (go-mode))
 
+;;;; gptel
+(use-package gptel
+  ;; :bind ("C-c C-<return>" . gptel-send)
+  :config
+  (load "cys/llm-api-keys.el")
+  (evil-define-key '(motion normal visual) gptel-mode-map
+    (kbd "RET") nil
+    (kbd "<return>") nil)
+  (cys/alist-set gptel-prompt-prefix-alist
+                 'org-mode "* ")
+  (setq gptel-default-mode 'org-mode))
+
 ;;;; haskell-indentation
 (use-package haskell-mode
   :after (evil)
