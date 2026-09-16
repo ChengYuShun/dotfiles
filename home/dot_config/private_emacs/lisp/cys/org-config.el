@@ -45,6 +45,7 @@
 (dolist (pair '(("C-c l p" . org-insert-link)
                 ("C-c n i g" . cys/org-roam-node-insert-global)
                 ("C-c n i n" . cys/org-roam-node-insert-non-global)
+                ("C-c n i l" . cys/org-roam-node-insert-llm)
                 ("C-c n l p" . org-roam-link-paste)))
   (keymap-set org-mode-map (car pair) (cdr pair)))
 (evil-define-key 'motion org-mode-map
@@ -66,6 +67,7 @@
   ;; reserved for org-roam
   (kbd "t n i g") #'cys/org-roam-node-insert-global
   (kbd "t n i n") #'cys/org-roam-node-insert-non-global
+  (kbd "t n i l") #'cys/org-roam-node-insert-llm
   (kbd "t n l y") #'org-roam-link-store
   (kbd "t n l o") #'org-roam-link-open
   (kbd "t n l p") #'org-roam-link-paste
@@ -77,7 +79,10 @@
   (kbd "t n r") #'cys/org-roam-node-rename
   (kbd "t n d") #'cys/org-roam-node-delete
   (kbd "t n g") #'cys/org-roam-global-toggle
-  (kbd "t n a") #'cys/org-roam-agenda-toggle)
+  (kbd "t n a") #'cys/org-roam-agenda-toggle
+  (kbd "t n t g") #'cys/org-roam-global-toggle
+  (kbd "t n t a") #'cys/org-roam-agenda-toggle
+  (kbd "t n t l") #'cys/org-roam-llm-toggle)
 
 ;;;; org-agenda
 (setq org-deadline-warning-days 0)

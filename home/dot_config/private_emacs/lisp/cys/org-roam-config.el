@@ -51,6 +51,26 @@
 (defun cys/org-roam-open-last-captured-new-frame ()
   (cys/org-roam-open-last-captured t))
 
+(defun cys/org-roam-setup-llm ()
+  (setq-local gptel-system-prompt cys/org-roam-llm-prompt)
+  (gptel-mode 1)
+  (insert "\n* "))
+
+(defvar cys/org-roam-llm-prompt "You are an LLM living in a Zettelkasten system implemented through Org-roam.
+
+Pay attention to the following:
+- NEVER include any headline (begins with asterisk *) in your reasoning/thinking.  Never use first-order headlines (start with second-order ones, i.e. two asterisks).
+- Be concise.
+- Give appropriate references when your ideas come from specifically those references.
+
+The output format is mostly Org-mode.  However, there are a few exceptional rules:
+- Put two spaces after each period; one after a dot for abbreviation.
+- Use `\\(` and `\\)` between inline LaTeX; use either `\\[` and `\\]` or `\\begin{equation*}` and `\\end{equation*}` between block LaTeX.
+- Make LaTeX equations indent appropriately under list items.  They need not and should not have no space in front of them, and instead should indent like regular texts.
+- Don't number equations.  Don't use tags.
+- Use `\\begin{tikzcd}` and `\\end{tikzcd}` to draw commutative diagrams.  No need to put things like square brackets to surround it.
+- Prefer British English.")
+
 (let ((common-head (concat ":PROPERTIES:\n"
                            ":CREATION_TIME: %<%FT%T%z>\n"
                            ":END:\n"
@@ -65,7 +85,13 @@
           ("n" "non-global" plain "%?"
            :target (file+head ,file-name ,common-head)
            :immediate-finish t
-           :after-finalize (,#'cys/org-roam-open-last-captured-new-frame)))))
+           :after-finalize (,#'cys/org-roam-open-last-captured-new-frame))
+          ("l" "llm" plain "%?"
+           :target (file+head ,file-name
+                              ,(concat common-head "#+filetags: :llm:"))
+           :immediate-finish t
+           :after-finalize (,#'cys/org-roam-open-last-captured-new-frame
+                            ,#'cys/org-roam-setup-llm)))))
 
 ;;;; common subroutines
 
@@ -140,6 +166,12 @@ This function works by iterating through all files with the tag
   (org-roam-node-insert #'(lambda (node) nil)
                         :templates `(,(nth 1 org-roam-capture-templates))))
 
+(defun cys/org-roam-node-insert-llm ()
+  "Insert an LLM node.  All LLM nodes are non-global."
+  (interactive)
+  (org-roam-node-insert #'(lambda (node) nil)
+                        :templates `(,(nth 2 org-roam-capture-templates))))
+
 (defun cys/org-roam-node-delete (&optional show-prompt)
   "Delete a node at the current buffer."
   (interactive "p")
@@ -168,6 +200,13 @@ This function works by iterating through all files with the tag
   (interactive)
   (cys/org-roam-tag-toggle "global"))
 
+(defun cys/org-roam-llm-toggle ()
+  "Toggle the LLM tag for the node at point."
+  (interactive)
+  (if (cys/org-roam-tag-toggle "llm")
+      (gptel-mode -1)
+    (gptel-mode 1)))
+
 (defun cys/org-roam-agenda-toggle ()
   (interactive)
   (let* ((node (org-roam-node-at-point))
@@ -175,6 +214,15 @@ This function works by iterating through all files with the tag
   (if (cys/org-roam-tag-toggle "agenda")
       (setq org-agenda-files (delete file org-agenda-files))
     (add-to-list 'org-agenda-files file))))
+
+;;;; LLM hook
+(require 'org)
+(defun cys/org-roam-llm-org-mode-hook ()
+  (let ((node (org-roam-node-at-point)))
+    (when (and (org-roam-node-p node)
+               (member "llm" (org-roam-node-tags node)))
+        (gptel-mode 1))))
+(add-hook 'org-mode-hook #'cys/org-roam-llm-org-mode-hook 'append)
 
 ;;;; diagram with Krita
 
