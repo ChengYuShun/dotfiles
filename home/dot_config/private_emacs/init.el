@@ -675,6 +675,10 @@ frame, current terminal."
 (use-package php-mode
   :commands (php-mode))
 
+;;;; plz
+(use-package plz
+  :commands (plz))
+
 ;;;; prescient
 (use-package prescient
   :demand t

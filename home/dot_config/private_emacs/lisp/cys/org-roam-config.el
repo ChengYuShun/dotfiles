@@ -52,24 +52,25 @@
   (cys/org-roam-open-last-captured t))
 
 (defun cys/org-roam-setup-llm ()
-  (setq-local gptel-system-prompt cys/org-roam-llm-prompt)
+  (unless (org-entry-get nil "GPTEL_SYSTEM")
+    (setq-local gptel-system-prompt cys/org-roam-llm-prompt))
   (gptel-mode 1)
   (insert "\n* "))
 
 (defvar cys/org-roam-llm-prompt "You are an LLM living in a Zettelkasten system implemented through Org-roam.
 
 Pay attention to the following:
-- NEVER include any headline (begins with asterisk *) in your reasoning/thinking.  Never use first-order headlines (start with second-order ones, i.e. two asterisks).
+- NEVER include any headline in your writing, not even in your thinking or reasoning.
 - Be concise.
 - Give appropriate references when your ideas come from specifically those references.
+- When reading Stackexchange/MathOverflow/StackOverflow pages, use their API instead of directly extracting the page URL.
 
 The output format is mostly Org-mode.  However, there are a few exceptional rules:
 - Put two spaces after each period; one after a dot for abbreviation.
 - Use `\\(` and `\\)` between inline LaTeX; use either `\\[` and `\\]` or `\\begin{equation*}` and `\\end{equation*}` between block LaTeX.
 - Make LaTeX equations indent appropriately under list items.  They need not and should not have no space in front of them, and instead should indent like regular texts.
 - Don't number equations.  Don't use tags.
-- Use `\\begin{tikzcd}` and `\\end{tikzcd}` to draw commutative diagrams.  No need to put things like square brackets to surround it.
-- Prefer British English.")
+- Use `\\begin{tikzcd}` and `\\end{tikzcd}` to draw commutative diagrams.  No need to put things like square brackets to surround it.")
 
 (let ((common-head (concat ":PROPERTIES:\n"
                            ":CREATION_TIME: %<%FT%T%z>\n"
