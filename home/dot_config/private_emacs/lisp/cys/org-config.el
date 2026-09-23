@@ -32,6 +32,7 @@
 (setq org-export-with-smart-quotes t)
 (setq org-startup-folded 'nofold
       org-cycle-hide-drawer-startup t)
+(setq org-src-content-indentation 0)
 (cys/alist-set-many org-file-apps
                     'directory 'system
                     "\\.pdf\\'" 'system)
