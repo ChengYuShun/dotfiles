@@ -738,11 +738,27 @@ frame, current terminal."
 (use-package swift-mode)
 
 ;;;; tide
-;; (use-package tide)
+(use-package tide
+  :init
+  (require 'company)
+  (require 'flycheck)
+  :hook ((typescript-ts-mode . tide-setup)
+         (tsx-ts-mode . tide-setup)
+         (typescript-ts-mode . tide-hl-identifier-mode)))
 
-;;;; typescript-mode.
-;; (use-package typescript-mode
-;;   :hook (typescript-mode . (lambda () (lsp) (hs-minor-mode 1))))
+;;;; typescript
+;;(use-package typescript-mode
+;;  :hook (typescript-mode . (lambda () (lsp) (hs-minor-mode 1))))
+;; Commented, since the development of this package is dead.
+;; Use typescript-ts-mode.
+
+;;;; typescript-ts-mode
+(use-package typescript-ts-mode
+  :hook (typescript-ts-mode . cys/ts-mode-hook)
+  :config
+  (defun cys/ts-mode-hook ()
+    (lsp)
+    (hs-minor-mode 1)))
 
 ;;;; undo-tree
 (use-package undo-tree
