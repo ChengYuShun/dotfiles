@@ -208,6 +208,10 @@ This function works by iterating through all files with the tag
       (gptel-mode -1)
     (gptel-mode 1)))
 
+(defun cys/org-roam-publish-toggle ()
+  (interactive)
+  (cys/org-roam-tag-toggle "publish"))
+
 (defun cys/org-roam-agenda-toggle ()
   (interactive)
   (let* ((node (org-roam-node-at-point))

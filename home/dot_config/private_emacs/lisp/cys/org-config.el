@@ -81,9 +81,11 @@
   (kbd "t n d") #'cys/org-roam-node-delete
   (kbd "t n g") #'cys/org-roam-global-toggle
   (kbd "t n a") #'cys/org-roam-agenda-toggle
+  (kbd "t n p") #'cys/org-roam-publish-toggle
   (kbd "t n t g") #'cys/org-roam-global-toggle
   (kbd "t n t a") #'cys/org-roam-agenda-toggle
-  (kbd "t n t l") #'cys/org-roam-llm-toggle)
+  (kbd "t n t l") #'cys/org-roam-llm-toggle
+  (kbd "t n t p") #'cys/org-roam-publish-toggle)
 
 ;;;; org-agenda
 (setq org-deadline-warning-days 0)
