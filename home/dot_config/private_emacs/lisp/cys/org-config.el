@@ -91,17 +91,29 @@
 (setq org-deadline-warning-days 0)
 (setq org-agenda-start-on-weekday nil)
 (setq org-log-done t)
-(evil-define-key 'motion org-agenda-mode-map
-  "q" 'org-agenda-quit
-  "j" 'org-agenda-next-item
-  "k" 'org-agenda-previous-item
-  (kbd "RET") 'org-agenda-switch-to
-  (kbd "<tab>") 'org-agenda-goto)
 (evil-set-initial-state 'org-agenda-mode 'motion)
+
 (defun cys/org-agenda ()
   (interactive)
   (cys/org-roam-agenda-files-update)
   (org-agenda))
+
+(defun cys/org-agenda-sync ()
+  "My command for synchronising Org-agenda via vdirsyncer.
+The command synchronously runs the shell command, and pops up a window
+once finished."
+  (interactive)
+  (let ((ical-path (concat cys/org-roam-repo "/ical.ics"))
+        (output-buffer (get-buffer-create "*Org Agenda Sync*")))
+    (with-current-buffer output-buffer
+      (special-mode)
+      (read-only-mode -1)
+      (erase-buffer))
+    (org-icalendar-export-current-agenda ical-path)
+    (call-process-shell-command "vdirsyncer sync" nil output-buffer)
+    (display-buffer output-buffer '(display-buffer-below-selected
+                                    (post-command-select-window . "yes")))
+    (read-only-mode 1)))
 
 ;;;; babel
 (org-babel-do-load-languages 'org-babel-load-languages

@@ -183,8 +183,7 @@
 ;;;; company
 (use-package company
   :demand t
-  :bind (:map
-         company-active-map
+  :bind (:map company-active-map
          ;; my binds
          ("TAB"           . company-select-next)
          ("<tab>"         . company-select-next)
@@ -376,7 +375,19 @@ frame, current terminal."
   :config
   (message "evil-collection loaded.")
   ;; Hook for each mode.
-  (defvar cys/evil-collection-mode-hooks (make-hash-table))
+  (defvar cys/evil-collection-mode-hooks (make-hash-table)
+    "My hooks to be run after `evil-collection' loads a mode.
+Note that it is necessary to set some keybindings after the mode is
+loaded by `evil-collection', since otherwise, `evil-collection' will
+override those settings.  This should be a good temporary solution.  We
+should seek for a more elegant one though.
+
+More details: `evil-collection-init' loads the corresponding config file
+after the corresponding feature is provided, via `with-eval-after-load'.
+So what we should do in our version of `define-key' is to test if the
+corresponding \"evil-collection-XXX\" feature is provided, and either
+execute immediately, or add to our custom hook, which is run via
+`evil-collection-setup-hook'.")
   ;; dired
   (puthash 'dired
            (lambda ()
@@ -416,6 +427,23 @@ frame, current terminal."
                         (kbd "SPC") nil
                         (kbd "u") 'scroll-down-command
                         (kbd "d") 'scroll-up-command))
+           cys/evil-collection-mode-hooks)
+  ;; org-agenda
+  (puthash 'org-agenda
+           (lambda ()
+             (evil-define-key '(normal motion) org-agenda-mode-map
+               "t" nil
+               (kbd "SPC") nil)
+             (evil-define-key 'motion org-agenda-mode-map
+               "q" #'org-agenda-quit
+               "j" #'org-agenda-next-item
+               "k" #'org-agenda-previous-item
+               (kbd "t u") #'cys/org-agenda-sync
+               (kbd "RET") #'org-agenda-switch-to
+               (kbd "<tab>") #'org-agenda-goto)
+             (dolist (pair `((,(kbd "t") . nil)
+                             (,(kbd "<escape>") . #'evil-motion-state)))
+               (define-key org-agenda-mode-map (car pair) (cdr pair))))
            cys/evil-collection-mode-hooks)
   ;; outline
   (puthash 'outline
