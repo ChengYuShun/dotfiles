@@ -81,13 +81,16 @@ We also make this buffer visible during the execution."
 (defmacro cys/alist-set (alist-place key-exp val-exp &optional no-delete-exp)
   "Update the association list.
 
-ALIST-PLACE is the place that stores the alist to be updated.
+ALIST-PLACE is the place that stores the alist to be updated.  Relevant
+variables must be bound dynamically, since otherwise there is no way for
+this macro to access it.
 
 ((eval KEY-EXP) . (eval VAL-EXP)) will be updated to the alist.
 
-If (eval NO-DELETE-EXP) is nil, the first cons with its car being
-KEY will be deleted.  If (eval NO-DELETE-EXP) is non-nil, the
-cons will not be deleted."
+If (eval NO-DELETE-EXP) and (eval VAL-EXP) are both nil, the first cons with
+its car being KEY will be deleted.  If (eval NO-DELETE-EXP) is non-nil,
+the cons will not be deleted even if (eval VAL-EXP) is nil."
+  (declare (indent 1))
   (let (;; the key
         (key-sym (gensym "key-"))
         ;; the value
@@ -125,7 +128,9 @@ cons will not be deleted."
 (defmacro cys/alist-set-many (alist-place &rest key-val-exps)
   "Update the association list.
 
+Relevant arguments are similar to those in `cys/alist-set'.
 KEY-VAL-EXPS are key expressions and value expressions."
+  (declare (indent 1))
   (let ((macro-calls nil))
     (while key-val-exps
       (let ((key-exp (car key-val-exps))
@@ -134,7 +139,7 @@ KEY-VAL-EXPS are key expressions and value expressions."
         (setq macro-calls
               (cons `(cys/alist-set ,alist-place ,key-exp ,val-exp)
                     macro-calls))))
-    (cons 'progn macro-calls)))
+    (cons 'progn (reverse macro-calls))))
 
 ;;;; text insertion
 
