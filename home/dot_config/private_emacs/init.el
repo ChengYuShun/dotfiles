@@ -374,108 +374,7 @@ frame, current terminal."
   :demand t
   :config
   (message "evil-collection loaded.")
-  ;; Hook for each mode.
-  (defvar cys/evil-collection-mode-hooks (make-hash-table)
-    "My hooks to be run after `evil-collection' loads a mode.
-Note that it is necessary to set some keybindings after the mode is
-loaded by `evil-collection', since otherwise, `evil-collection' will
-override those settings.  This should be a good temporary solution.  We
-should seek for a more elegant one though.
-
-More details: `evil-collection-init' loads the corresponding config file
-after the corresponding feature is provided, via `with-eval-after-load'.
-So what we should do in our version of `define-key' is to test if the
-corresponding \"evil-collection-XXX\" feature is provided, and either
-execute immediately, or add to our custom hook, which is run via
-`evil-collection-setup-hook'.")
-  ;; dired
-  (puthash 'dired
-           (lambda ()
-             (evil-define-key* 'normal dired-mode-map
-               (kbd "SPC") nil
-               (kbd "h") 'dired-up-directory
-               (kbd "l") 'dired-find-file))
-           cys/evil-collection-mode-hooks)
-  ;; flycheck
-  (puthash 'flycheck
-           (lambda ()
-             (evil-define-key* 'motion flycheck-mode-map
-               (kbd "]d") 'flycheck-next-error
-               (kbd "[d") 'flycheck-previous-error))
-           cys/evil-collection-mode-hooks)
-  ;; help
-  (puthash 'help
-           (lambda ()
-             (evil-define-key 'normal help-mode-map
-               (kbd "SPC") nil
-               [remap cys/evil-go-back] 'help-go-back))
-           cys/evil-collection-mode-hooks)
-  ;; info
-  (puthash 'info
-           (lambda ()
-             (evil-define-key 'normal Info-mode-map
-               (kbd "SPC") nil
-               [remap cys/evil-open-link] 'Info-follow-nearest-node
-               [remap cys/evil-go-up] 'Info-up
-               [remap cys/evil-goto-next] 'Info-next
-               [remap cys/evil-goto-prev] 'Info-prev
-               [remap cys/evil-go-back] 'Info-last))
-           cys/evil-collection-mode-hooks)
-  ;; man
-  (puthash 'man
-           (lambda () (evil-define-key* 'normal Man-mode-map
-                        (kbd "SPC") nil
-                        (kbd "u") 'scroll-down-command
-                        (kbd "d") 'scroll-up-command))
-           cys/evil-collection-mode-hooks)
-  ;; org-agenda
-  (puthash 'org-agenda
-           (lambda ()
-             (evil-define-key '(normal motion) org-agenda-mode-map
-               "t" nil
-               (kbd "SPC") nil)
-             (evil-define-key 'motion org-agenda-mode-map
-               "q" #'org-agenda-quit
-               "j" #'org-agenda-next-item
-               "k" #'org-agenda-previous-item
-               (kbd "t u") #'cys/org-agenda-sync
-               (kbd "RET") #'org-agenda-switch-to
-               (kbd "<tab>") #'org-agenda-goto)
-             (dolist (pair `((,(kbd "t") . nil)
-                             (,(kbd "<escape>") . #'evil-motion-state)))
-               (define-key org-agenda-mode-map (car pair) (cdr pair))))
-           cys/evil-collection-mode-hooks)
-  ;; outline
-  (puthash 'outline
-           (lambda ()
-             (evil-define-key* 'motion outline-minor-mode-map
-               (kbd "<tab>") nil
-               (kbd "<tab>") 'outline-toggle-subtree
-               (kbd "C-i") 'outline-toggle-subtree
-               (kbd "<backtab>") nil
-               (kbd "<backtab>") 'outline-show-children))
-           cys/evil-collection-mode-hooks)
-  ;; term
-  (puthash 'term
-           (lambda ()
-             (define-key term-mode-map (kbd "RET") nil)
-             (define-key term-mode-map (kbd "C-j") nil)
-             (define-key term-mode-map (kbd "M-x") nil)
-             (evil-define-key 'normal term-mode-map
-               (kbd "RET") 'term-send-input))
-           cys/evil-collection-mode-hooks)
-  ;; view
-  (puthash 'view
-           (lambda () (evil-define-key 'normal view-mode-map (kbd "SPC") nil))
-           cys/evil-collection-mode-hooks)
-  ;; Add to `evil-collection-setup-hook'.
-  (add-hook 'evil-collection-setup-hook
-            (lambda (mode _mode-keymaps &rest _rest)
-              (let ((callback (gethash mode cys/evil-collection-mode-hooks)))
-                (when (functionp callback)
-                  (eval `(,callback))))))
-  ;; Initialize evil-collection.
-  (evil-collection-init))
+  (require 'cys/evil-collection-config))
 
 ;;;; input-switch
 (when (equal (getenv "XDG_CURRENT_DESKTOP") "KDE")
@@ -652,12 +551,15 @@ execute immediately, or add to our custom hook, which is run via
 
 ;;;; magit
 (use-package magit
+  :after (evil-collection)
   :commands (magit magit-status)
   :bind (:map
          magit-status-mode-map
          ("SPC" . nil))
   :hook (git-commit-mode . (lambda () (set-fill-column 69)))
   :config
+  (cys/evil-collection-override-key magit nil magit-diff-mode-map
+    (kbd "SPC") nil)
   (when (eq system-type 'windows-nt)
     (setq magit-git-executable "C:\\msys64\\usr\\bin\\git.exe"))
   (cys/alist-set magit-section-initial-visibility-alist

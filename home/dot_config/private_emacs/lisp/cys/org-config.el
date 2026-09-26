@@ -87,6 +87,20 @@
   (kbd "t n t l") #'cys/org-roam-llm-toggle
   (kbd "t n t p") #'cys/org-roam-publish-toggle)
 
+;; Agenda keybindings
+(cys/evil-collection-override-key org-agenda '(normal motion) org-agenda-mode-map
+  "q" #'org-agenda-quit
+  "j" #'org-agenda-next-item
+  "k" #'org-agenda-previous-item
+  (kbd "SPC") nil
+  (kbd "t") nil
+  (kbd "t u") #'cys/org-agenda-sync
+  (kbd "RET") #'org-agenda-switch-to
+  (kbd "<tab>") #'org-agenda-goto)
+(cys/evil-collection-override-key org-agenda nil org-agenda-mode-map
+  (kbd "t") nil
+  (kbd "<escape>") #'evil-motion-state)
+
 ;;;; org-agenda
 (setq org-deadline-warning-days 0)
 (setq org-agenda-start-on-weekday nil)
